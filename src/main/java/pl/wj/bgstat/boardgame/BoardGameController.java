@@ -1,11 +1,10 @@
-package pl.wj.bgstat.controllers;
+package pl.wj.bgstat.boardgame;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import pl.wj.bgstat.models.dtos.BoardGameHeaderDto;
-import pl.wj.bgstat.models.dtos.BoardGameRequestDto;
-import pl.wj.bgstat.models.dtos.BoardGameResponseDto;
-import pl.wj.bgstat.services.BoardGameService;
+import pl.wj.bgstat.boardgame.model.dtos.BoardGameHeaderDto;
+import pl.wj.bgstat.boardgame.model.dtos.BoardGameRequestDto;
+import pl.wj.bgstat.boardgame.model.dtos.BoardGameResponseDto;
 
 import javax.validation.Valid;
 import java.util.List;

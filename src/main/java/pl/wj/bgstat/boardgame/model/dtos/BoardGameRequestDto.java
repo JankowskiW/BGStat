@@ -1,4 +1,4 @@
-package pl.wj.bgstat.models.dtos;
+package pl.wj.bgstat.boardgame.model.dtos;
 
 import lombok.Builder;
 import lombok.Getter;

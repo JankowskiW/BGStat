@@ -1,18 +1,18 @@
-package pl.wj.bgstat.services;
+package pl.wj.bgstat.boardgame;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import pl.wj.bgstat.mappers.BoardGameMapper;
-import pl.wj.bgstat.models.BoardGame;
-import pl.wj.bgstat.models.dtos.BoardGameHeaderDto;
-import pl.wj.bgstat.models.dtos.BoardGameRequestDto;
-import pl.wj.bgstat.models.dtos.BoardGameResponseDto;
-import pl.wj.bgstat.repositories.BoardGameRepository;
+import pl.wj.bgstat.boardgame.model.BoardGameMapper;
+import pl.wj.bgstat.boardgame.model.BoardGame;
+import pl.wj.bgstat.boardgame.model.dtos.BoardGameHeaderDto;
+import pl.wj.bgstat.boardgame.model.dtos.BoardGameRequestDto;
+import pl.wj.bgstat.boardgame.model.dtos.BoardGameResponseDto;
+import pl.wj.bgstat.boardgame.BoardGameRepository;
 
 import java.util.List;
 
-import static pl.wj.bgstat.mappers.BoardGameMapper.mapToBoardGameHeaderDtos;
+import static pl.wj.bgstat.boardgame.model.BoardGameMapper.mapToBoardGameHeaderDtos;
 
 @Service
 @RequiredArgsConstructor

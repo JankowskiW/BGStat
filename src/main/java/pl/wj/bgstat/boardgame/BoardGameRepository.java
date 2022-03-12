@@ -1,10 +1,10 @@
-package pl.wj.bgstat.repositories;
+package pl.wj.bgstat.boardgame;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-import pl.wj.bgstat.models.BoardGame;
+import pl.wj.bgstat.boardgame.model.BoardGame;
 
 import java.util.List;
 

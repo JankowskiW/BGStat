@@ -1,12 +1,11 @@
-package pl.wj.bgstat.mappers;
+package pl.wj.bgstat.boardgame.model;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import pl.wj.bgstat.models.BoardGame;
-import pl.wj.bgstat.models.BoardGameDescription;
-import pl.wj.bgstat.models.dtos.BoardGameHeaderDto;
-import pl.wj.bgstat.models.dtos.BoardGameRequestDto;
-import pl.wj.bgstat.models.dtos.BoardGameResponseDto;
+import pl.wj.bgstat.boardgamedescription.BoardGameDescription;
+import pl.wj.bgstat.boardgame.model.dtos.BoardGameHeaderDto;
+import pl.wj.bgstat.boardgame.model.dtos.BoardGameRequestDto;
+import pl.wj.bgstat.boardgame.model.dtos.BoardGameResponseDto;
 
 import java.util.List;
 import java.util.stream.Collectors;

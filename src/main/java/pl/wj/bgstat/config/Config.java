@@ -1,4 +1,4 @@
-package pl.wj.bgstat.configs;
+package pl.wj.bgstat.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
