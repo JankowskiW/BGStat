@@ -27,7 +27,7 @@ To run this project, ....
 * Add new board games and basic info about them
 * Add board games to your private library
 * Get basic info about board games such as description, recommended age, playing time, minimum and maximum player numbers, etc.
-* Keep statistics about your plays such as playing time, winners, date of play, etc.
+* Keep statistics about your games such as playing time, winners, date of play, etc.
 * Make your wish list
 * and a lot more features...
 
@@ -35,5 +35,5 @@ To run this project, ....
 This app is inspired by:
 * Spring Boot, Spring, Hibernate and Spring Security tutorial by Mateusz Dąbrowski
   (https://www.youtube.com/playlist?list=PLLIGVl2WVN6ugud2cc3OShwWoTt65jzSL)
-* Many articles on NullPointerException blog (https://nullpointerexception.pl/)
+* Articles on NullPointerException blog (https://nullpointerexception.pl/)
 * Hibernate and JPA course from NullPointerException blog (https://kursy.nullpointerexception.pl/kurs-hibernate-i-jpa/)

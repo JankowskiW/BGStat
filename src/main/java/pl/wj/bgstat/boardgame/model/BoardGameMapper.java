@@ -1,5 +1,6 @@
 package pl.wj.bgstat.boardgame.model;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import pl.wj.bgstat.boardgamedescription.BoardGameDescription;
@@ -8,22 +9,32 @@ import pl.wj.bgstat.boardgame.model.dtos.BoardGameRequestDto;
 import pl.wj.bgstat.boardgame.model.dtos.BoardGameResponseDto;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class BoardGameMapper {
 
-    public static List<BoardGameHeaderDto> mapToBoardGameHeaderDtos(List<BoardGame> boardGames) {
-        return boardGames.stream()
-                .map(boardGame -> mapToBoardGameHeaderDto(boardGame))
-                .collect(Collectors.toList());
+
+    public static BoardGame mapToBoardGame(Long id, BoardGame originalBoardGame, Map<String, Object> partialBoardGameRequest) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        BoardGame boardGame = objectMapper.convertValue(partialBoardGameRequest, BoardGame.class);
+        // Spróbować przypisać zmapowany obiekt ????????????
+        boardGame.setId(id);
+        if (boardGame.getBoardGameDescription() == null) {
+            boardGame.setBoardGameDescription(new BoardGameDescription());
+        } else {
+            boardGame.getBoardGameDescription().setBoardGameId(id);
+        }
+
+        return boardGame;
     }
 
-    private static BoardGameHeaderDto mapToBoardGameHeaderDto(BoardGame boardGame) {
-        return BoardGameHeaderDto.builder()
-                .id(boardGame.getId())
-                .name(boardGame.getName())
-                .build();
+    public static BoardGame mapToBoardGame(Long id, BoardGameRequestDto boardGameRequestDto) {
+        BoardGame boardGame = mapToBoardGame(boardGameRequestDto);
+        boardGame.setId(id);
+        boardGame.getBoardGameDescription().setBoardGameId(id);
+        return boardGame;
     }
 
     public static BoardGame mapToBoardGame(BoardGameRequestDto boardGameRequestDto) {
@@ -38,6 +49,19 @@ public class BoardGameMapper {
         boardGame.getBoardGameDescription().setDescription(boardGameRequestDto.getDescription());
         boardGame.getBoardGameDescription().setBoardGame(boardGame);
         return boardGame;
+    }
+
+    public static List<BoardGameHeaderDto> mapToBoardGameHeaderDtos(List<BoardGame> boardGames) {
+        return boardGames.stream()
+                .map(boardGame -> mapToBoardGameHeaderDto(boardGame))
+                .collect(Collectors.toList());
+    }
+
+    private static BoardGameHeaderDto mapToBoardGameHeaderDto(BoardGame boardGame) {
+        return BoardGameHeaderDto.builder()
+                .id(boardGame.getId())
+                .name(boardGame.getName())
+                .build();
     }
 
     public static BoardGameResponseDto mapToBoardGameResponseDto(BoardGame boardGame) {

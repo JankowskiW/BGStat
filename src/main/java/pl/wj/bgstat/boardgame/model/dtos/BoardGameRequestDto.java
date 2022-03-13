@@ -1,17 +1,18 @@
 package pl.wj.bgstat.boardgame.model.dtos;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.*;
 
 @Getter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class BoardGameRequestDto {
-    // TODO: Make possible to pass only few attributes e.g: when user want to change only name or only description
-    // TODO: Make PATCH method instead of PUT method to edit only few attributes
-
     @NotBlank @Length(max = 255)
     private String name;
     @NotNull @Min(1)

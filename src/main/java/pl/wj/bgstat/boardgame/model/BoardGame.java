@@ -21,6 +21,9 @@ public class BoardGame {
     private int complexity;
     private int playingTime;
 
-    @OneToOne(cascade = {CascadeType.REMOVE, CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "boardGame")
+    @OneToOne(cascade = {CascadeType.REMOVE,
+                         CascadeType.PERSIST,
+                         CascadeType.MERGE},
+              mappedBy = "boardGame")
     private BoardGameDescription boardGameDescription;
 }
