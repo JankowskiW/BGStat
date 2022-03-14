@@ -1,47 +1,17 @@
 package pl.wj.bgstat.boardgame.model;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import pl.wj.bgstat.boardgamedescription.BoardGameDescription;
+import pl.wj.bgstat.boardgamedescription.model.BoardGameDescription;
 import pl.wj.bgstat.boardgame.model.dto.BoardGameHeaderDto;
 import pl.wj.bgstat.boardgame.model.dto.BoardGameRequestDto;
 import pl.wj.bgstat.boardgame.model.dto.BoardGameResponseDto;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class BoardGameMapper {
-
-
-//    public static BoardGame mapToBoardGame(Long id, BoardGame originalBoardGame, Map<String, Object> partialBoardGameRequest) {
-//        ObjectMapper objectMapper = new ObjectMapper();
-//        BoardGame boardGame = objectMapper.convertValue(partialBoardGameRequest, BoardGame.class);
-//        // Spróbować przypisać zmapowany obiekt ????????????
-//        boardGame.setId(id);
-//        if (boardGame.getBoardGameDescription() == null) {
-//            boardGame.setBoardGameDescription(new BoardGameDescription());
-//        } else {
-//            boardGame.getBoardGameDescription().setBoardGameId(id);
-//        }
-//
-//        return boardGame;
-//    }
-
-    public static BoardGame mapToBoardGame(Long id,  Map<String, Object> partialBoardGameRequest) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        BoardGame boardGame = objectMapper.convertValue(partialBoardGameRequest, BoardGame.class);
-        boardGame.setId(id);
-        if (boardGame.getBoardGameDescription() == null) {
-            boardGame.setBoardGameDescription(new BoardGameDescription());
-        } else {
-            boardGame.getBoardGameDescription().setBoardGameId(id);
-        }
-        return boardGame;
-    }
-
 
     public static BoardGame mapToBoardGame(Long id, BoardGameRequestDto boardGameRequestDto) {
         BoardGame boardGame = mapToBoardGame(boardGameRequestDto);

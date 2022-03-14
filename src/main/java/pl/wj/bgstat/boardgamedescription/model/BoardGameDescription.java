@@ -1,4 +1,4 @@
-package pl.wj.bgstat.boardgamedescription;
+package pl.wj.bgstat.boardgamedescription.model;
 
 
 import lombok.Getter;
@@ -17,7 +17,7 @@ public class BoardGameDescription {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @MapsId
     private BoardGame boardGame;
 }

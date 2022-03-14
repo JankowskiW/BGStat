@@ -39,21 +39,17 @@ public class BoardGameController {
         return boardGameService.addBoardGame(boardGameRequestDto);
     }
 
-    @DeleteMapping("/{id}")
-    public void deleteBoardGame(@PathVariable Long id) {
-        boardGameService.deleteBoardGame(id);
-    }
-
     @PutMapping("/{id}")
     public BoardGameResponseDto editBoardGame(@PathVariable Long id, @RequestBody @Valid BoardGameRequestDto boardGameRequestDto) {
         return boardGameService.editBoardGame(id, boardGameRequestDto);
     }
 
-    @PatchMapping("/{id}")
-    public BoardGameResponseDto editPartOfBoardGame(@PathVariable Long id, @RequestBody Map<String, Object> partialBoardGameRequest) {
-//        return boardGameService.editPartOfBoardGame(id, BoardGameMapper.mapToBoardGameRequestDto(partialBoardGameRequest));
-        return boardGameService.editPartOfBoardGame(id, partialBoardGameRequest);
+    @DeleteMapping("/{id}")
+    public void deleteBoardGame(@PathVariable Long id) {
+        boardGameService.deleteBoardGame(id);
     }
+
+
 
 }
 

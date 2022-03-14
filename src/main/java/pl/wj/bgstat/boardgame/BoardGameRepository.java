@@ -17,4 +17,7 @@ public interface BoardGameRepository extends JpaRepository<BoardGame, Long> {
 
     @Query("SELECT bg FROM BoardGame bg LEFT JOIN FETCH bg.boardGameDescription bgd WHERE bg.id = :id")
     BoardGame findWithDescriptionById(Long id);
+
+    boolean existsByNameAndIdNot(String name, Long id);
+    boolean existsByName(String name);
 }

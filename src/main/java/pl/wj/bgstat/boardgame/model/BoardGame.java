@@ -2,7 +2,7 @@ package pl.wj.bgstat.boardgame.model;
 
 import lombok.Getter;
 import lombok.Setter;
-import pl.wj.bgstat.boardgamedescription.BoardGameDescription;
+import pl.wj.bgstat.boardgamedescription.model.BoardGameDescription;
 
 import javax.persistence.*;
 
