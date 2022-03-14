@@ -5,15 +5,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import pl.wj.bgstat.boardgame.model.BoardGameMapper;
 import pl.wj.bgstat.boardgame.model.BoardGame;
-import pl.wj.bgstat.boardgame.model.dtos.BoardGameHeaderDto;
-import pl.wj.bgstat.boardgame.model.dtos.BoardGameRequestDto;
-import pl.wj.bgstat.boardgame.model.dtos.BoardGameResponseDto;
-import pl.wj.bgstat.boardgame.BoardGameRepository;
+import pl.wj.bgstat.boardgame.model.dto.BoardGameHeaderDto;
+import pl.wj.bgstat.boardgame.model.dto.BoardGameRequestDto;
+import pl.wj.bgstat.boardgame.model.dto.BoardGameResponseDto;
 
 import java.util.List;
 import java.util.Map;
-
-import static pl.wj.bgstat.boardgame.model.BoardGameMapper.mapToBoardGameHeaderDtos;
 
 @Service
 @RequiredArgsConstructor
@@ -49,8 +46,8 @@ public class BoardGameService {
     }
 
     public BoardGameResponseDto editPartOfBoardGame(Long id, Map<String, Object> partialBoardGameRequest) {
-        BoardGame boardGame = boardGameRepository.findById(id).orElseThrow();
-        boardGame = BoardGameMapper.mapToBoardGame(id, boardGame, partialBoardGameRequest);
+        boardGameRepository.findById(id).orElseThrow();
+        BoardGame boardGame = BoardGameMapper.mapToBoardGame(id, partialBoardGameRequest);
         boardGameRepository.save(boardGame);
         return BoardGameMapper.mapToBoardGameResponseDto(boardGame);
     }

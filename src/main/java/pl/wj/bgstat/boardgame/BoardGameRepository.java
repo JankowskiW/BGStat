@@ -5,14 +5,14 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import pl.wj.bgstat.boardgame.model.BoardGame;
-import pl.wj.bgstat.boardgame.model.dtos.BoardGameHeaderDto;
+import pl.wj.bgstat.boardgame.model.dto.BoardGameHeaderDto;
 
 import java.util.List;
 
 @Repository
 public interface BoardGameRepository extends JpaRepository<BoardGame, Long> {
 
-    @Query("SELECT new pl.wj.bgstat.boardgame.model.dtos.BoardGameHeaderDto(bg.id, bg.name) FROM BoardGame bg")
+    @Query("SELECT new pl.wj.bgstat.boardgame.model.dto.BoardGameHeaderDto(bg.id, bg.name) FROM BoardGame bg")
     List<BoardGameHeaderDto> findAllBoardGameHeaders(Pageable page);
 
     @Query("SELECT bg FROM BoardGame bg LEFT JOIN FETCH bg.boardGameDescription bgd WHERE bg.id = :id")
