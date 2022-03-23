@@ -15,7 +15,7 @@ public class BoardGameDescriptionController {
     private final BoardGameDescriptionService boardGameDescriptionService;
 
     @PutMapping("/{id}")
-    public BoardGameDescriptionResponseDto editBoardGameDescription(@PathVariable Long id,
+    public BoardGameDescriptionResponseDto editBoardGameDescription(@PathVariable long id,
                           @RequestBody @Valid BoardGameDescriptionRequestDto boardGameRequestDescriptionDto) {
         return boardGameDescriptionService.editBoardGameDescription(id, boardGameRequestDescriptionDto);
     }

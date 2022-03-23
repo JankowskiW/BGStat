@@ -30,7 +30,7 @@ public class BoardGameController {
     }
 
     @GetMapping("/{id}")
-    public BoardGameResponseDto getSingleBoardGame(@PathVariable Long id) {
+    public BoardGameResponseDto getSingleBoardGame(@PathVariable long id) {
         return boardGameService.getSingleBoardGame(id);
     }
 
@@ -40,12 +40,12 @@ public class BoardGameController {
     }
 
     @PutMapping("/{id}")
-    public BoardGameResponseDto editBoardGame(@PathVariable Long id, @RequestBody @Valid BoardGameRequestDto boardGameRequestDto) {
+    public BoardGameResponseDto editBoardGame(@PathVariable long id, @RequestBody @Valid BoardGameRequestDto boardGameRequestDto) {
         return boardGameService.editBoardGame(id, boardGameRequestDto);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteBoardGame(@PathVariable Long id) {
+    public void deleteBoardGame(@PathVariable long id) {
         boardGameService.deleteBoardGame(id);
     }
 

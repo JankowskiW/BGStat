@@ -28,7 +28,7 @@ public class BoardGameService {
         return boardGameRepository.findAllBoardGameHeaders(PageRequest.of(pageNumber, pageSize));
     }
     
-    public BoardGameResponseDto getSingleBoardGame(Long id) {
+    public BoardGameResponseDto getSingleBoardGame(long id) {
         BoardGame boardGame = boardGameRepository.findWithDescriptionById(id);
         if (boardGame == null) throw new EntityNotFoundException("No such board game with id: " + id);
         return BoardGameMapper.mapToBoardGameResponseDto(boardGame);
@@ -44,7 +44,7 @@ public class BoardGameService {
         return boardGameResponseDto;
     }
 
-    public BoardGameResponseDto editBoardGame(Long id, BoardGameRequestDto boardGameRequestDto) {
+    public BoardGameResponseDto editBoardGame(long id, BoardGameRequestDto boardGameRequestDto) {
         if (!boardGameRepository.existsById(id)) throw new EntityNotFoundException("No such board game with id: " + id);
         if (boardGameRepository.existsByNameAndIdNot(boardGameRequestDto.getName(), id))
             throw new EntityExistsException("Board game with name '" +
@@ -55,7 +55,7 @@ public class BoardGameService {
         return BoardGameMapper.mapToBoardGameResponseDto(boardGame);
     }
 
-    public void deleteBoardGame(Long id) {
+    public void deleteBoardGame(long id) {
         boardGameRepository.deleteById(id);
     }
 }

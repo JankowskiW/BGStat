@@ -6,6 +6,6 @@ import lombok.Getter;
 @Getter
 @Builder
 public class BoardGameDescriptionResponseDto {
-    private Long id;
+    private long id;
     private String description;
 }

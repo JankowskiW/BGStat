@@ -1,7 +1,9 @@
 package pl.wj.bgstat.boardgamedescription.model;
 
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import pl.wj.bgstat.boardgame.model.BoardGame;
 

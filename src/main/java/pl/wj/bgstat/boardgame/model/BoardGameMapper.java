@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class BoardGameMapper {
 
-    public static BoardGame mapToBoardGame(Long id, BoardGameRequestDto boardGameRequestDto) {
+    public static BoardGame mapToBoardGame(long id, BoardGameRequestDto boardGameRequestDto) {
         BoardGame boardGame = mapToBoardGame(boardGameRequestDto);
         boardGame.setId(id);
         boardGame.getBoardGameDescription().setBoardGameId(id);

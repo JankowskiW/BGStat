@@ -6,7 +6,7 @@ import pl.wj.bgstat.boardgamedescription.model.dto.BoardGameDescriptionResponseD
 
 public class BoardGameDescriptionMapper {
 
-    public static BoardGameDescription mapToBoardGameDescription(Long id,
+    public static BoardGameDescription mapToBoardGameDescription(long id,
                                        BoardGameDescriptionRequestDto boardGameDescriptionRequestDto) {
         BoardGameDescription boardGameDescription = new BoardGameDescription();
         boardGameDescription.setBoardGameId(id);

@@ -16,8 +16,8 @@ public interface BoardGameRepository extends JpaRepository<BoardGame, Long> {
     List<BoardGameHeaderDto> findAllBoardGameHeaders(Pageable page);
 
     @Query("SELECT bg FROM BoardGame bg LEFT JOIN FETCH bg.boardGameDescription bgd WHERE bg.id = :id")
-    BoardGame findWithDescriptionById(Long id);
+    BoardGame findWithDescriptionById(long id);
 
-    boolean existsByNameAndIdNot(String name, Long id);
+    boolean existsByNameAndIdNot(String name, long id);
     boolean existsByName(String name);
 }
