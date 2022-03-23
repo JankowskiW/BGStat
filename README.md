@@ -36,6 +36,9 @@ To run this project, ....
 
 ## Sources
 This app is inspired by:
+* Spring Boot Reference Documentation
+* Hibernate ORM Documentation
+* AssertJ Documentation
 * Spring Boot, Spring, Hibernate and Spring Security tutorial by Mateusz Dąbrowski
   (https://www.youtube.com/playlist?list=PLLIGVl2WVN6ugud2cc3OShwWoTt65jzSL)
 * Articles on NullPointerException blog (https://nullpointerexception.pl/)
