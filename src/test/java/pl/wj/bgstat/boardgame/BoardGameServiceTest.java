@@ -10,9 +10,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Pageable;
 import pl.wj.bgstat.boardgame.model.BoardGame;
 import pl.wj.bgstat.boardgame.model.dto.BoardGameHeaderDto;
+import pl.wj.bgstat.boardgame.model.dto.BoardGameRequestDto;
 import pl.wj.bgstat.boardgame.model.dto.BoardGameResponseDto;
 import pl.wj.bgstat.boardgamedescription.model.BoardGameDescription;
 
+import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,9 +23,11 @@ import java.util.concurrent.ThreadLocalRandom;
 import static java.lang.Math.ceil;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willDoNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class BoardGameServiceTest {
@@ -133,7 +137,7 @@ class BoardGameServiceTest {
     }
 
     @Test
-    void shouldThrowEntityNotFoundException() {
+    void shouldThrowEntityNotFoundExceptionWhenCannotFindBoardGameById() {
         // given
         long id = boardGameList.size() + 1;
         String exMsg = "No such board game with id: " + id;
@@ -148,6 +152,73 @@ class BoardGameServiceTest {
                 .isInstanceOf(EntityNotFoundException.class)
                 .hasMessage(exMsg);
     }
+
+    @Test
+    void shouldReturnCreatedBoardGame() {
+        // given
+        given(boardGameRepository.save(any(BoardGame.class)))
+                .willReturn(new BoardGame());
+
+        // when
+        BoardGameResponseDto boardGameResponseDto = boardGameService.addBoardGame(new BoardGameRequestDto());
+
+        // then
+        assertThat(boardGameResponseDto).isNotNull();
+    }
+
+    @Test
+    void shouldThrowEntityExistsExceptionWhenBoardGameNameExists() {
+        // given
+        String boardGameName = "Name No. 1";
+        String exMsg = "Board game with name '" +
+                boardGameName + "' already exists in database";
+        BoardGameRequestDto boardGameRequestDto = new BoardGameRequestDto(
+                boardGameName, 1, 1, 5, 2, 150, "DESCRIPTION");
+        given(boardGameRepository.existsByName(anyString()))
+                .willReturn(boardGameList.stream()
+                        .filter(bg -> bg.getName().equals(boardGameName))
+                        .count() > 0);
+
+        // when // then
+        assertThatThrownBy(() -> boardGameService.addBoardGame(boardGameRequestDto))
+                .isInstanceOf(EntityExistsException.class)
+                .hasMessage(exMsg);
+    }
+
+    @Test
+    void shouldRemoveBoardGameByIdWhenIdExists () {
+        // given
+        long id = 3;
+        given(boardGameRepository.existsById(anyLong()))
+                .willReturn(boardGameList.stream()
+                        .filter(bg -> bg.getId() == id)
+                        .count() > 0);
+        willDoNothing().given(boardGameRepository).deleteById(anyLong());
+
+        // when
+        boardGameService.deleteBoardGame(id);
+
+        // then
+        verify(boardGameRepository, times(1)).deleteById(id);
+    }
+
+    @Test
+    void shouldThrowEntityNotFoundExceptionWhenTryToRemoveNonExistingBoardGame() {
+        // given
+        long id = 100;
+        String exMsg = "No such board game with id: " + id;
+        given(boardGameRepository.existsById(anyLong()))
+                .willReturn(boardGameList.stream()
+                        .filter(bg -> bg.getId() == id)
+                        .count() > 0);
+
+        // when // then
+        assertThatThrownBy(() -> boardGameService.deleteBoardGame(id))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessage(exMsg);
+    }
+
+
 
 
 
@@ -171,7 +242,7 @@ class BoardGameServiceTest {
         for (int i = 1; i <= numberOfElements; i++) {
             boardGame = new BoardGame();
             boardGame.setId(i);
-            boardGame.setName(RandomString.make(Rand(MIN_NAME_LEN, MAX_NAME_LEN)));
+            boardGame.setName("Name No. " + i);
             boardGame.setRecommendedAge(Rand(MIN_AGE, MAX_AGE));
             boardGame.setMinPlayersNumber(Rand(MIN_PLAYERS_NUMBER, MAX_PLAYERS_NUMBER));
             boardGame.setMaxPlayersNumber(Rand(boardGame.getMinPlayersNumber(), MAX_PLAYERS_NUMBER));

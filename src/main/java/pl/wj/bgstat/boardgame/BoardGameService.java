@@ -56,6 +56,7 @@ public class BoardGameService {
     }
 
     public void deleteBoardGame(long id) {
+        if (!boardGameRepository.existsById(id)) throw new EntityNotFoundException("No such board game with id: " + id);
         boardGameRepository.deleteById(id);
     }
 }
