@@ -29,8 +29,8 @@ public class BoardGameService {
     }
     
     public BoardGameResponseDto getSingleBoardGame(long id) {
-        BoardGame boardGame = boardGameRepository.findWithDescriptionById(id);
-        if (boardGame == null) throw new EntityNotFoundException("No such board game with id: " + id);
+        BoardGame boardGame = boardGameRepository.findWithDescriptionById(id)
+                .orElseThrow(() -> new EntityNotFoundException("No such board game with id: " + id));
         return BoardGameMapper.mapToBoardGameResponseDto(boardGame);
     }
 

@@ -8,6 +8,7 @@ import pl.wj.bgstat.boardgame.model.BoardGame;
 import pl.wj.bgstat.boardgame.model.dto.BoardGameHeaderDto;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface BoardGameRepository extends JpaRepository<BoardGame, Long> {
@@ -16,7 +17,7 @@ public interface BoardGameRepository extends JpaRepository<BoardGame, Long> {
     List<BoardGameHeaderDto> findAllBoardGameHeaders(Pageable page);
 
     @Query("SELECT bg FROM BoardGame bg LEFT JOIN FETCH bg.boardGameDescription bgd WHERE bg.id = :id")
-    BoardGame findWithDescriptionById(long id);
+    Optional<BoardGame> findWithDescriptionById(long id);
 
     boolean existsByNameAndIdNot(String name, long id);
     boolean existsByName(String name);
