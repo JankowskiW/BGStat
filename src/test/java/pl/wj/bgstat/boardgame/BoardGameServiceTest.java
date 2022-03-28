@@ -1,6 +1,5 @@
 package pl.wj.bgstat.boardgame;
 
-import net.bytebuddy.utility.RandomString;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,15 +14,12 @@ import pl.wj.bgstat.boardgame.model.BoardGameMapper;
 import pl.wj.bgstat.boardgame.model.dto.BoardGameHeaderDto;
 import pl.wj.bgstat.boardgame.model.dto.BoardGameRequestDto;
 import pl.wj.bgstat.boardgame.model.dto.BoardGameResponseDto;
-import pl.wj.bgstat.boardgamedescription.model.BoardGameDescription;
 
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.ThreadLocalRandom;
 
 import static java.lang.Math.ceil;
 import static java.lang.Math.floor;
@@ -31,8 +27,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static pl.wj.bgstat.boardgame.BoardGameServiceTestHelper.*;
 
 @ExtendWith(MockitoExtension.class)
 class BoardGameServiceTest {
@@ -45,26 +41,15 @@ class BoardGameServiceTest {
     private static final int PAGE_SIZE = 4;
     private static final int NUMBER_OF_ELEMENTS = 20;
 
-    private static final int MIN_NAME_LEN = 1;
-    private static final int MAX_NAME_LEN = 255;
-    private static final int MIN_AGE = 1;
-    private static final int MAX_AGE = 18;
-    private static final int MIN_PLAYERS_NUMBER = 1;
-    private static final int MAX_PLAYERS_NUMBER = 1;
-    private static final int MIN_COMPLEXITY = 1;
-    private static final int MAX_COMPLEXITY = 10;
-    private static final int MIN_PLAYING_TIME = 1;
-    private static final int MAX_PLAYING_TIME = 360;
-
-    private List<BoardGameHeaderDto> boardGameHeaderList;
     private List<BoardGame> boardGameList;
+    private List<BoardGameHeaderDto> boardGameHeaderList;
     private BoardGameRequestDto boardGameRequestDto;
 
     @BeforeEach
     void setUp() {
-        populateBoardGameHeaderDtoList(NUMBER_OF_ELEMENTS);
-        populateBoardGameList(NUMBER_OF_ELEMENTS);
-        createBoardGameRequestDto();
+        boardGameList = populateBoardGameList(NUMBER_OF_ELEMENTS);
+        boardGameHeaderList = populateBoardGameHeaderDtoList(boardGameList);
+        boardGameRequestDto = createBoardGameRequestDto(boardGameList.size());
     }
 
 
@@ -246,10 +231,95 @@ class BoardGameServiceTest {
     }
 
     @Test
+    @DisplayName("Should edit board game when exists")
+    void shouldEditBoardGameWhenExists() {
+        // given
+        long id = 1l;
+        BoardGame boardGame = boardGameList.stream().filter(bg -> bg.getId() == id).findFirst().orElseThrow();
+        BoardGameRequestDto boardGameRequestDto = BoardGameRequestDto.builder()
+                .name(boardGame.getName())
+                .recommendedAge(boardGame.getRecommendedAge()*2)
+                .build();
+        given(boardGameRepository.existsById(anyLong())).willReturn(
+                boardGameList.stream().filter(bg -> bg.getId() == id).count() > 0);
+        given(boardGameRepository.existsByNameAndIdNot(anyString(), anyLong())).willReturn(
+                boardGameList.stream().filter(bg -> bg.getId() != id &&
+                        bg.getName().equals(boardGameRequestDto.getName())).count() > 0);
+        given(boardGameRepository.save(any(BoardGame.class))).willAnswer(
+                i -> {
+                    BoardGame bg = i.getArgument(0, BoardGame.class);
+                    bg.setId(id);
+                    bg.setRecommendedAge(boardGameRequestDto.getRecommendedAge());
+                    return bg;
+                });
+
+        // when
+        BoardGameResponseDto boardGameResponseDto = boardGameService.editBoardGame(id, boardGameRequestDto);
+
+        // then
+        verify(boardGameRepository).existsById(id);
+        verify(boardGameRepository).existsByNameAndIdNot(boardGameRequestDto.getName(), id);
+        verify(boardGameRepository).save(any(BoardGame.class));
+        assertThat(boardGameResponseDto).isNotNull();
+        assertThat(boardGameResponseDto.getId()).isEqualTo(id);
+        assertThat(boardGameResponseDto.getRecommendedAge()).isEqualTo(boardGameRequestDto.getRecommendedAge());
+    }
+
+    @Test
+    @DisplayName("Should throw EntityNotFoundException when trying to edit non existing board game")
+    void shouldThrowExceptionWhenTryingToEditNonExistingBoardGame() {
+        // given
+        long id = 100l;
+        String exMsg = "No such board game with id: " + id;
+        given(boardGameRepository.existsById(anyLong()))
+                .willReturn(boardGameList.stream()
+                        .filter(bg -> bg.getId() == id)
+                        .count() > 0);
+
+        // when
+        assertThatThrownBy(() -> boardGameService.editBoardGame(id, new BoardGameRequestDto()))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessage(exMsg);
+
+        // then
+        verify(boardGameRepository).existsById(id);
+    }
+
+    @Test
+    @DisplayName("Should throw EntityExistsException when trying to set new name that already exists")
+    void shouldThrowExceptionWhenTryingToSetNameThatAlreadyExists() {
+        // given
+        long id = 1l;
+        BoardGame boardGame = boardGameList.stream().filter(bg -> bg.getId() == id).findFirst().orElseThrow();
+        BoardGameRequestDto boardGameRequestDto = new BoardGameRequestDto(
+                boardGameList.get(1).getName(), boardGame.getRecommendedAge(), boardGame.getMinPlayersNumber(),
+                boardGame.getMaxPlayersNumber(), boardGame.getComplexity(), boardGame.getPlayingTime(),
+                boardGame.getBoardGameDescription().getDescription());
+        String exMsg = "Board game with name '" + boardGameRequestDto.getName() + "' already exists in database";
+        given(boardGameRepository.existsById(anyLong()))
+                .willReturn(boardGameList.stream()
+                        .filter(bg -> bg.getId() == id)
+                        .count() > 0);
+        given(boardGameRepository.existsByNameAndIdNot(anyString(), anyLong()))
+                .willReturn(boardGameList.stream()
+                        .filter(bg -> bg.getId() != id && bg.getName().equals(boardGameRequestDto.getName()))
+                        .count() > 0);
+
+        // when
+        assertThatThrownBy(() -> boardGameService.editBoardGame(id, boardGameRequestDto))
+                .isInstanceOf(EntityExistsException.class)
+                .hasMessage(exMsg);
+
+        // then
+        verify(boardGameRepository).existsByNameAndIdNot(boardGameRequestDto.getName(), id);
+    }
+
+
+    @Test
     @DisplayName("Should remove board game by id when id exists in database")
     void shouldRemoveBoardGameByIdWhenIdExists () {
         // given
-        long id = 3;
+        long id = 3l;
         given(boardGameRepository.existsById(anyLong()))
                 .willReturn(boardGameList.stream()
                         .filter(bg -> bg.getId() == id)
@@ -267,7 +337,7 @@ class BoardGameServiceTest {
     @DisplayName("Should throw EntityNotFoundException when trying to remove non existing board game")
     void shouldThrowExceptionWhenTryingToRemoveNonExistingBoardGame() {
         // given
-        long id = 100;
+        long id = 100l;
         String exMsg = "No such board game with id: " + id;
         given(boardGameRepository.existsById(anyLong()))
                 .willReturn(boardGameList.stream()
@@ -280,57 +350,12 @@ class BoardGameServiceTest {
                 .hasMessage(exMsg);
 
         // then
-        verify(boardGameRepository).existsById(any());
+        verify(boardGameRepository).existsById(id);
     }
 
 
 
 
 
-
-
-    private int Rand(int min, int max) {
-        return ThreadLocalRandom.current().nextInt(min, max+1);
-    }
-
-    private void populateBoardGameHeaderDtoList(int numberOfElements) {
-        boardGameHeaderList = new ArrayList<>();
-        for (int i = 1; i <= numberOfElements; i++)
-            boardGameHeaderList.add(
-                    new BoardGameHeaderDto(i, RandomString.make(Rand(MIN_NAME_LEN, MAX_NAME_LEN))));
-    }
-
-    private void populateBoardGameList(int numberOfElements) {
-        BoardGame boardGame;
-        BoardGameDescription boardGameDescription;
-        boardGameList = new ArrayList<>();
-        for (int i = 1; i <= numberOfElements; i++) {
-            boardGame = new BoardGame();
-            boardGame.setId(i);
-            boardGame.setName("Name No. " + i);
-            boardGame.setRecommendedAge(Rand(MIN_AGE, MAX_AGE));
-            boardGame.setMinPlayersNumber(Rand(MIN_PLAYERS_NUMBER, MAX_PLAYERS_NUMBER));
-            boardGame.setMaxPlayersNumber(Rand(boardGame.getMinPlayersNumber(), MAX_PLAYERS_NUMBER));
-            boardGame.setComplexity(Rand(MIN_COMPLEXITY, MAX_COMPLEXITY));
-            boardGame.setPlayingTime(Rand(MIN_PLAYING_TIME, MAX_PLAYING_TIME));
-            boardGameDescription = new BoardGameDescription();
-            boardGameDescription.setBoardGameId(i);
-            boardGameDescription.setBoardGame(boardGame);
-            boardGameDescription.setDescription("DESCRIPTION OF " + boardGame.getName());
-            boardGame.setBoardGameDescription(boardGameDescription);
-            boardGameList.add(boardGame);
-        }
-    }
-
-    private void createBoardGameRequestDto() {
-        boardGameRequestDto = new BoardGameRequestDto(
-                "Name No. " + (boardGameList.size() + 1),
-                18,
-                1,
-                4,
-                5,
-                150,
-                "DESCRIPTION OF Name No. " + (boardGameList.size() + 1));
-    }
 
 }

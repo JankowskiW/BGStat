@@ -8,7 +8,6 @@ import pl.wj.bgstat.boardgame.model.dto.BoardGameResponseDto;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
