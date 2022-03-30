@@ -7,6 +7,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import pl.wj.bgstat.boardgame.model.BoardGame;
@@ -61,11 +63,11 @@ class BoardGameServiceTest {
         int fromIndex = (pageNumber - 1) * PAGE_SIZE;
         int toIndex = fromIndex + PAGE_SIZE;
         given(boardGameRepository.findAllBoardGameHeaders(any(Pageable.class)))
-                .willReturn(boardGameHeaderList.subList(fromIndex, toIndex));
+                .willReturn(new PageImpl<BoardGameHeaderDto>(boardGameHeaderList.subList(fromIndex, toIndex)));
 
         // when
-        List<BoardGameHeaderDto> boardGameHeaders =
-                boardGameService.getBoardGameHeaders(pageNumber, PAGE_SIZE);
+        Page<BoardGameHeaderDto> boardGameHeaders =
+                boardGameService.getBoardGameHeaders(PageRequest.of(pageNumber, PAGE_SIZE));
 
         // then
         assertThat(boardGameHeaders)
@@ -85,11 +87,11 @@ class BoardGameServiceTest {
         int fromIndex = NUMBER_OF_ELEMENTS - lastPageSize;
         int toIndex = NUMBER_OF_ELEMENTS;
         given(boardGameRepository.findAllBoardGameHeaders(any(Pageable.class)))
-                .willReturn(boardGameHeaderList.subList(fromIndex, toIndex));
+                .willReturn(new PageImpl<>(boardGameHeaderList.subList(fromIndex, toIndex)));
 
         // when
-        List<BoardGameHeaderDto> boardGameHeaders =
-                boardGameService.getBoardGameHeaders(lastPageNumber, PAGE_SIZE);
+        Page<BoardGameHeaderDto> boardGameHeaders =
+                boardGameService.getBoardGameHeaders(PageRequest.of(lastPageNumber, PAGE_SIZE));
 
         // then
         assertThat(boardGameHeaders)
@@ -104,11 +106,12 @@ class BoardGameServiceTest {
     void shouldReturnEmptyListOfBoardGameHeaders() {
         // given
         int tooHighPageNumber = (int) ceil(boardGameHeaderList.size() / (double) PAGE_SIZE) + 1;
-        given(boardGameRepository.findAllBoardGameHeaders(any(Pageable.class))).willReturn(new ArrayList<>());
+        given(boardGameRepository.findAllBoardGameHeaders(any(Pageable.class)))
+                .willReturn(new PageImpl<BoardGameHeaderDto>(new ArrayList<BoardGameHeaderDto>()));
 
         // when
-        List<BoardGameHeaderDto> boardGameHeaders =
-                boardGameService.getBoardGameHeaders(tooHighPageNumber, PAGE_SIZE);
+        Page<BoardGameHeaderDto> boardGameHeaders =
+                boardGameService.getBoardGameHeaders(PageRequest.of(tooHighPageNumber, PAGE_SIZE));
 
         // then
         verify(boardGameRepository).findAllBoardGameHeaders(PageRequest.of(tooHighPageNumber, PAGE_SIZE));
@@ -124,8 +127,9 @@ class BoardGameServiceTest {
         int pageNumber = 2;
         String exMsg = "Database access error";
         willThrow(new IllegalAccessError(exMsg)).given(boardGameRepository).findAllBoardGameHeaders(any(Pageable.class));
+
         // when
-        assertThatThrownBy(() -> boardGameService.getBoardGameHeaders(pageNumber, PAGE_SIZE))
+        assertThatThrownBy(() -> boardGameService.getBoardGameHeaders(PageRequest.of(pageNumber, PAGE_SIZE)))
                 .isInstanceOf(IllegalAccessError.class)
                 .hasMessage(exMsg);
 

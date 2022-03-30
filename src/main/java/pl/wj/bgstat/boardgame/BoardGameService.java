@@ -1,7 +1,9 @@
 package pl.wj.bgstat.boardgame;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import pl.wj.bgstat.boardgame.model.BoardGame;
 import pl.wj.bgstat.boardgame.model.BoardGameMapper;
@@ -21,8 +23,8 @@ public class BoardGameService {
 
     
     
-    public List<BoardGameHeaderDto> getBoardGameHeaders(int pageNumber, int pageSize) {
-        return boardGameRepository.findAllBoardGameHeaders(PageRequest.of(pageNumber, pageSize));
+    public Page<BoardGameHeaderDto> getBoardGameHeaders(Pageable pageable) {
+        return boardGameRepository.findAllBoardGameHeaders(pageable);
     }
     
     public BoardGameResponseDto getSingleBoardGame(long id) {
