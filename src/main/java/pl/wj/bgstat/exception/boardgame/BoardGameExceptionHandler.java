@@ -17,23 +17,21 @@ public class BoardGameExceptionHandler {
     @ExceptionHandler(EntityNotFoundException.class)
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
     public ExceptionBody handleBoardGameNotFoundException(EntityNotFoundException e) {
-        ExceptionBody exception = new ExceptionBody(
+        return new ExceptionBody(
                 e.getMessage(),
                 HttpStatus.NOT_FOUND,
                 ZonedDateTime.now()
         );
-        return exception;
     }
 
     @ExceptionHandler(EntityExistsException.class)
     @ResponseStatus(value = HttpStatus.CONFLICT)
     public ExceptionBody handleBoardGameAlreadyExistsException(EntityExistsException e) {
-        ExceptionBody exception = new ExceptionBody(
+        return new ExceptionBody(
                 e.getMessage(),
                 HttpStatus.CONFLICT,
                 ZonedDateTime.now()
         );
-        return exception;
     }
 
 }

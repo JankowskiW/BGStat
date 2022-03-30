@@ -2,7 +2,6 @@ package pl.wj.bgstat.boardgame;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import pl.wj.bgstat.boardgame.model.BoardGame;
@@ -13,7 +12,6 @@ import pl.wj.bgstat.boardgame.model.dto.BoardGameResponseDto;
 
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -21,8 +19,6 @@ public class BoardGameService {
 
     private final BoardGameRepository boardGameRepository;
 
-    
-    
     public Page<BoardGameHeaderDto> getBoardGameHeaders(Pageable pageable) {
         return boardGameRepository.findAllBoardGameHeaders(pageable);
     }
@@ -39,8 +35,7 @@ public class BoardGameService {
                     boardGameRequestDto.getName() + "' already exists in database");
         BoardGame boardGame = BoardGameMapper.mapToBoardGame(boardGameRequestDto);
         boardGameRepository.save(boardGame);
-        BoardGameResponseDto boardGameResponseDto = BoardGameMapper.mapToBoardGameResponseDto(boardGame);
-        return boardGameResponseDto;
+        return BoardGameMapper.mapToBoardGameResponseDto(boardGame);
     }
 
     public BoardGameResponseDto editBoardGame(long id, BoardGameRequestDto boardGameRequestDto) {

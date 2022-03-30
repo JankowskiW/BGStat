@@ -9,13 +9,11 @@ import pl.wj.bgstat.boardgamedescription.model.dto.BoardGameDescriptionResponseD
 
 import javax.persistence.EntityNotFoundException;
 
-
 @Service
 @RequiredArgsConstructor
 public class BoardGameDescriptionService {
 
     private final BoardGameDescriptionRepository boardGameDescriptionRepository;
-
 
     public BoardGameDescriptionResponseDto editBoardGameDescription(long id, BoardGameDescriptionRequestDto boardGameRequestDescriptionDto) {
         BoardGameDescription boardGameDescription = boardGameDescriptionRepository.findById(id).orElseThrow(

@@ -1,6 +1,5 @@
 package pl.wj.bgstat.boardgamedescription.model;
 
-import pl.wj.bgstat.boardgame.model.dto.BoardGameHeaderDto;
 import pl.wj.bgstat.boardgamedescription.model.dto.BoardGameDescriptionRequestDto;
 import pl.wj.bgstat.boardgamedescription.model.dto.BoardGameDescriptionResponseDto;
 

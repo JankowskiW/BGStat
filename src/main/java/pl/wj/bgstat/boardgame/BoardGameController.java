@@ -17,11 +17,7 @@ import java.util.List;
 @RequestMapping("/board_games")
 public class BoardGameController {
 
-    private static final int PAGE_SIZE = 25;
-
     private final BoardGameService boardGameService;
-
-
 
     @GetMapping("")
     public Page<BoardGameHeaderDto> getBoardGameHeaders(Pageable pageable) {

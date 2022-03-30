@@ -54,7 +54,6 @@ class BoardGameServiceTest {
         boardGameRequestDto = createBoardGameRequestDto(boardGameList.size());
     }
 
-
     @Test
     @DisplayName("Should return only one but not last page of board game headers")
     void shouldReturnOnlyOneButNotLastPageOfBoardGameHeaders() {
@@ -63,7 +62,7 @@ class BoardGameServiceTest {
         int fromIndex = (pageNumber - 1) * PAGE_SIZE;
         int toIndex = fromIndex + PAGE_SIZE;
         given(boardGameRepository.findAllBoardGameHeaders(any(Pageable.class)))
-                .willReturn(new PageImpl<BoardGameHeaderDto>(boardGameHeaderList.subList(fromIndex, toIndex)));
+                .willReturn(new PageImpl<>(boardGameHeaderList.subList(fromIndex, toIndex)));
 
         // when
         Page<BoardGameHeaderDto> boardGameHeaders =
@@ -107,7 +106,7 @@ class BoardGameServiceTest {
         // given
         int tooHighPageNumber = (int) ceil(boardGameHeaderList.size() / (double) PAGE_SIZE) + 1;
         given(boardGameRepository.findAllBoardGameHeaders(any(Pageable.class)))
-                .willReturn(new PageImpl<BoardGameHeaderDto>(new ArrayList<BoardGameHeaderDto>()));
+                .willReturn(new PageImpl<>(new ArrayList<>()));
 
         // when
         Page<BoardGameHeaderDto> boardGameHeaders =
