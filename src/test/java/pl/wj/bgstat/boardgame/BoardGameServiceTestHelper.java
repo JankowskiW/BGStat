@@ -10,13 +10,11 @@ import java.util.List;
 
 public class BoardGameServiceTestHelper {
 
-
     private static final int RECOMMENDED_AGE = 14;
     private static final int MIN_PLAYERS_NUMBER = 1;
     private static final int MAX_PLAYERS_NUMBER = 4;
     private static final int COMPLEXITY = 2;
     private static final int PLAYING_TIME = 120;
-
 
     public static List<BoardGame> populateBoardGameList(int numberOfElements) {
         List<BoardGame> boardGameList = new ArrayList<>();

@@ -15,10 +15,12 @@ public class BoardGameDescriptionService {
 
     private final BoardGameDescriptionRepository boardGameDescriptionRepository;
 
-    public BoardGameDescriptionResponseDto editBoardGameDescription(long id, BoardGameDescriptionRequestDto boardGameRequestDescriptionDto) {
+    public BoardGameDescriptionResponseDto editBoardGameDescription(long id,
+                      BoardGameDescriptionRequestDto boardGameRequestDescriptionDto) {
         BoardGameDescription boardGameDescription = boardGameDescriptionRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException("No such board game description with id: " + id));
         boardGameDescription.setDescription(boardGameRequestDescriptionDto.getDescription());
-        return BoardGameDescriptionMapper.mapToBoardGameDescriptionResponseDto(boardGameDescriptionRepository.save(boardGameDescription));
+        return BoardGameDescriptionMapper.mapToBoardGameDescriptionResponseDto(
+                    boardGameDescriptionRepository.save(boardGameDescription));
     }
 }

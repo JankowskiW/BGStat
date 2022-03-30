@@ -113,7 +113,6 @@ class BoardGameServiceTest {
                 boardGameService.getBoardGameHeaders(PageRequest.of(tooHighPageNumber, PAGE_SIZE));
 
         // then
-        verify(boardGameRepository).findAllBoardGameHeaders(PageRequest.of(tooHighPageNumber, PAGE_SIZE));
         assertThat(boardGameHeaders)
                 .isNotNull()
                 .hasSize(0);
@@ -131,9 +130,6 @@ class BoardGameServiceTest {
         assertThatThrownBy(() -> boardGameService.getBoardGameHeaders(PageRequest.of(pageNumber, PAGE_SIZE)))
                 .isInstanceOf(IllegalAccessError.class)
                 .hasMessage(exMsg);
-
-        // then
-        verify(boardGameRepository).findAllBoardGameHeaders(PageRequest.of(pageNumber, PAGE_SIZE));
     }
 
     @Test
@@ -151,7 +147,6 @@ class BoardGameServiceTest {
         BoardGameResponseDto boardGameResponseDto = boardGameService.getSingleBoardGame(id);
 
         // then
-        verify(boardGameRepository).findWithDescriptionById(id);
         assertThat(boardGameResponseDto)
                 .isNotNull()
                 .usingRecursiveComparison()
@@ -173,9 +168,6 @@ class BoardGameServiceTest {
         assertThatThrownBy(() -> boardGameService.getSingleBoardGame(id))
                 .isInstanceOf(EntityNotFoundException.class)
                 .hasMessage(exMsg);
-
-        // then
-        verify(boardGameRepository).findWithDescriptionById(id);
     }
 
     @Test
@@ -202,8 +194,6 @@ class BoardGameServiceTest {
         BoardGameResponseDto boardGameResponseDto = boardGameService.addBoardGame(boardGameRequestDto);
 
         // then
-        verify(boardGameRepository).existsByName(boardGameRequestDto.getName());
-        verify(boardGameRepository).save(any(BoardGame.class));
         assertThat(boardGameResponseDto)
                 .isNotNull()
                 .usingRecursiveComparison()
@@ -228,9 +218,6 @@ class BoardGameServiceTest {
         assertThatThrownBy(() -> boardGameService.addBoardGame(boardGameRequestDto))
                 .isInstanceOf(EntityExistsException.class)
                 .hasMessage(exMsg);
-
-        // then
-        verify(boardGameRepository).existsByName(boardGameName);
     }
 
     @Test
@@ -260,9 +247,6 @@ class BoardGameServiceTest {
         BoardGameResponseDto boardGameResponseDto = boardGameService.editBoardGame(id, boardGameRequestDto);
 
         // then
-        verify(boardGameRepository).existsById(id);
-        verify(boardGameRepository).existsByNameAndIdNot(boardGameRequestDto.getName(), id);
-        verify(boardGameRepository).save(any(BoardGame.class));
         assertThat(boardGameResponseDto).isNotNull();
         assertThat(boardGameResponseDto.getId()).isEqualTo(id);
         assertThat(boardGameResponseDto.getRecommendedAge()).isEqualTo(boardGameRequestDto.getRecommendedAge());
@@ -283,9 +267,6 @@ class BoardGameServiceTest {
         assertThatThrownBy(() -> boardGameService.editBoardGame(id, new BoardGameRequestDto()))
                 .isInstanceOf(EntityNotFoundException.class)
                 .hasMessage(exMsg);
-
-        // then
-        verify(boardGameRepository).existsById(id);
     }
 
     @Test
@@ -312,9 +293,6 @@ class BoardGameServiceTest {
         assertThatThrownBy(() -> boardGameService.editBoardGame(id, boardGameRequestDto))
                 .isInstanceOf(EntityExistsException.class)
                 .hasMessage(exMsg);
-
-        // then
-        verify(boardGameRepository).existsByNameAndIdNot(boardGameRequestDto.getName(), id);
     }
 
 
@@ -351,14 +329,5 @@ class BoardGameServiceTest {
         assertThatThrownBy(() -> boardGameService.deleteBoardGame(id))
                 .isInstanceOf(EntityNotFoundException.class)
                 .hasMessage(exMsg);
-
-        // then
-        verify(boardGameRepository).existsById(id);
     }
-
-
-
-
-
-
 }

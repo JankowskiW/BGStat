@@ -1,7 +1,6 @@
 package pl.wj.bgstat.boardgamedescription.model;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import pl.wj.bgstat.boardgame.model.BoardGame;
 
 import javax.persistence.*;
@@ -9,6 +8,8 @@ import javax.persistence.*;
 @Entity
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name="board_game_descriptions")
 public class BoardGameDescription {
     @Id

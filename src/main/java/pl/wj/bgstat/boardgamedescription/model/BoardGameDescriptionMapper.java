@@ -15,7 +15,7 @@ public class BoardGameDescriptionMapper {
 
     public static BoardGameDescriptionResponseDto mapToBoardGameDescriptionResponseDto(BoardGameDescription boardGameDescription) {
         return BoardGameDescriptionResponseDto.builder()
-                .id(boardGameDescription.getBoardGameId())
+                .boardGameId(boardGameDescription.getBoardGameId())
                 .description(boardGameDescription.getDescription())
                 .build();
     }
