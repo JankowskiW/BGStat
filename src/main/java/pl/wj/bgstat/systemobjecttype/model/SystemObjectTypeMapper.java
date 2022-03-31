@@ -13,7 +13,7 @@ public class SystemObjectTypeMapper {
         return systemObjectType;
     }
 
-    private static SystemObjectType mapToSystemObjectType(SystemObjectTypeRequestDto systemObjectTypeRequestDto) {
+    public static SystemObjectType mapToSystemObjectType(SystemObjectTypeRequestDto systemObjectTypeRequestDto) {
         SystemObjectType systemObjectType = new SystemObjectType();
         systemObjectType.setName(systemObjectTypeRequestDto.getName());
         systemObjectType.setDescription(systemObjectTypeRequestDto.getDescription());

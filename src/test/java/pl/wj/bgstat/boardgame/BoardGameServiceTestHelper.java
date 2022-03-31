@@ -36,15 +36,15 @@ public class BoardGameServiceTestHelper {
             boardGame.setBoardGameDescription(boardGameDescription);
             boardGameList.add(boardGame);
         }
-
         return boardGameList;
     }
 
     public static List<BoardGameHeaderDto> populateBoardGameHeaderDtoList(List<BoardGame> boardGameList) {
         List<BoardGameHeaderDto> boardGameHeaderList = new ArrayList<>();
-        for (int i = 0; i < boardGameList.size(); i++)
+        for (BoardGame boardGame : boardGameList) {
             boardGameHeaderList.add(new BoardGameHeaderDto(
-                    boardGameList.get(i).getId(), boardGameList.get(i).getName()));
+                    boardGame.getId(), boardGame.getName()));
+        }
         return boardGameHeaderList;
     }
 
