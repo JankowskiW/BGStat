@@ -17,6 +17,7 @@ public class SystemObjectTypeMapper {
         SystemObjectType systemObjectType = new SystemObjectType();
         systemObjectType.setName(systemObjectTypeRequestDto.getName());
         systemObjectType.setDescription(systemObjectTypeRequestDto.getDescription());
+        systemObjectType.setArchivized(systemObjectTypeRequestDto.isArchivized());
         return systemObjectType;
     }
 }

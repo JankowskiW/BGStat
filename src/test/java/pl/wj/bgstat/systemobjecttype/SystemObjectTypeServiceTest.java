@@ -22,6 +22,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willDoNothing;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class SystemObjectTypeServiceTest {
@@ -151,7 +153,7 @@ class SystemObjectTypeServiceTest {
         String systemObjectTypeName = "Name No. 1";
         String exMsg = "System object type with name '" + systemObjectTypeName + "' already exists in database";
         SystemObjectTypeRequestDto systemObjectTypeRequestDto = new SystemObjectTypeRequestDto(
-                systemObjectTypeName, "DESCRIPTION");
+                systemObjectTypeName, "DESCRIPTION", false);
         given(systemObjectTypeRepository.existsByName(anyString()))
                 .willReturn(systemObjectTypeList.stream()
                         .filter(sot -> sot.getName().equals(systemObjectTypeName))
@@ -217,7 +219,7 @@ class SystemObjectTypeServiceTest {
         long id = 1l;
         SystemObjectType systemObjectType = systemObjectTypeList.stream().filter(sot -> sot.getId() == id).findFirst().orElseThrow();
         SystemObjectTypeRequestDto systemObjectTypeRequestDto = new SystemObjectTypeRequestDto(
-                systemObjectTypeList.get(1).getName(), systemObjectType.getDescription());
+                systemObjectTypeList.get(1).getName(), systemObjectType.getDescription(), false);
         String exMsg = "System object type with name '" +systemObjectTypeRequestDto.getName() + "' already exists in database";
         given(systemObjectTypeRepository.existsById(anyLong()))
                 .willReturn(systemObjectTypeList.stream()
@@ -232,6 +234,41 @@ class SystemObjectTypeServiceTest {
         // when
         assertThatThrownBy(() -> systemObjectTypeService.editSystemObjectType(id, systemObjectTypeRequestDto))
                 .isInstanceOf(EntityExistsException.class)
+                .hasMessage(exMsg);
+    }
+
+    @Test
+    @Description("Should remove system object type whe id exists in database")
+    void shouldRemoveSystemObjectTypeWhenIdExists() {
+        // given
+        long id = 1l;
+        given(systemObjectTypeRepository.existsById(anyLong()))
+                .willReturn(systemObjectTypeList.stream()
+                        .filter(sot -> sot.getId() == id)
+                        .count() > 0);
+        willDoNothing().given(systemObjectTypeRepository).deleteById(anyLong());
+
+        // when
+        systemObjectTypeService.deleteSystemObjectType(id);
+
+        // then
+        verify(systemObjectTypeRepository).deleteById(id);
+    }
+
+    @Test
+    @Description("Should throw EntityNotFoundException when trying to remove non existing system object type")
+    void shouldThrowExceptionWhenTryingToRemoveNonExistingSystemObjectType() {
+        // given
+        long id = 100l;
+        String exMsg = "No such system object type with id: " + id;
+        given(systemObjectTypeRepository.existsById(anyLong()))
+                .willReturn(systemObjectTypeList.stream()
+                        .filter(sot -> sot.getId() == id)
+                        .count() > 0);
+
+        // when
+        assertThatThrownBy(() -> systemObjectTypeService.deleteSystemObjectType(id))
+                .isInstanceOf(EntityNotFoundException.class)
                 .hasMessage(exMsg);
     }
 }

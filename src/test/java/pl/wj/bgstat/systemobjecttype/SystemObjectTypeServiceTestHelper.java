@@ -17,6 +17,7 @@ public class SystemObjectTypeServiceTestHelper {
             systemObjectType.setId(i);
             systemObjectType.setName("Name No. " + i);
             systemObjectType.setDescription("DESCRIPTION OF " + systemObjectType.getName());
+            systemObjectType.setArchivized(false);
             systemObjectTypeList.add(systemObjectType);
         }
         return systemObjectTypeList;
@@ -26,14 +27,15 @@ public class SystemObjectTypeServiceTestHelper {
         List<SystemObjectTypeHeaderDto> systemObjectTypeHeaderDtoList = new ArrayList<>();
         for(SystemObjectType systemObjectType : systemObjectTypeList) {
             systemObjectTypeHeaderDtoList.add(new SystemObjectTypeHeaderDto(
-                   systemObjectType.getId(), systemObjectType.getName()));
+                   systemObjectType.getId(), systemObjectType.getName(), systemObjectType.isArchivized()));
         }
         return systemObjectTypeHeaderDtoList;
     }
 
     public static SystemObjectTypeRequestDto createSystemObjectTypeRequestDto(int currentSize) {
         return new SystemObjectTypeRequestDto(
-          "Name No. " + (currentSize + 1),
-                "DESCRIPTION OF Name No. " + (currentSize + 1));
+                "Name No. " + (currentSize + 1),
+                "DESCRIPTION OF Name No. " + (currentSize + 1),
+                false);
     }
 }

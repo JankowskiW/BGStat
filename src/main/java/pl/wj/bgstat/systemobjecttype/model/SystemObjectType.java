@@ -2,6 +2,7 @@ package pl.wj.bgstat.systemobjecttype.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 
@@ -15,4 +16,6 @@ public class SystemObjectType {
     private long id;
     private String name;
     private String description;
+    @ColumnDefault("true")
+    private boolean archivized;
 }
