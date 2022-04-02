@@ -14,7 +14,7 @@ import java.util.Optional;
 public interface BoardGameRepository extends JpaRepository<BoardGame, Long> {
 
     @Query("SELECT new pl.wj.bgstat.boardgame.model.dto.BoardGameHeaderDto(bg.id, bg.name) FROM BoardGame bg")
-    Page<BoardGameHeaderDto> findAllBoardGameHeaders(Pageable page);
+    Page<BoardGameHeaderDto> findAllBoardGameHeaders(Pageable pageable);
 
     @Query("SELECT bg FROM BoardGame bg LEFT JOIN FETCH bg.boardGameDescription bgd WHERE bg.id = :id")
     Optional<BoardGame> findWithDescriptionById(long id);

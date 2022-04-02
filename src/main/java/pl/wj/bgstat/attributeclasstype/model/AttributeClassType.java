@@ -1,4 +1,4 @@
-package pl.wj.bgstat.systemobjecttype.model;
+package pl.wj.bgstat.attributeclasstype.model;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -9,8 +9,8 @@ import javax.persistence.*;
 @Entity
 @Getter
 @Setter
-@Table(name="system_object_types")
-public class SystemObjectType {
+@Table(name="attribute_class_types")
+public class AttributeClassType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;

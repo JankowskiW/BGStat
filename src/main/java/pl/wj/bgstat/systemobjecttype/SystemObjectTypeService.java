@@ -47,10 +47,10 @@ public class SystemObjectTypeService {
         return systemObjectType;
     }
 
-    public void deleteSystemObjectType(Long id) {
+    public void deleteSystemObjectType(long id) {
         if(!systemObjectTypeRepository.existsById(id))
             throw new EntityNotFoundException("No such system object type with id: " + id);
-        // TODO: check if object is related to any attribute class and if it is than throw an exception
+        // TODO: check if object is related to any attribute class and if it is then throw an exception
         systemObjectTypeRepository.deleteById(id);
     }
 }

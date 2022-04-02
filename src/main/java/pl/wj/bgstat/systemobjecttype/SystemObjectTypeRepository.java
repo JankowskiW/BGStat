@@ -11,7 +11,7 @@ import java.util.List;
 @Repository
 public interface SystemObjectTypeRepository extends JpaRepository<SystemObjectType, Long> {
 
-    @Query("SELECT new pl.wj.bgstat.systemobjecttype.model.dto.SystemObjectTypeHeaderDto(sot.id, sot.name) " +
+    @Query("SELECT new pl.wj.bgstat.systemobjecttype.model.dto.SystemObjectTypeHeaderDto(sot.id, sot.name, sot.archived) " +
            "FROM SystemObjectType sot")
     List<SystemObjectTypeHeaderDto> findAllSystemObjectTypeHeaders();
 

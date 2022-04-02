@@ -14,5 +14,5 @@ import javax.validation.constraints.NotBlank;
 public class SystemObjectTypeHeaderDto {
     private long id;
     private String name;
-    private boolean archivized;
+    private boolean archived;
 }
