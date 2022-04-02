@@ -239,7 +239,6 @@ class BoardGameServiceTest {
                 i -> {
                     BoardGame bg = i.getArgument(0, BoardGame.class);
                     bg.setId(id);
-                    bg.setRecommendedAge(boardGameRequestDto.getRecommendedAge());
                     return bg;
                 });
 

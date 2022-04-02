@@ -108,10 +108,8 @@ class SystemObjectTypeServiceTest {
         // given
         long id = systemObjectTypeList.size() + 1;
         String exMsg = "No such system object type with id: " + id;
-        given(systemObjectTypeRepository.findById(anyLong()))
-                .willReturn(systemObjectTypeList.stream()
-                        .filter(sot -> sot.getId() == id)
-                        .findAny());
+        given(systemObjectTypeRepository.findById(anyLong())).willReturn(
+                systemObjectTypeList.stream().filter(sot -> sot.getId() == id).findAny());
 
         // when
         assertThatThrownBy(() -> systemObjectTypeService.getSingleSystemObjectType(id))
@@ -184,7 +182,6 @@ class SystemObjectTypeServiceTest {
                 i -> {
                     SystemObjectType sot = i.getArgument(0, SystemObjectType.class);
                     sot.setId(id);
-                    sot.setDescription(systemObjectTypeRequestDto.getDescription());
                     return sot;
                 });
 
@@ -219,7 +216,7 @@ class SystemObjectTypeServiceTest {
         long id = 1l;
         SystemObjectType systemObjectType = systemObjectTypeList.stream().filter(sot -> sot.getId() == id).findFirst().orElseThrow();
         SystemObjectTypeRequestDto systemObjectTypeRequestDto = new SystemObjectTypeRequestDto(
-                systemObjectTypeList.get(1).getName(), systemObjectType.getDescription(), false);
+                systemObjectTypeList.get(1).getName(), systemObjectType.getDescription(), systemObjectType.isArchived());
         String exMsg = "System object type with name '" +systemObjectTypeRequestDto.getName() + "' already exists in database";
         given(systemObjectTypeRepository.existsById(anyLong()))
                 .willReturn(systemObjectTypeList.stream()
@@ -238,7 +235,7 @@ class SystemObjectTypeServiceTest {
     }
 
     @Test
-    @Description("Should remove system object type whe id exists in database")
+    @Description("Should remove system object type when id exists in database")
     void shouldRemoveSystemObjectTypeWhenIdExists() {
         // given
         long id = 1l;
@@ -262,9 +259,7 @@ class SystemObjectTypeServiceTest {
         long id = 100l;
         String exMsg = "No such system object type with id: " + id;
         given(systemObjectTypeRepository.existsById(anyLong()))
-                .willReturn(systemObjectTypeList.stream()
-                        .filter(sot -> sot.getId() == id)
-                        .count() > 0);
+                .willReturn(systemObjectTypeList.stream().filter(sot -> sot.getId() == id).count() > 0);
 
         // when
         assertThatThrownBy(() -> systemObjectTypeService.deleteSystemObjectType(id))

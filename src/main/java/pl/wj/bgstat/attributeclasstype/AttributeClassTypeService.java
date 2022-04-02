@@ -40,7 +40,7 @@ public class AttributeClassTypeService {
         if (!attributeClassTypeRepository.existsById(id))
             throw new EntityNotFoundException("No such attribute class type with id: " + id);
         if (attributeClassTypeRepository.existsByNameAndIdNot(attributeClassTypeRequestDto.getName(), id))
-            throw new EntityNotFoundException("Attribute class type with name '" +
+            throw new EntityExistsException("Attribute class type with name '" +
                     attributeClassTypeRequestDto.getName() + "' already exists in database");
 
         AttributeClassType attributeClassType = AttributeClassTypeMapper.mapToAttributeClassType(id, attributeClassTypeRequestDto);
