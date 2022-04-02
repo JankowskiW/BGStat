@@ -19,6 +19,7 @@ public class SystemObjectTypeController {
 
     @GetMapping("")
     public List<SystemObjectTypeHeaderDto> getSystemObjectTypeHeaders() {
+        // TODO: Create filter by archived
         return systemObjectTypeService.getSystemObjectTypeHeaders();
     }
 
