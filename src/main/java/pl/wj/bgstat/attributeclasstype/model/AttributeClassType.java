@@ -3,8 +3,11 @@ package pl.wj.bgstat.attributeclasstype.model;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
+import pl.wj.bgstat.attributeclass.model.AttributeClass;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Getter

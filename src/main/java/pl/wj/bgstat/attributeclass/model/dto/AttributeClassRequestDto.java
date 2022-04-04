@@ -10,7 +10,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AttributeClassRequestDto {
-    private long attributeClassTypeId;
     private String name;
     private String description;
+    private long attributeClassTypeId;
+    private String attributeClassTypeName;
 }

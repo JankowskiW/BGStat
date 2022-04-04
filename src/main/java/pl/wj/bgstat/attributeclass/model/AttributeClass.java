@@ -3,6 +3,7 @@ package pl.wj.bgstat.attributeclass.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import pl.wj.bgstat.attributeclasstype.model.AttributeClassType;
 
 import javax.persistence.*;
 
@@ -14,7 +15,9 @@ public class AttributeClass {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    private long attributeClassTypeId;
     private String name;
     private String description;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private AttributeClassType attributeClassType;
 }
