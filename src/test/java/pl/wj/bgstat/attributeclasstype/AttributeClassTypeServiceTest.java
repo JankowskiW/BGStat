@@ -154,7 +154,7 @@ class AttributeClassTypeServiceTest {
 
     @Test
     @Description("Should create and return created attribute class type")
-    void shouldReturnCreatedSystemObjectType() {
+    void shouldReturnCreatedAttributeClassType() {
         // given
         AttributeClassType expectedResponse = AttributeClassTypeMapper.mapToAttributeClassType(attributeClassTypeRequestDto);
         expectedResponse.setId(attributeClassTypeList.size()+1);
@@ -288,7 +288,7 @@ class AttributeClassTypeServiceTest {
 
     @Test
     @Description("Should throw EntityNotFoundException when trying to remove non existing attribute class type")
-    void shouldThrowExceptionWhenTryingToRemoveNonExistingSystemObjectType() {
+    void shouldThrowExceptionWhenTryingToRemoveNonExistingAttributeClassType() {
         // given
         long id = 100l;
         String exMsg = "No such attribute class type with id: " + id;
