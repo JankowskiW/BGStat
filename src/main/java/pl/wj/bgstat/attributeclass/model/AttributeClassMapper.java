@@ -1,8 +1,11 @@
 package pl.wj.bgstat.attributeclass.model;
 
+import pl.wj.bgstat.attributeclass.model.dto.AttributeClassRequestDto;
 import pl.wj.bgstat.attributeclass.model.dto.AttributeClassResponseDto;
+import pl.wj.bgstat.attributeclasstype.model.AttributeClassType;
 
 public class AttributeClassMapper {
+
     public static AttributeClassResponseDto mapToAttributeClassResponseDto(AttributeClass attributeClass) {
         return AttributeClassResponseDto.builder()
                 .id(attributeClass.getId())
@@ -11,5 +14,14 @@ public class AttributeClassMapper {
                 .attributeClassTypeId(attributeClass.getAttributeClassType().getId())
                 .attributeClassTypeName(attributeClass.getAttributeClassType().getName())
                 .build();
+    }
+
+    public static AttributeClass mapToAttributeClass(AttributeClassRequestDto attributeClassRequestDto) {
+        AttributeClass attributeClass = new AttributeClass();
+        attributeClass.setName(attributeClassRequestDto.getName());
+        attributeClass.setDescription(attributeClassRequestDto.getDescription());
+        attributeClass.setAttributeClassType(new AttributeClassType());
+        attributeClass.getAttributeClassType().setId(attributeClassRequestDto.getAttributeClassTypeId());
+        return attributeClass;
     }
 }

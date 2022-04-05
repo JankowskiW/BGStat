@@ -1,6 +1,7 @@
 package pl.wj.bgstat.attributeclass;
 
 import lombok.RequiredArgsConstructor;
+import org.hibernate.cfg.NotYetImplementedException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,7 +16,8 @@ public class AttributeClassController {
     private final AttributeClassService attributeClassService;
 
     @GetMapping("/{id}")
-    public AttributeClass getSingleBoardGame(@PathVariable long id) {
-        return attributeClassService.getSingleBoardGame(id);
+    public AttributeClass getSingleAttributeClass(@PathVariable long id) {
+//        return attributeClassService.getSingleAttributeClass(id);
+        throw new NotYetImplementedException();
     }
 }

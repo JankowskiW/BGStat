@@ -37,13 +37,11 @@ class SystemObjectTypeServiceTest {
 
     private List<SystemObjectType> systemObjectTypeList;
     private List<SystemObjectTypeHeaderDto> systemObjectTypeHeaderList;
-    private SystemObjectTypeRequestDto systemObjectTypeRequestDto;
 
     @BeforeEach
     void setUp() {
         systemObjectTypeList = SystemObjectTypeServiceTestHelper.populateSystemObjectTypeList(NUMBER_OF_ELEMENTS);
         systemObjectTypeHeaderList = SystemObjectTypeServiceTestHelper.populateSystemObjectTypeHeaderDtoList(systemObjectTypeList);
-        systemObjectTypeRequestDto = SystemObjectTypeServiceTestHelper.createSystemObjectTypeRequestDto(systemObjectTypeList.size());
     }
 
     @Test
@@ -121,6 +119,7 @@ class SystemObjectTypeServiceTest {
     @Description("Should create and return created system object type")
     void shouldReturnCreatedSystemObjectType() {
         // given
+        SystemObjectTypeRequestDto systemObjectTypeRequestDto = SystemObjectTypeServiceTestHelper.createSystemObjectTypeRequestDto(NUMBER_OF_ELEMENTS);
         SystemObjectType expectedResponse = SystemObjectTypeMapper.mapToSystemObjectType(systemObjectTypeRequestDto);
         expectedResponse.setId(systemObjectTypeList.size()+1);
         given(systemObjectTypeRepository.existsByName(anyString())).willReturn(

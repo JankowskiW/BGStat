@@ -7,7 +7,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import pl.wj.bgstat.attributeclass.model.AttributeClass;
 import pl.wj.bgstat.attributeclass.model.dto.AttributeClassHeaderDto;
+import pl.wj.bgstat.attributeclass.model.dto.AttributeClassRequestDto;
 import pl.wj.bgstat.attributeclass.model.dto.AttributeClassResponseDto;
+import pl.wj.bgstat.attributeclasstype.model.dto.AttributeClassTypeRequestDto;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -17,16 +19,23 @@ public class AttributeClassService {
 
     private final AttributeClassRepository attributeClassRepository;
 
-
-    public AttributeClass getSingleBoardGame(long id) {
-        return attributeClassRepository.findWithAttributeClassTypeById(id).orElseThrow(()->new EntityNotFoundException("XXX"));
-    }
-
     public Page<AttributeClassHeaderDto> getAttributeClassHeaders(PageRequest of) {
         throw new NotYetImplementedException();
     }
 
-    public AttributeClassResponseDto getSingleAttribyteClass(long id) {
+    public AttributeClassResponseDto getSingleAttributeClass(long id) {
+        throw new NotYetImplementedException();
+    }
+
+    public AttributeClassResponseDto addAttributeClass(AttributeClassRequestDto attributeClassRequestDto) {
+        throw new NotYetImplementedException();
+    }
+
+    public AttributeClassResponseDto editAttributeClass(long id, AttributeClassRequestDto attributeClassRequestDto) {
+        throw new NotYetImplementedException();
+    }
+
+    public void deleteAttributeClass(long id) {
         throw new NotYetImplementedException();
     }
 }

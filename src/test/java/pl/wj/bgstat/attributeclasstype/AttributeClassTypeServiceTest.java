@@ -44,13 +44,11 @@ class AttributeClassTypeServiceTest {
 
     private List<AttributeClassType> attributeClassTypeList;
     private List<AttributeClassTypeHeaderDto> attributeClassTypeHeaderList;
-    private AttributeClassTypeRequestDto attributeClassTypeRequestDto;
 
     @BeforeEach
     void setUp() {
         attributeClassTypeList = AttributeClassTypeServiceTestHelper.populateAttributeClassTypeList(NUMBER_OF_ELEMENTS);
         attributeClassTypeHeaderList = AttributeClassTypeServiceTestHelper.populateAttributeClassTypeHeaderDtoList(attributeClassTypeList);
-        attributeClassTypeRequestDto = AttributeClassTypeServiceTestHelper.createAttributeClassTypeRequestDto(NUMBER_OF_ELEMENTS);
     }
 
     @Test
@@ -156,6 +154,7 @@ class AttributeClassTypeServiceTest {
     @Description("Should create and return created attribute class type")
     void shouldReturnCreatedAttributeClassType() {
         // given
+        AttributeClassTypeRequestDto attributeClassTypeRequestDto = AttributeClassTypeServiceTestHelper.createAttributeClassTypeRequestDto(NUMBER_OF_ELEMENTS);
         AttributeClassType expectedResponse = AttributeClassTypeMapper.mapToAttributeClassType(attributeClassTypeRequestDto);
         expectedResponse.setId(attributeClassTypeList.size()+1);
         given(attributeClassTypeRepository.existsByName(anyString())).willReturn(

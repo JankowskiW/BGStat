@@ -45,13 +45,11 @@ class BoardGameServiceTest {
 
     private List<BoardGame> boardGameList;
     private List<BoardGameHeaderDto> boardGameHeaderList;
-    private BoardGameRequestDto boardGameRequestDto;
 
     @BeforeEach
     void setUp() {
         boardGameList = populateBoardGameList(NUMBER_OF_ELEMENTS);
         boardGameHeaderList = populateBoardGameHeaderDtoList(boardGameList);
-        boardGameRequestDto = createBoardGameRequestDto(boardGameList.size());
     }
 
     @Test
@@ -174,6 +172,7 @@ class BoardGameServiceTest {
     @DisplayName("Should create and return created board game")
     void shouldReturnCreatedBoardGame() {
         // given
+        BoardGameRequestDto boardGameRequestDto = BoardGameServiceTestHelper.createBoardGameRequestDto(NUMBER_OF_ELEMENTS);
         BoardGame boardGame = BoardGameMapper.mapToBoardGame(boardGameRequestDto);
         boardGame.setId(boardGameList.size()+1);
         boardGame.getBoardGameDescription().setBoardGameId(boardGame.getId());

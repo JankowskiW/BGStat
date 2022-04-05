@@ -11,24 +11,28 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.w3c.dom.Attr;
 import pl.wj.bgstat.attributeclass.model.AttributeClass;
 import pl.wj.bgstat.attributeclass.model.AttributeClassMapper;
 import pl.wj.bgstat.attributeclass.model.dto.AttributeClassHeaderDto;
 import pl.wj.bgstat.attributeclass.model.dto.AttributeClassRequestDto;
 import pl.wj.bgstat.attributeclass.model.dto.AttributeClassResponseDto;
 import pl.wj.bgstat.attributeclasstype.model.AttributeClassType;
+import pl.wj.bgstat.attributeclasstype.model.dto.AttributeClassTypeRequestDto;
 
+import javax.persistence.EntityExistsException;
+import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static java.lang.Math.ceil;
 import static java.lang.Math.floor;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willDoNothing;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class AttributeClassServiceTest {
@@ -43,13 +47,11 @@ class AttributeClassServiceTest {
 
     private List<AttributeClass> attributeClassList;
     private List<AttributeClassHeaderDto> attributeClassHeaderList;
-    private AttributeClassRequestDto attributeClassRequestDto;
 
     @BeforeEach
     void setUp() {
         attributeClassList = AttributeClassServiceTestHelper.populateAttributeClassList(NUMBER_OF_ELEMENTS);
         attributeClassHeaderList = AttributeClassServiceTestHelper.populateAttributeClassHeaderDtoList(attributeClassList);
-        attributeClassRequestDto = AttributeClassServiceTestHelper.createAttributeClassRequestDto(NUMBER_OF_ELEMENTS);
     }
 
     @Test
@@ -118,17 +120,17 @@ class AttributeClassServiceTest {
 
     @Test
     @Description("Should return only one attrbute class details")
-    void shouldReturnSingleAttributeClassDeatails() {
+    void shouldReturnSingleAttributeClassDeatailsById() {
         // given
         long id = 1l;
         Optional<AttributeClass> returnedAttributeClass = attributeClassList.stream()
                 .filter(ac -> ac.getId() == id)
                 .findAny();
         AttributeClassResponseDto expectedResponse = AttributeClassMapper.mapToAttributeClassResponseDto(returnedAttributeClass.orElseThrow());
-        given(attributeClassRepository.findById(anyLong())).willReturn(returnedAttributeClass);
+        given(attributeClassRepository.findWithAttributeClassTypeById(anyLong())).willReturn(returnedAttributeClass);
 
         // when
-        AttributeClassResponseDto attributeClassResponseDto = attributeClassService.getSingleAttribyteClass(id);
+        AttributeClassResponseDto attributeClassResponseDto = attributeClassService.getSingleAttributeClass(id);
 
         // then
         assertThat(attributeClassResponseDto)
@@ -138,83 +140,176 @@ class AttributeClassServiceTest {
     }
 
     @Test
-    @Description("Should throw EntityNotFoundException when cannot find attrybute class by id")
+    @Description("Should throw EntityNotFoundException when cannot find attribute class by id")
     void shouldThrowExceptionWhenCannotFindAttributeClassById() {
         // given
+        long id = 100l;
+        String exMsg = "No such attribute class with id: " + id;
+        given(attributeClassRepository.findWithAttributeClassTypeById(anyLong()))
+                .willReturn(attributeClassList.stream()
+                        .filter(ac -> ac.getId() == id)
+                        .findAny());
 
         // when
-
-        // then
+        assertThatThrownBy(() -> attributeClassService.getSingleAttributeClass(id))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessage(exMsg);
     }
 
     @Test
     @Description("Should create and return created attribute class type")
     void shouldReturnCreatedAttributeClass() {
         // given
+        AttributeClassRequestDto attributeClassRequestDto = AttributeClassServiceTestHelper.createAttributeClassRequestDto(NUMBER_OF_ELEMENTS);
+        AttributeClass attributeClass = AttributeClassMapper.mapToAttributeClass(attributeClassRequestDto);
+        attributeClass.setId(attributeClassList.size()+1);
+        AttributeClassResponseDto expectedResponse = AttributeClassMapper.mapToAttributeClassResponseDto(attributeClass);
+        given(attributeClassRepository.existsByName(anyString())).willReturn(
+                attributeClassList.stream()
+                        .filter(ac -> ac.getName().equals(attributeClassRequestDto.getName()))
+                        .count() > 0);
+        given(attributeClassRepository.save(any(AttributeClass.class))).willAnswer(
+                i -> {
+                    AttributeClass ac = i.getArgument(0, AttributeClass.class);
+                    ac.setId(attributeClass.getId());
+                    return ac;
+                });
 
         // when
+        AttributeClassResponseDto attributeClassResponseDto = attributeClassService.addAttributeClass(attributeClassRequestDto);
 
         // then
+        assertThat(attributeClassResponseDto)
+                .isNotNull()
+                .usingRecursiveComparison()
+                .isEqualTo(expectedResponse);
     }
 
     @Test
-    @Description("Should throw EntityNotFoundException when attrybute class already esists in database")
+    @Description("Should throw EntityExistsException when attrybute class already exists in database")
     void shouldThrowExceptionWhenAttributeClassExists() {
         // given
+        String attributeClassName = "Name No. 1";
+        String exMsg = "Attribute class with name '" + attributeClassName + "' already exists in database";
+        AttributeClassRequestDto attributeClassRequestDto = new AttributeClassRequestDto(
+                attributeClassName, "New description", 1);
+        given(attributeClassRepository.existsByName(anyString()))
+                .willReturn(attributeClassList.stream()
+                        .filter(ac -> ac.getName().equals(attributeClassName))
+                        .count() > 0);
 
         // when
-
-        // then
+        assertThatThrownBy(() -> attributeClassService.addAttributeClass(attributeClassRequestDto))
+                .isInstanceOf(EntityExistsException.class)
+                .hasMessage(exMsg);
     }
 
     @Test
     @Description("Should edit attribute class when exists")
     void shouldEditAttributeClassWhenExists() {
         // given
+        long id = 1l;
+        AttributeClass attributeClass = attributeClassList.stream().filter(ac -> ac.getId() == id).findFirst().orElseThrow();
+        AttributeClassRequestDto attributeClassRequestDto = AttributeClassRequestDto.builder()
+                .name(attributeClass.getName())
+                .description("NEW DESCRIPTION")
+                .build();
+        given(attributeClassRepository.existsById(anyLong())).willReturn(
+                attributeClassList.stream()
+                        .filter(ac -> ac.getId() == id)
+                        .count()>0);
+        given(attributeClassRepository.existsByNameAndIdNot(anyString(), anyLong())).willReturn(
+                attributeClassList.stream()
+                        .filter(ac -> ac.getId() == id && ac.getName().equals(attributeClassRequestDto.getName()))
+                        .count()>0);
+        given(attributeClassRepository.save(any(AttributeClass.class))).willAnswer(
+                i -> {
+                    AttributeClass ac = i.getArgument(0, AttributeClass.class);
+                    ac.setId(id);
+                    return ac;
+                });
 
         // when
+        AttributeClassResponseDto attributeClassResponseDto = attributeClassService.editAttributeClass(id, attributeClassRequestDto);
 
         // then
+        assertThat(attributeClassResponseDto).isNotNull();
+        assertThat(attributeClassResponseDto.getId()).isEqualTo(id);
+        assertThat(attributeClassResponseDto.getDescription()).isEqualTo(attributeClassRequestDto.getDescription());
     }
 
     @Test
     @Description("Should throw EntityNotFoundException when trying to edit non existing attribute class")
     void shouldThrowExceptionWhenTryingToEditNonExistingAttributeClass() {
         // given
+        long id = 100l;
+        String exMsg = "No such attribute class with id: " + id;
+        given(attributeClassRepository.existsById(anyLong()))
+                .willReturn(attributeClassList.stream()
+                        .filter(ac -> ac.getId() == id)
+                        .count() > 0);
 
         // when
-
-        // then
+        assertThatThrownBy(() -> attributeClassService.editAttributeClass(id, new AttributeClassRequestDto()))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessage(exMsg);
     }
 
     @Test
     @Description("Should throw EntityExistsException when trying to set new name that already exists")
     void shouldThrowExceptionWhenTryingToSetNameThatAlreadyExists() {
         // given
+        long id = 1l;
+        AttributeClass attributeClass = attributeClassList.stream().filter(ac -> ac.getId() == id).findFirst().orElseThrow();
+        AttributeClassRequestDto attributeClassRequestDto = new AttributeClassRequestDto(
+          attributeClassList.get(1).getName(), attributeClass.getDescription(), attributeClass.getAttributeClassType().getId());
+        String exMsg = "Attribute class with name '" + attributeClassRequestDto.getName() + "' already exists in database";
+        given(attributeClassRepository.existsById(anyLong())).willReturn(
+                attributeClassList.stream().filter(ac -> ac.getId() == id).count() > 0);
+        given(attributeClassRepository.existsByNameAndIdNot(anyString(), anyLong())).willReturn(
+                attributeClassList.stream()
+                        .filter(ac -> ac.getId() == id && ac.getName().equals(attributeClass.getName()))
+                        .count() > 0);
 
         // when
-
-        // then
+        assertThatThrownBy(() -> attributeClassService.editAttributeClass(id, attributeClassRequestDto))
+                .isInstanceOf(EntityExistsException.class)
+                .hasMessage(exMsg);
     }
 
     @Test
     @Description("Should remove attribute class when id exists in database")
-    void shouldRemoveAttrybuteClassWhenIdExists() {
+    void shouldRemoveAttributeClassWhenIdExists() {
         // given
+        long id = 3l;
+        given(attributeClassRepository.existsById(anyLong())).willReturn(
+                attributeClassList.stream()
+                        .filter(ac -> ac.getId() == id)
+                        .count() > 0);
+        willDoNothing().given(attributeClassRepository).deleteById(anyLong());
 
         // when
+        attributeClassService.deleteAttributeClass(id);
 
         // then
+        verify(attributeClassRepository).deleteById(id);
     }
 
     @Test
     @Description("Should throw EntityNotFoundException when trying to remove non existing attrybute class")
     void shouldThrowExceptionWhenTryingToRemoveNonExistingAttributeClass() {
         // given
-
-        // when
+        long id = 100l;
+        String exMsg = "No such attribute class with id: " + id;
+        given(attributeClassRepository.existsById(anyLong())).willReturn(
+                attributeClassList.stream()
+                        .filter(ac -> ac.getId() == id)
+                        .count() > 0);
 
         // then
+        assertThatThrownBy(() -> attributeClassService.deleteAttributeClass(id))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessage(exMsg);
     }
 
 }
