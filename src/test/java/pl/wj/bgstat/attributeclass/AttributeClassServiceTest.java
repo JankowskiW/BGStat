@@ -11,14 +11,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.w3c.dom.Attr;
 import pl.wj.bgstat.attributeclass.model.AttributeClass;
 import pl.wj.bgstat.attributeclass.model.AttributeClassMapper;
 import pl.wj.bgstat.attributeclass.model.dto.AttributeClassHeaderDto;
 import pl.wj.bgstat.attributeclass.model.dto.AttributeClassRequestDto;
 import pl.wj.bgstat.attributeclass.model.dto.AttributeClassResponseDto;
-import pl.wj.bgstat.attributeclasstype.model.AttributeClassType;
-import pl.wj.bgstat.attributeclasstype.model.dto.AttributeClassTypeRequestDto;
 
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
@@ -28,11 +25,14 @@ import java.util.Optional;
 
 import static java.lang.Math.ceil;
 import static java.lang.Math.floor;
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.verify;
+import static pl.wj.bgstat.exception.ExceptionHelper.ATTRIBUTE_CLASS_EXISTS_EX_MSG;
+import static pl.wj.bgstat.exception.ExceptionHelper.ATTRIBUTE_CLASS_NOT_FOUND_EX_MSG;
 
 @ExtendWith(MockitoExtension.class)
 class AttributeClassServiceTest {
@@ -77,7 +77,7 @@ class AttributeClassServiceTest {
     }
 
     @Test
-    @Description("Should return last page of attrybute class headers")
+    @Description("Should return last page of attribute class headers")
     void shouldReturnOnlylastPageOfAttrybuteClassHeaders() {
         // given
         int lastPageNumber = (int) ceil(NUMBER_OF_ELEMENTS / (double) PAGE_SIZE);
@@ -101,7 +101,7 @@ class AttributeClassServiceTest {
     }
 
     @Test
-    @Description("Should return empty list of attrybute class headers when page number is too hight")
+    @Description("Should return empty list of attribute class headers when page number is too hight")
     void shouldReturnEmptylistOfAttrybuteClassTypeHeaders() {
         // given
         int tooHighPageNumber = (int) ceil(attributeClassHeaderList.size() / (double) PAGE_SIZE) + 1;
@@ -144,7 +144,6 @@ class AttributeClassServiceTest {
     void shouldThrowExceptionWhenCannotFindAttributeClassById() {
         // given
         long id = 100l;
-        String exMsg = "No such attribute class with id: " + id;
         given(attributeClassRepository.findWithAttributeClassTypeById(anyLong()))
                 .willReturn(attributeClassList.stream()
                         .filter(ac -> ac.getId() == id)
@@ -153,7 +152,7 @@ class AttributeClassServiceTest {
         // when
         assertThatThrownBy(() -> attributeClassService.getSingleAttributeClass(id))
                 .isInstanceOf(EntityNotFoundException.class)
-                .hasMessage(exMsg);
+                .hasMessage(ATTRIBUTE_CLASS_NOT_FOUND_EX_MSG + id);
     }
 
     @Test
@@ -190,7 +189,6 @@ class AttributeClassServiceTest {
     void shouldThrowExceptionWhenAttributeClassExists() {
         // given
         String attributeClassName = "Name No. 1";
-        String exMsg = "Attribute class with name '" + attributeClassName + "' already exists in database";
         AttributeClassRequestDto attributeClassRequestDto = new AttributeClassRequestDto(
                 attributeClassName, "New description", 1);
         given(attributeClassRepository.existsByName(anyString()))
@@ -201,7 +199,7 @@ class AttributeClassServiceTest {
         // when
         assertThatThrownBy(() -> attributeClassService.addAttributeClass(attributeClassRequestDto))
                 .isInstanceOf(EntityExistsException.class)
-                .hasMessage(exMsg);
+                .hasMessage(ATTRIBUTE_CLASS_EXISTS_EX_MSG);
     }
 
     @Test
@@ -220,7 +218,8 @@ class AttributeClassServiceTest {
                         .count()>0);
         given(attributeClassRepository.existsByNameAndIdNot(anyString(), anyLong())).willReturn(
                 attributeClassList.stream()
-                        .filter(ac -> ac.getId() == id && ac.getName().equals(attributeClassRequestDto.getName()))
+                        .filter(ac -> ac.getId() != id &&
+                                ac.getName().equals(attributeClassRequestDto.getName()))
                         .count()>0);
         given(attributeClassRepository.save(any(AttributeClass.class))).willAnswer(
                 i -> {
@@ -230,7 +229,8 @@ class AttributeClassServiceTest {
                 });
 
         // when
-        AttributeClassResponseDto attributeClassResponseDto = attributeClassService.editAttributeClass(id, attributeClassRequestDto);
+        AttributeClassResponseDto attributeClassResponseDto =
+                attributeClassService.editAttributeClass(id, attributeClassRequestDto);
 
         // then
         assertThat(attributeClassResponseDto).isNotNull();
@@ -243,7 +243,6 @@ class AttributeClassServiceTest {
     void shouldThrowExceptionWhenTryingToEditNonExistingAttributeClass() {
         // given
         long id = 100l;
-        String exMsg = "No such attribute class with id: " + id;
         given(attributeClassRepository.existsById(anyLong()))
                 .willReturn(attributeClassList.stream()
                         .filter(ac -> ac.getId() == id)
@@ -252,7 +251,7 @@ class AttributeClassServiceTest {
         // when
         assertThatThrownBy(() -> attributeClassService.editAttributeClass(id, new AttributeClassRequestDto()))
                 .isInstanceOf(EntityNotFoundException.class)
-                .hasMessage(exMsg);
+                .hasMessage(ATTRIBUTE_CLASS_NOT_FOUND_EX_MSG + id);
     }
 
     @Test
@@ -263,7 +262,6 @@ class AttributeClassServiceTest {
         AttributeClass attributeClass = attributeClassList.stream().filter(ac -> ac.getId() == id).findFirst().orElseThrow();
         AttributeClassRequestDto attributeClassRequestDto = new AttributeClassRequestDto(
           attributeClassList.get(1).getName(), attributeClass.getDescription(), attributeClass.getAttributeClassType().getId());
-        String exMsg = "Attribute class with name '" + attributeClassRequestDto.getName() + "' already exists in database";
         given(attributeClassRepository.existsById(anyLong())).willReturn(
                 attributeClassList.stream().filter(ac -> ac.getId() == id).count() > 0);
         given(attributeClassRepository.existsByNameAndIdNot(anyString(), anyLong())).willReturn(
@@ -274,7 +272,7 @@ class AttributeClassServiceTest {
         // when
         assertThatThrownBy(() -> attributeClassService.editAttributeClass(id, attributeClassRequestDto))
                 .isInstanceOf(EntityExistsException.class)
-                .hasMessage(exMsg);
+                .hasMessage(ATTRIBUTE_CLASS_EXISTS_EX_MSG);
     }
 
     @Test
@@ -300,7 +298,6 @@ class AttributeClassServiceTest {
     void shouldThrowExceptionWhenTryingToRemoveNonExistingAttributeClass() {
         // given
         long id = 100l;
-        String exMsg = "No such attribute class with id: " + id;
         given(attributeClassRepository.existsById(anyLong())).willReturn(
                 attributeClassList.stream()
                         .filter(ac -> ac.getId() == id)
@@ -309,7 +306,7 @@ class AttributeClassServiceTest {
         // then
         assertThatThrownBy(() -> attributeClassService.deleteAttributeClass(id))
                 .isInstanceOf(EntityNotFoundException.class)
-                .hasMessage(exMsg);
+                .hasMessage(ATTRIBUTE_CLASS_NOT_FOUND_EX_MSG + id);
     }
 
 }

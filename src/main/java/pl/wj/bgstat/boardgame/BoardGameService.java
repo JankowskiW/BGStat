@@ -13,6 +13,9 @@ import pl.wj.bgstat.boardgame.model.dto.BoardGameResponseDto;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
 
+import static pl.wj.bgstat.exception.ExceptionHelper.BOARD_GAME_NOT_FOUND_EX_MSG;
+import static pl.wj.bgstat.exception.ExceptionHelper.BOARD_GAME_TYPE_EXISTS_EX_MSG;
+
 @Service
 @RequiredArgsConstructor
 public class BoardGameService {
@@ -25,24 +28,22 @@ public class BoardGameService {
     
     public BoardGameResponseDto getSingleBoardGame(long id) {
         BoardGame boardGame = boardGameRepository.findWithDescriptionById(id)
-                .orElseThrow(() -> new EntityNotFoundException("No such board game with id: " + id));
+                .orElseThrow(() -> new EntityNotFoundException(BOARD_GAME_NOT_FOUND_EX_MSG + id));
         return BoardGameMapper.mapToBoardGameResponseDto(boardGame);
     }
 
     public BoardGameResponseDto addBoardGame(BoardGameRequestDto boardGameRequestDto) {
         if (boardGameRepository.existsByName(boardGameRequestDto.getName()))
-            throw new EntityExistsException("Board game with name '" +
-                    boardGameRequestDto.getName() + "' already exists in database");
+            throw new EntityExistsException(BOARD_GAME_TYPE_EXISTS_EX_MSG);
         BoardGame boardGame = BoardGameMapper.mapToBoardGame(boardGameRequestDto);
         boardGameRepository.save(boardGame);
         return BoardGameMapper.mapToBoardGameResponseDto(boardGame);
     }
 
     public BoardGameResponseDto editBoardGame(long id, BoardGameRequestDto boardGameRequestDto) {
-        if (!boardGameRepository.existsById(id)) throw new EntityNotFoundException("No such board game with id: " + id);
+        if (!boardGameRepository.existsById(id)) throw new EntityNotFoundException(BOARD_GAME_NOT_FOUND_EX_MSG + id);
         if (boardGameRepository.existsByNameAndIdNot(boardGameRequestDto.getName(), id))
-            throw new EntityExistsException("Board game with name '" +
-                    boardGameRequestDto.getName() + "' already exists in database");
+            throw new EntityExistsException(BOARD_GAME_TYPE_EXISTS_EX_MSG);
 
         BoardGame boardGame = BoardGameMapper.mapToBoardGame(id, boardGameRequestDto);
         boardGameRepository.save(boardGame);
@@ -50,7 +51,7 @@ public class BoardGameService {
     }
 
     public void deleteBoardGame(long id) {
-        if (!boardGameRepository.existsById(id)) throw new EntityNotFoundException("No such board game with id: " + id);
+        if (!boardGameRepository.existsById(id)) throw new EntityNotFoundException(BOARD_GAME_NOT_FOUND_EX_MSG + id);
         boardGameRepository.deleteById(id);
     }
 }

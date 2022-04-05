@@ -19,6 +19,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
+import static pl.wj.bgstat.exception.ExceptionHelper.BOARD_GAME_DESCRIPTION_NOT_FOUND_EX_MSG;
 
 @ExtendWith(MockitoExtension.class)
 class BoardGameDescriptionServiceTest {
@@ -71,7 +72,6 @@ class BoardGameDescriptionServiceTest {
     void shouldThrowExceptionWhenTryingToEditNonExistingBoardGameDescription() {
         // given
         long id = 100l;
-        String exMsg = "No such board game description with id: " + id;
         given(boardGameDescriptionRepository.findById(anyLong())).willReturn(
                 boardGameDescriptionList.stream().filter(bgd -> bgd.getBoardGameId() == id).findAny());
 
@@ -79,6 +79,6 @@ class BoardGameDescriptionServiceTest {
         assertThatThrownBy(() -> boardGameDescriptionService
                 .editBoardGameDescription(id, new BoardGameDescriptionRequestDto()))
                     .isInstanceOf(EntityNotFoundException.class)
-                    .hasMessage(exMsg);
+                    .hasMessage(BOARD_GAME_DESCRIPTION_NOT_FOUND_EX_MSG);
     }
 }

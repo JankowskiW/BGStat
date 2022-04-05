@@ -9,6 +9,8 @@ import pl.wj.bgstat.boardgamedescription.model.dto.BoardGameDescriptionResponseD
 
 import javax.persistence.EntityNotFoundException;
 
+import static pl.wj.bgstat.exception.ExceptionHelper.BOARD_GAME_DESCRIPTION_NOT_FOUND_EX_MSG;
+
 @Service
 @RequiredArgsConstructor
 public class BoardGameDescriptionService {
@@ -18,7 +20,7 @@ public class BoardGameDescriptionService {
     public BoardGameDescriptionResponseDto editBoardGameDescription(long id,
                       BoardGameDescriptionRequestDto boardGameRequestDescriptionDto) {
         BoardGameDescription boardGameDescription = boardGameDescriptionRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException("No such board game description with id: " + id));
+                () -> new EntityNotFoundException(BOARD_GAME_DESCRIPTION_NOT_FOUND_EX_MSG));
         boardGameDescription.setDescription(boardGameRequestDescriptionDto.getDescription());
         return BoardGameDescriptionMapper.mapToBoardGameDescriptionResponseDto(
                     boardGameDescriptionRepository.save(boardGameDescription));

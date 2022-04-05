@@ -11,6 +11,9 @@ import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
+import static pl.wj.bgstat.exception.ExceptionHelper.SYSTEM_OBJECT_TYPE_EXISTS_EX_MSG;
+import static pl.wj.bgstat.exception.ExceptionHelper.SYSTEM_OBJECT_TYPE_NOT_FOUND_EX_MSG;
+
 @Service
 @RequiredArgsConstructor
 public class SystemObjectTypeService {
@@ -23,13 +26,12 @@ public class SystemObjectTypeService {
 
     public SystemObjectType getSingleSystemObjectType(long id) {
         return systemObjectTypeRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException("No such system object type with id: " + id));
+                () -> new EntityNotFoundException(SYSTEM_OBJECT_TYPE_NOT_FOUND_EX_MSG + id));
     }
 
     public SystemObjectType addSystemObjectType(SystemObjectTypeRequestDto systemObjectTypeRequestDto) {
         if (systemObjectTypeRepository.existsByName(systemObjectTypeRequestDto.getName()))
-            throw new EntityExistsException("System object type with name '" +
-                    systemObjectTypeRequestDto.getName() + "' already exists in database");
+            throw new EntityExistsException(SYSTEM_OBJECT_TYPE_EXISTS_EX_MSG);
         SystemObjectType systemObjectType = SystemObjectTypeMapper.mapToSystemObjectType(systemObjectTypeRequestDto);
         systemObjectTypeRepository.save(systemObjectType);
         return systemObjectType;
@@ -37,10 +39,9 @@ public class SystemObjectTypeService {
 
     public SystemObjectType editSystemObjectType(long id, SystemObjectTypeRequestDto systemObjectTypeRequestDto) {
         if (!systemObjectTypeRepository.existsById(id))
-            throw new EntityNotFoundException("No such system object type with id: " + id);
+            throw new EntityNotFoundException(SYSTEM_OBJECT_TYPE_NOT_FOUND_EX_MSG + id);
         if (systemObjectTypeRepository.existsByNameAndIdNot(systemObjectTypeRequestDto.getName(), id))
-            throw new EntityExistsException("System object type with name '" +
-                    systemObjectTypeRequestDto.getName() + "' already exists in database");
+            throw new EntityExistsException(SYSTEM_OBJECT_TYPE_EXISTS_EX_MSG);
 
         SystemObjectType systemObjectType = SystemObjectTypeMapper.mapToSystemObjectType(id, systemObjectTypeRequestDto);
         systemObjectTypeRepository.save(systemObjectType);
@@ -49,7 +50,7 @@ public class SystemObjectTypeService {
 
     public void deleteSystemObjectType(long id) {
         if(!systemObjectTypeRepository.existsById(id))
-            throw new EntityNotFoundException("No such system object type with id: " + id);
+            throw new EntityNotFoundException(SYSTEM_OBJECT_TYPE_NOT_FOUND_EX_MSG + id);
         // TODO: check if object is related to any attribute class and if it is then throw an exception
         systemObjectTypeRepository.deleteById(id);
     }

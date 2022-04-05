@@ -30,6 +30,8 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.verify;
+import static pl.wj.bgstat.exception.ExceptionHelper.ATTRIBUTE_CLASS_TYPE_EXISTS_EX_MSG;
+import static pl.wj.bgstat.exception.ExceptionHelper.ATTRIBUTE_CLASS_TYPE_NOT_FOUND_EX_MSG;
 
 @ExtendWith(MockitoExtension.class)
 class AttributeClassTypeServiceTest {
@@ -140,14 +142,13 @@ class AttributeClassTypeServiceTest {
     void shouldThrowExceptionWhenCannotFindAttributeClassTypeById() {
         // given
         long id = attributeClassTypeList.size() + 1;
-        String exMsg = "No such attribute class type with id: " + id;
         given(attributeClassTypeRepository.findById(anyLong())).willReturn(
                 attributeClassTypeList.stream().filter(act -> act.getId() == id).findAny());
 
         // when
         assertThatThrownBy(() -> attributeClassTypeService.getSingleAttributeClassType(id))
                 .isInstanceOf(EntityNotFoundException.class)
-                .hasMessage(exMsg);
+                .hasMessage(ATTRIBUTE_CLASS_TYPE_NOT_FOUND_EX_MSG + id);
     }
 
     @Test
@@ -183,7 +184,6 @@ class AttributeClassTypeServiceTest {
     void shouldThrowExceptionWhenAttributeClassTypeExists() {
         // given
         String attributeClassTypeName = "Name No. 1";
-        String exMsg = "Attribute class type with name '" + attributeClassTypeName + "' already exists in database";
         AttributeClassTypeRequestDto attributeClassTypeRequestDto = new AttributeClassTypeRequestDto(
                 attributeClassTypeName, "DESCRIPTION", false);
         given(attributeClassTypeRepository.existsByName(anyString()))
@@ -194,7 +194,7 @@ class AttributeClassTypeServiceTest {
         // when
         assertThatThrownBy(() -> attributeClassTypeService.addAttributeClassType(attributeClassTypeRequestDto))
                 .isInstanceOf(EntityExistsException.class)
-                .hasMessage(exMsg);
+                .hasMessage(ATTRIBUTE_CLASS_TYPE_EXISTS_EX_MSG);
     }
 
     @Test
@@ -234,14 +234,13 @@ class AttributeClassTypeServiceTest {
     void shouldThrowExceptionWhenTryingToEditNonExistingAttributeClassType() {
         // given
         long id = 100l;
-        String exMsg = "No such attribute class type with id: " + id;
         given(attributeClassTypeRepository.existsById(anyLong())).willReturn(
                 attributeClassTypeList.stream().filter(act -> act.getId() == id).count() > 0);
 
         // when
         assertThatThrownBy(() -> attributeClassTypeService.editAttributeClassType(id, new AttributeClassTypeRequestDto()))
                 .isInstanceOf(EntityNotFoundException.class)
-                .hasMessage(exMsg);
+                .hasMessage(ATTRIBUTE_CLASS_TYPE_NOT_FOUND_EX_MSG + id);
     }
 
     @Test
@@ -252,7 +251,6 @@ class AttributeClassTypeServiceTest {
         AttributeClassType attributeClassType = attributeClassTypeList.stream().filter(act -> act.getId() == id).findFirst().orElseThrow();
         AttributeClassTypeRequestDto attributeClassTypeRequestDto = new AttributeClassTypeRequestDto(
                 attributeClassTypeList.get(1).getName(), attributeClassType.getDescription(), attributeClassType.isArchived());
-        String exMsg = "Attribute class type with name '" + attributeClassTypeRequestDto.getName() + "' already exists in database";
         given(attributeClassTypeRepository.existsById(anyLong()))
                 .willReturn(attributeClassTypeList.stream()
                                 .filter(act -> act.getId() == id)
@@ -266,7 +264,7 @@ class AttributeClassTypeServiceTest {
         // when
         assertThatThrownBy(() -> attributeClassTypeService.editAttributeClassType(id, attributeClassTypeRequestDto))
                 .isInstanceOf(EntityExistsException.class)
-                .hasMessage(exMsg);
+                .hasMessage(ATTRIBUTE_CLASS_TYPE_EXISTS_EX_MSG);
     }
 
     @Test
@@ -290,13 +288,12 @@ class AttributeClassTypeServiceTest {
     void shouldThrowExceptionWhenTryingToRemoveNonExistingAttributeClassType() {
         // given
         long id = 100l;
-        String exMsg = "No such attribute class type with id: " + id;
         given(attributeClassTypeRepository.existsById(anyLong())).willReturn(
                 attributeClassTypeList.stream().filter(act -> act.getId() == id).count() > 0);
 
         // when
         assertThatThrownBy(() -> attributeClassTypeService.deleteAttributeClassType(id))
                 .isInstanceOf(EntityNotFoundException.class)
-                .hasMessage(exMsg);
+                .hasMessage(ATTRIBUTE_CLASS_TYPE_NOT_FOUND_EX_MSG + id);
     }
 }

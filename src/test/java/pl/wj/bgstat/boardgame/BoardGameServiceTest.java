@@ -31,6 +31,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.verify;
 import static pl.wj.bgstat.boardgame.BoardGameServiceTestHelper.*;
+import static pl.wj.bgstat.exception.ExceptionHelper.*;
 
 @ExtendWith(MockitoExtension.class)
 class BoardGameServiceTest {
@@ -121,13 +122,12 @@ class BoardGameServiceTest {
     void shouldThrowErrorWhenFindAllHeadersAccessingDb() {
         // given
         int pageNumber = 2;
-        String exMsg = "Database access error";
-        willThrow(new IllegalAccessError(exMsg)).given(boardGameRepository).findAllBoardGameHeaders(any(Pageable.class));
+        willThrow(new IllegalAccessError(DATABASE_ACCESS_ER_MSG)).given(boardGameRepository).findAllBoardGameHeaders(any(Pageable.class));
 
         // when
         assertThatThrownBy(() -> boardGameService.getBoardGameHeaders(PageRequest.of(pageNumber, PAGE_SIZE)))
                 .isInstanceOf(IllegalAccessError.class)
-                .hasMessage(exMsg);
+                .hasMessage(DATABASE_ACCESS_ER_MSG);
     }
 
     @Test
@@ -156,7 +156,6 @@ class BoardGameServiceTest {
     void shouldThrowExceptionWhenCannotFindBoardGameById() {
         // given
         long id = boardGameList.size() + 1;
-        String exMsg = "No such board game with id: " + id;
         given(boardGameRepository.findWithDescriptionById(anyLong()))
                 .willReturn(boardGameList.stream()
                         .filter(bg -> bg.getId() == id)
@@ -165,7 +164,7 @@ class BoardGameServiceTest {
         // when
         assertThatThrownBy(() -> boardGameService.getSingleBoardGame(id))
                 .isInstanceOf(EntityNotFoundException.class)
-                .hasMessage(exMsg);
+                .hasMessage(BOARD_GAME_NOT_FOUND_EX_MSG + id);
     }
 
     @Test
@@ -204,8 +203,6 @@ class BoardGameServiceTest {
     void shouldThrowExceptionWhenBoardGameNameExists() {
         // given
         String boardGameName = "Name No. 1";
-        String exMsg = "Board game with name '" +
-                boardGameName + "' already exists in database";
         BoardGameRequestDto boardGameRequestDto = new BoardGameRequestDto(
                 boardGameName, 1, 1, 5, 2, 150, "DESCRIPTION");
         given(boardGameRepository.existsByName(anyString()))
@@ -216,7 +213,7 @@ class BoardGameServiceTest {
         // when
         assertThatThrownBy(() -> boardGameService.addBoardGame(boardGameRequestDto))
                 .isInstanceOf(EntityExistsException.class)
-                .hasMessage(exMsg);
+                .hasMessage(BOARD_GAME_TYPE_EXISTS_EX_MSG);
     }
 
     @Test
@@ -255,7 +252,6 @@ class BoardGameServiceTest {
     void shouldThrowExceptionWhenTryingToEditNonExistingBoardGame() {
         // given
         long id = 100l;
-        String exMsg = "No such board game with id: " + id;
         given(boardGameRepository.existsById(anyLong()))
                 .willReturn(boardGameList.stream()
                         .filter(bg -> bg.getId() == id)
@@ -264,7 +260,7 @@ class BoardGameServiceTest {
         // when
         assertThatThrownBy(() -> boardGameService.editBoardGame(id, new BoardGameRequestDto()))
                 .isInstanceOf(EntityNotFoundException.class)
-                .hasMessage(exMsg);
+                .hasMessage(BOARD_GAME_NOT_FOUND_EX_MSG + id);
     }
 
     @Test
@@ -277,7 +273,6 @@ class BoardGameServiceTest {
                 boardGameList.get(1).getName(), boardGame.getRecommendedAge(), boardGame.getMinPlayersNumber(),
                 boardGame.getMaxPlayersNumber(), boardGame.getComplexity(), boardGame.getPlayingTime(),
                 boardGame.getBoardGameDescription().getDescription());
-        String exMsg = "Board game with name '" + boardGameRequestDto.getName() + "' already exists in database";
         given(boardGameRepository.existsById(anyLong()))
                 .willReturn(boardGameList.stream()
                         .filter(bg -> bg.getId() == id)
@@ -290,7 +285,7 @@ class BoardGameServiceTest {
         // when
         assertThatThrownBy(() -> boardGameService.editBoardGame(id, boardGameRequestDto))
                 .isInstanceOf(EntityExistsException.class)
-                .hasMessage(exMsg);
+                .hasMessage(BOARD_GAME_TYPE_EXISTS_EX_MSG);
     }
 
 
@@ -317,7 +312,6 @@ class BoardGameServiceTest {
     void shouldThrowExceptionWhenTryingToRemoveNonExistingBoardGame() {
         // given
         long id = 100l;
-        String exMsg = "No such board game with id: " + id;
         given(boardGameRepository.existsById(anyLong()))
                 .willReturn(boardGameList.stream()
                         .filter(bg -> bg.getId() == id)
@@ -326,6 +320,6 @@ class BoardGameServiceTest {
         // when
         assertThatThrownBy(() -> boardGameService.deleteBoardGame(id))
                 .isInstanceOf(EntityNotFoundException.class)
-                .hasMessage(exMsg);
+                .hasMessage(BOARD_GAME_NOT_FOUND_EX_MSG + id);
     }
 }

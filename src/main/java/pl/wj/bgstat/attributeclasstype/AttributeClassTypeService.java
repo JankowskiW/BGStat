@@ -12,6 +12,9 @@ import pl.wj.bgstat.attributeclasstype.model.dto.AttributeClassTypeRequestDto;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
 
+import static pl.wj.bgstat.exception.ExceptionHelper.ATTRIBUTE_CLASS_TYPE_EXISTS_EX_MSG;
+import static pl.wj.bgstat.exception.ExceptionHelper.ATTRIBUTE_CLASS_TYPE_NOT_FOUND_EX_MSG;
+
 @Service
 @RequiredArgsConstructor
 public class AttributeClassTypeService {
@@ -24,13 +27,12 @@ public class AttributeClassTypeService {
 
     public AttributeClassType getSingleAttributeClassType(long id) {
         return attributeClassTypeRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException("No such attribute class type with id: " + id));
+                () -> new EntityNotFoundException(ATTRIBUTE_CLASS_TYPE_NOT_FOUND_EX_MSG + id));
     }
 
     public AttributeClassType addAttributeClassType(AttributeClassTypeRequestDto attributeClassTypeRequestDto) {
         if (attributeClassTypeRepository.existsByName(attributeClassTypeRequestDto.getName()))
-            throw new EntityExistsException("Attribute class type with name '" +
-                    attributeClassTypeRequestDto.getName() + "' already exists in database");
+            throw new EntityExistsException(ATTRIBUTE_CLASS_TYPE_EXISTS_EX_MSG);
         AttributeClassType attributeClassType = AttributeClassTypeMapper.mapToAttributeClassType(attributeClassTypeRequestDto);
         attributeClassTypeRepository.save(attributeClassType);
         return attributeClassType;
@@ -38,10 +40,9 @@ public class AttributeClassTypeService {
 
     public AttributeClassType editAttributeClassType(long id, AttributeClassTypeRequestDto attributeClassTypeRequestDto) {
         if (!attributeClassTypeRepository.existsById(id))
-            throw new EntityNotFoundException("No such attribute class type with id: " + id);
+            throw new EntityNotFoundException(ATTRIBUTE_CLASS_TYPE_NOT_FOUND_EX_MSG + id);
         if (attributeClassTypeRepository.existsByNameAndIdNot(attributeClassTypeRequestDto.getName(), id))
-            throw new EntityExistsException("Attribute class type with name '" +
-                    attributeClassTypeRequestDto.getName() + "' already exists in database");
+            throw new EntityExistsException(ATTRIBUTE_CLASS_TYPE_EXISTS_EX_MSG);
 
         AttributeClassType attributeClassType = AttributeClassTypeMapper.mapToAttributeClassType(id, attributeClassTypeRequestDto);
         attributeClassTypeRepository.save(attributeClassType);
@@ -50,7 +51,7 @@ public class AttributeClassTypeService {
 
     public void deleteAttributeClassType(long id) {
         if(!attributeClassTypeRepository.existsById(id))
-            throw new EntityNotFoundException("No such attribute class type with id: " + id);
+            throw new EntityNotFoundException(ATTRIBUTE_CLASS_TYPE_NOT_FOUND_EX_MSG + id);
         // TODO: check if attribute is related to any object type and if it is then throw an exception
         attributeClassTypeRepository.deleteById(id);
     }
