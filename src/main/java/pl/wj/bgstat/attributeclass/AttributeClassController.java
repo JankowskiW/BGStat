@@ -10,7 +10,7 @@ import pl.wj.bgstat.attributeclass.model.AttributeClass;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/attribute_classes")
+@RequestMapping("/attribute-classes")
 public class AttributeClassController {
 
     private final AttributeClassService attributeClassService;

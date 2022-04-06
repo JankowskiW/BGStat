@@ -12,7 +12,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/system_object_type")
+@RequestMapping("/system-object-types")
 public class SystemObjectTypeController {
 
     private final SystemObjectTypeService systemObjectTypeService;

@@ -9,7 +9,7 @@ import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/board_game_description")
+@RequestMapping("/board-game-descriptions")
 public class BoardGameDescriptionController {
 
     private final BoardGameDescriptionService boardGameDescriptionService;

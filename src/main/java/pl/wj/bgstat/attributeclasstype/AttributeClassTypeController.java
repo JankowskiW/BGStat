@@ -12,7 +12,7 @@ import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/attribute_class_types")
+@RequestMapping("/attribute-class-types")
 public class AttributeClassTypeController {
 
     private final AttributeClassTypeService attributeClassTypeService;
