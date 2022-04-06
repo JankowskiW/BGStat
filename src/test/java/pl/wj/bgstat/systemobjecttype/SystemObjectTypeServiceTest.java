@@ -262,4 +262,22 @@ class SystemObjectTypeServiceTest {
                 .isInstanceOf(EntityNotFoundException.class)
                 .hasMessage(SYSTEM_OBJECT_TYPE_NOT_FOUND_EX_MSG + id);
     }
+
+    @Test
+    @Description("Should return all attribute classes by system object type id")
+    void shouldReturnAllAttributeClassesBySystemObjectTypeId() {
+
+    }
+
+    @Test
+    @Description("Should return empty list of attribute classes")
+    void shouldReturnEmptyListOfAttributeClasses() {
+
+    }
+
+    @Test
+    @Description("Should throw EntityNotFoundExpception when trying to get attribute classes of non existing system object type")
+    void shouldThrowExceptionWhenTryingToGetAttributeClassesOfNonExistingSystemObjectType() {
+
+    }
 }

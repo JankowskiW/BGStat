@@ -3,8 +3,10 @@ package pl.wj.bgstat.systemobjecttype.model;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
+import pl.wj.bgstat.systemobjectattributeclass.model.SystemObjectAttributeClass;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -18,4 +20,9 @@ public class SystemObjectType {
     private String description;
     @ColumnDefault("false")
     private boolean archived;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "systemObjectType")
+    private Set<SystemObjectAttributeClass> attributeClasses;
+
+
 }

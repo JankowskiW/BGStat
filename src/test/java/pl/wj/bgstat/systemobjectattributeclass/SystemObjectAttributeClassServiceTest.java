@@ -23,15 +23,37 @@ class SystemObjectAttributeClassServiceTest {
     }
 
     @Test
-    @Description("Should return attribute classes by system object id")
-    void shouldReturnAttributeClassesBySystemObjectId() {
+    @Description("Should return created assignment of attribute class to system object type")
+    void shouldReturnAssignmentOfAttributeClassToSystemObjectType() {
 
     }
 
     @Test
-    @Description("Should return system objects by attribute class id")
-    void shouldReturnSystemObjectsByAttributeClassId() {
+    @Description("Should throw EntityNotFoundException when trying to assign non existing attribute class to system object type")
+    void shouldThrowExceptionWhenTryingToAssignNonExistingAttributeClassToSystemObjectType() {
 
+    }
+
+    @Test
+    @Description("Should throw EntityNotFoundException when trying to assign attribute class to non existing system object type")
+    void shouldThrowExceptionWhenTryingToAssignAttributeClassToNonExistingSystemObjectType() {
+
+    }
+
+    @Test
+    @Description("Should throw EntityExistsException when trying to create existing assignment")
+    void shouldThrowExceptionWhenTryingToCreateExistingAssignment() {
+
+    }
+
+    @Test
+    @Description("Should remove attribute class from system object type when id exists in database")
+    void shouldRemoveAttributeClassFromSystemObjectType() {
+    }
+
+    @Test
+    @Description("Should throw EntityNotFoundException when trying to remove non existing system object type attribute class")
+    void shouldThrowExceptionWhenTryingToRemoveNonExistingSystemObjectTypeAttributeClass() {
     }
 
 }

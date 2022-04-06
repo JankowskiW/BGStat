@@ -309,4 +309,22 @@ class AttributeClassServiceTest {
                 .hasMessage(ATTRIBUTE_CLASS_NOT_FOUND_EX_MSG + id);
     }
 
+    @Test
+    @Description("Should return all system object types by attribute class id")
+    void shouldReturnAllSystemObjectTypesByAttributeClassId() {
+
+    }
+
+    @Test
+    @Description("Should return empty list of system object types")
+    void shouldReturnEmptyListOfSystemObjectTypes() {
+
+    }
+
+    @Test
+    @Description("Should throw EntityNotFoundExpception when trying to get system object types of non existing attribute class")
+    void shouldThrowExceptionWhenTryingToGetSystemObjectTypesOfNonExistingAttributeClass() {
+
+    }
+
 }
