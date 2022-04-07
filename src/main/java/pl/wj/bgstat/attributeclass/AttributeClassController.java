@@ -20,4 +20,6 @@ public class AttributeClassController {
 //        return attributeClassService.getSingleAttributeClass(id);
         throw new NotYetImplementedException();
     }
+
+
 }

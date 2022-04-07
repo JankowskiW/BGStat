@@ -23,4 +23,7 @@ public class ExceptionHelper {
     public static final String SYSTEM_OBJECT_TYPE_NOT_FOUND_EX_MSG = "No such system object type with id: ";
     public static final String SYSTEM_OBJECT_TYPE_EXISTS_EX_MSG = "System object type with given name already exists in database";
 
+    // System Object Attribute Class Module
+    public static final String SYSTEM_OBJECT_ATTRIBUTE_CLASS_EXISTS_EX_MSG = "No such attribute class to system object type assignment";
+    public static final String SYSTEM_OBJECT_ATTRIBUTE_CLASS_NOT_FOUND_EX_MSG = "Attribute class to system object type assignment already exists in database";
 }

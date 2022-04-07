@@ -3,7 +3,6 @@ package pl.wj.bgstat.systemobjectattributeclass.model;
 import lombok.Getter;
 import lombok.Setter;
 import pl.wj.bgstat.attributeclass.model.AttributeClass;
-import pl.wj.bgstat.attributeclasstype.model.AttributeClassType;
 import pl.wj.bgstat.systemobjecttype.model.SystemObjectType;
 
 import javax.persistence.*;

@@ -1,10 +1,9 @@
 package pl.wj.bgstat.systemobjectattributeclass;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.hibernate.cfg.NotYetImplementedException;
+import org.springframework.web.bind.annotation.*;
+import pl.wj.bgstat.attributeclass.model.AttributeClass;
 import pl.wj.bgstat.systemobjectattributeclass.model.SystemObjectAttributeClass;
 
 import java.util.ArrayList;
@@ -16,5 +15,6 @@ import java.util.List;
 public class SystemObjectAttributeClassController {
 
     private final SystemObjectAttributeClassService systemObjectAttributeClassService;
+
 
 }
