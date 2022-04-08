@@ -50,7 +50,8 @@ class SystemObjectTypeServiceTest {
     @Description("Should return all system object type headers")
     void shouldReturnAllSystemObjectTypeHeaders() {
         // given
-        given(systemObjectTypeRepository.findAllSystemObjectTypeHeaders()).willReturn(systemObjectTypeHeaderList);
+        given(systemObjectTypeRepository.findAllSystemObjectTypeHeaders()).willReturn(
+                systemObjectTypeHeaderList);
 
         // when
         List<SystemObjectTypeHeaderDto> systemObjectTypeHeaders =

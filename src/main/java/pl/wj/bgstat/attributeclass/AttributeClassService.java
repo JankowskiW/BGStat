@@ -9,9 +9,12 @@ import pl.wj.bgstat.attributeclass.model.AttributeClassMapper;
 import pl.wj.bgstat.attributeclass.model.dto.AttributeClassHeaderDto;
 import pl.wj.bgstat.attributeclass.model.dto.AttributeClassRequestDto;
 import pl.wj.bgstat.attributeclass.model.dto.AttributeClassResponseDto;
+import pl.wj.bgstat.systemobjectattributeclass.SystemObjectAttributeClassRepository;
+import pl.wj.bgstat.systemobjectattributeclass.model.dto.SystemObjectAttributeClassResponseDto;
 
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
+import java.util.List;
 
 import static pl.wj.bgstat.exception.ExceptionHelper.ATTRIBUTE_CLASS_EXISTS_EX_MSG;
 import static pl.wj.bgstat.exception.ExceptionHelper.ATTRIBUTE_CLASS_NOT_FOUND_EX_MSG;
@@ -21,6 +24,7 @@ import static pl.wj.bgstat.exception.ExceptionHelper.ATTRIBUTE_CLASS_NOT_FOUND_E
 public class AttributeClassService {
 
     private final AttributeClassRepository attributeClassRepository;
+    private final SystemObjectAttributeClassRepository systemObjectAttributeClassRepository;
 
     public Page<AttributeClassHeaderDto> getAttributeClassHeaders(Pageable pageable) {
         return attributeClassRepository.findAllAttributeClassHeaders(pageable);
@@ -53,5 +57,10 @@ public class AttributeClassService {
     public void deleteAttributeClass(long id) {
         if(!attributeClassRepository.existsById(id)) throw new EntityNotFoundException(ATTRIBUTE_CLASS_NOT_FOUND_EX_MSG + id);
         attributeClassRepository.deleteById(id);
+    }
+
+    public List<SystemObjectAttributeClassResponseDto> getAllAttributeClassToSystemObjectTypeAssignments(long id) {
+        if (!attributeClassRepository.existsById(id)) throw new EntityNotFoundException(ATTRIBUTE_CLASS_NOT_FOUND_EX_MSG + id);
+        return systemObjectAttributeClassRepository.findAllResponseDtosByAttributeClassId(id);
     }
 }
