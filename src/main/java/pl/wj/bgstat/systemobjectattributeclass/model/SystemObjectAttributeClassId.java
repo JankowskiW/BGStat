@@ -1,8 +1,6 @@
 package pl.wj.bgstat.systemobjectattributeclass.model;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.Embeddable;
 import java.io.Serializable;
@@ -11,6 +9,8 @@ import java.io.Serializable;
 @Getter
 @Setter
 @EqualsAndHashCode
+@AllArgsConstructor
+@NoArgsConstructor
 public class SystemObjectAttributeClassId implements Serializable {
     private long attributeClassId;
     private long systemObjectTypeId;

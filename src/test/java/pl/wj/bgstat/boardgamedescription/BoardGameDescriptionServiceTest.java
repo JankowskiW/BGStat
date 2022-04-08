@@ -43,7 +43,7 @@ class BoardGameDescriptionServiceTest {
     @DisplayName("Should edit board game description when exists")
     void shouldEditBoardGameDescriptionWhenExists() {
         // given
-        long id = 1l;
+        long id = 1L;
         BoardGameDescriptionRequestDto boardGameDescriptionRequestDto =
                 BoardGameDescriptionRequestDto.builder().description("New board game description").build();
         given(boardGameDescriptionRepository.findById(anyLong())).willReturn(
@@ -71,7 +71,7 @@ class BoardGameDescriptionServiceTest {
     @DisplayName("Should throw EntityNotFoundException when trying to edit description of a non existing board game")
     void shouldThrowExceptionWhenTryingToEditNonExistingBoardGameDescription() {
         // given
-        long id = 100l;
+        long id = 100L;
         given(boardGameDescriptionRepository.findById(anyLong())).willReturn(
                 boardGameDescriptionList.stream().filter(bgd -> bgd.getBoardGameId() == id).findAny());
 

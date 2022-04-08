@@ -7,6 +7,4 @@ import pl.wj.bgstat.systemobjectattributeclass.model.SystemObjectAttributeClassI
 
 @Repository
 public interface SystemObjectAttributeClassRepository extends JpaRepository<SystemObjectAttributeClass, SystemObjectAttributeClassId> {
-
-    boolean existsByAttributeClassIdAndSystemObjectTypeId(long attributeClassId, long systemObjectTypeId);
 }

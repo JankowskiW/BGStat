@@ -7,14 +7,18 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import pl.wj.bgstat.attributeclass.AttributeClassRepository;
 import pl.wj.bgstat.attributeclass.model.AttributeClass;
 import pl.wj.bgstat.systemobjectattributeclass.model.SystemObjectAttributeClass;
+import pl.wj.bgstat.systemobjectattributeclass.model.SystemObjectAttributeClassId;
 import pl.wj.bgstat.systemobjectattributeclass.model.SystemObjectAttributeClassMapper;
 import pl.wj.bgstat.systemobjectattributeclass.model.dto.SystemObjectAttributeClassRequestDto;
 import pl.wj.bgstat.systemobjectattributeclass.model.dto.SystemObjectAttributeClassResponseDto;
+import pl.wj.bgstat.systemobjecttype.SystemObjectTypeRepository;
 import pl.wj.bgstat.systemobjecttype.model.SystemObjectType;
 
 import javax.persistence.EntityExistsException;
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -22,7 +26,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
-import static pl.wj.bgstat.exception.ExceptionHelper.SYSTEM_OBJECT_ATTRIBUTE_CLASS_EXISTS_EX_MSG;
+import static org.mockito.BDDMockito.willDoNothing;
+import static org.mockito.Mockito.verify;
+import static pl.wj.bgstat.exception.ExceptionHelper.*;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -30,6 +36,10 @@ class SystemObjectAttributeClassServiceTest {
 
     @Mock
     private SystemObjectAttributeClassRepository systemObjectAttributeClassRepository;
+    @Mock
+    private AttributeClassRepository attributeClassRepository;
+    @Mock
+    private SystemObjectTypeRepository systemObjectTypeRepository;
     @InjectMocks
     private SystemObjectAttributeClassService systemObjectAttributeClassService;
 
@@ -42,7 +52,8 @@ class SystemObjectAttributeClassServiceTest {
     @BeforeEach
     void setUp() {
         attributeClassList = SystemObjectAttributeClassServiceTestHelper.populateAttributeClassList(NUMBER_OF_ELEMENTS);
-        systemObjectTypeList = SystemObjectAttributeClassServiceTestHelper.populateSystemObjectTypeList(2 * NUMBER_OF_ELEMENTS);
+        systemObjectTypeList = SystemObjectAttributeClassServiceTestHelper
+                .populateSystemObjectTypeList(2 * NUMBER_OF_ELEMENTS);
         systemObjectAttributeClassList = SystemObjectAttributeClassServiceTestHelper
                 .populateSystemObjectAttributeClassList(attributeClassList, systemObjectTypeList);
     }
@@ -51,27 +62,26 @@ class SystemObjectAttributeClassServiceTest {
     @Description("Should return created assignment of attribute class to system object type")
     void shouldReturnAssignmentOfAttributeClassToSystemObjectType() {
         // given
-        long attributeClassId = 1;
-        long systemObjectTypeId = 3;
+        SystemObjectAttributeClassId id = new SystemObjectAttributeClassId(1L, 3L);
         SystemObjectAttributeClassRequestDto systemObjectAttributeClassRequestDto =
-                SystemObjectAttributeClassServiceTestHelper.createSystemObjectAttributeClassRequestDto(
-                        attributeClassId, systemObjectTypeId);
+                SystemObjectAttributeClassServiceTestHelper.createSystemObjectAttributeClassRequestDto(id);
         SystemObjectAttributeClass systemObjectAttributeClass =
-                SystemObjectAttributeClassMapper.mapToSystemObjectAttributeClass(systemObjectAttributeClassRequestDto);
+                SystemObjectAttributeClassMapper.mapToSystemObjectAttributeClass(id, systemObjectAttributeClassRequestDto);
         SystemObjectAttributeClassResponseDto expectedResponse =
                 SystemObjectAttributeClassMapper.mapToSystemObjectAttributeClassResponseDto(systemObjectAttributeClass);
-        given(systemObjectAttributeClassRepository.existsByAttributeClassIdAndSystemObjectTypeId(anyLong(), anyLong()))
-                .willReturn(systemObjectAttributeClassList.stream()
-                        .filter(soac ->
-                                soac.getId().getAttributeClassId() == systemObjectAttributeClassRequestDto.getAttributeClassId() &&
-                                soac.getId().getSystemObjectTypeId() == systemObjectAttributeClassRequestDto.getSystemObjectTypeId())
-                        .count() > 0);
+        given(systemObjectTypeRepository.existsById(anyLong())).willReturn(
+                systemObjectTypeList.stream().anyMatch(sot -> sot.getId() == id.getSystemObjectTypeId()));
+        given(attributeClassRepository.existsById(anyLong())).willReturn(
+                attributeClassList.stream().anyMatch(ac -> ac.getId() == id.getAttributeClassId()));
+        given(systemObjectAttributeClassRepository.existsById(any(SystemObjectAttributeClassId.class)))
+                .willReturn(systemObjectAttributeClassList.stream().anyMatch(soac -> soac.getId().equals(id)));
         given(systemObjectAttributeClassRepository.save(any(SystemObjectAttributeClass.class))).willAnswer(
            i -> i.getArgument(0, SystemObjectAttributeClass.class));
 
         // when
         SystemObjectAttributeClassResponseDto systemObjectAttributeClassResponseDto =
-                systemObjectAttributeClassService.addSystemObjectAttributeClass(systemObjectAttributeClassRequestDto);
+                systemObjectAttributeClassService.addSystemObjectAttributeClass(
+                        id.getAttributeClassId(), id.getSystemObjectTypeId(), systemObjectAttributeClassRequestDto);
 
         // then
         assertThat(systemObjectAttributeClassResponseDto)
@@ -84,48 +94,138 @@ class SystemObjectAttributeClassServiceTest {
     @Description("Should throw EntityNotFoundException when trying to assign non existing attribute class to system object type")
     void shouldThrowExceptionWhenTryingToAssignNonExistingAttributeClassToSystemObjectType() {
         // given
-        long attributeClassId = 1;
-        long systemObjectTypeId = 3;
+        SystemObjectAttributeClassId id = new SystemObjectAttributeClassId(100L, 1L);
         SystemObjectAttributeClassRequestDto systemObjectAttributeClassRequestDto =
-                SystemObjectAttributeClassServiceTestHelper.createSystemObjectAttributeClassRequestDto(
-                        attributeClassId, systemObjectTypeId);
-        given(systemObjectAttributeClassRepository.existsByAttributeClassIdAndSystemObjectTypeId(anyLong(), anyLong()))
-                .willReturn(systemObjectAttributeClassList.stream()
-                        .filter(soac ->
-                                soac.getId().getAttributeClassId() == systemObjectAttributeClassRequestDto.getAttributeClassId() &&
-                                        soac.getId().getSystemObjectTypeId() == systemObjectAttributeClassRequestDto.getSystemObjectTypeId())
-                        .count() > 0);
+                SystemObjectAttributeClassServiceTestHelper.createSystemObjectAttributeClassRequestDto(id);
+        given(systemObjectTypeRepository.existsById(anyLong())).willReturn(
+                systemObjectTypeList.stream().anyMatch(sot -> sot.getId() == id.getSystemObjectTypeId()));
+        given(attributeClassRepository.existsById(anyLong())).willReturn(
+                attributeClassList.stream().anyMatch(ac -> ac.getId() == id.getAttributeClassId()));
 
         // when
-        assertThatThrownBy(() -> systemObjectAttributeClassService.addSystemObjectAttributeClass(systemObjectAttributeClassRequestDto))
-                .isInstanceOf(EntityExistsException.class)
-                .hasMessage(SYSTEM_OBJECT_ATTRIBUTE_CLASS_EXISTS_EX_MSG);
+        assertThatThrownBy(() -> systemObjectAttributeClassService.addSystemObjectAttributeClass(
+                id.getAttributeClassId(), id.getSystemObjectTypeId(), systemObjectAttributeClassRequestDto))
+                    .isInstanceOf(EntityNotFoundException.class)
+                    .hasMessage(ATTRIBUTE_CLASS_NOT_FOUND_EX_MSG + id.getAttributeClassId());
     }
 
     @Test
     @Description("Should throw EntityNotFoundException when trying to assign attribute class to non existing system object type")
     void shouldThrowExceptionWhenTryingToAssignAttributeClassToNonExistingSystemObjectType() {
         // given
+        SystemObjectAttributeClassId id = new SystemObjectAttributeClassId(1L, 100L);
+        SystemObjectAttributeClassRequestDto systemObjectAttributeClassRequestDto =
+                SystemObjectAttributeClassServiceTestHelper.createSystemObjectAttributeClassRequestDto(id);
+        given(systemObjectTypeRepository.existsById(anyLong())).willReturn(
+                systemObjectTypeList.stream().anyMatch(sot -> sot.getId() == id.getSystemObjectTypeId()));
 
         // when
-
-        // then
+        assertThatThrownBy(() -> systemObjectAttributeClassService.addSystemObjectAttributeClass(
+                id.getAttributeClassId(), id.getSystemObjectTypeId(), systemObjectAttributeClassRequestDto))
+                    .isInstanceOf(EntityNotFoundException.class)
+                    .hasMessage(SYSTEM_OBJECT_TYPE_NOT_FOUND_EX_MSG + id.getSystemObjectTypeId());
     }
 
     @Test
     @Description("Should throw EntityExistsException when trying to create existing assignment")
     void shouldThrowExceptionWhenTryingToCreateExistingAssignment() {
+        // given
+        SystemObjectAttributeClassId id = new SystemObjectAttributeClassId(1L, 1L);
+        SystemObjectAttributeClassRequestDto systemObjectAttributeClassRequestDto =
+                SystemObjectAttributeClassServiceTestHelper.createSystemObjectAttributeClassRequestDto(id);
+        given(systemObjectTypeRepository.existsById(anyLong())).willReturn(
+                systemObjectTypeList.stream().anyMatch(sot -> sot.getId() == id.getSystemObjectTypeId()));
+        given(attributeClassRepository.existsById(anyLong())).willReturn(
+                attributeClassList.stream().anyMatch(ac -> ac.getId() == id.getAttributeClassId()));
+        given(systemObjectAttributeClassRepository.existsById(any(SystemObjectAttributeClassId.class)))
+                .willReturn(systemObjectAttributeClassList.stream().anyMatch(soac -> soac.getId().equals(id)));
 
+        // when
+        assertThatThrownBy(() -> systemObjectAttributeClassService.addSystemObjectAttributeClass(
+                id.getAttributeClassId(), id.getSystemObjectTypeId(), systemObjectAttributeClassRequestDto))
+                    .isInstanceOf(EntityExistsException.class)
+                    .hasMessage(SYSTEM_OBJECT_ATTRIBUTE_CLASS_EXISTS_EX_MSG);
     }
 
     @Test
-    @Description("Should remove attribute class from system object type when id exists in database")
-    void shouldRemoveAttributeClassFromSystemObjectType() {
+    @Description("Should remove attribute class from system object type when assignment exists in database")
+    void shouldRemoveAttributeClassFromSystemObjectTypeWhenAssignmentExists() {
+        // given
+        SystemObjectAttributeClassId id = new SystemObjectAttributeClassId(1L, 1L);
+        given(systemObjectAttributeClassRepository.existsById(any(SystemObjectAttributeClassId.class))).willReturn(
+                        systemObjectAttributeClassList.stream().anyMatch(
+                                soac -> soac.getId().equals(id)));
+        willDoNothing().given(systemObjectAttributeClassRepository).deleteById(any(SystemObjectAttributeClassId.class));
+
+        // when
+        systemObjectAttributeClassService.deleteSystemObjectAttributeClass(id.getAttributeClassId(), id.getSystemObjectTypeId());
+
+        // then
+        verify(systemObjectAttributeClassRepository).deleteById(id);
     }
 
     @Test
     @Description("Should throw EntityNotFoundException when trying to remove non existing system object type attribute class")
     void shouldThrowExceptionWhenTryingToRemoveNonExistingSystemObjectTypeAttributeClass() {
+        // given
+        SystemObjectAttributeClassId id = new SystemObjectAttributeClassId(1L, 100L);
+        given(systemObjectAttributeClassRepository.existsById(any(SystemObjectAttributeClassId.class)))
+                .willReturn(systemObjectAttributeClassList.stream().anyMatch(soac -> soac.getId().equals(id)));
+
+        // when
+        assertThatThrownBy(() -> systemObjectAttributeClassService.deleteSystemObjectAttributeClass(
+                id.getAttributeClassId(), id.getSystemObjectTypeId()))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessage(SYSTEM_OBJECT_ATTRIBUTE_CLASS_NOT_FOUND_EX_MSG);
+    }
+
+    @Test
+    @Description("Should edit attribute type to system object assignment when exists")
+    void shouldEditAttributeTypeToSystemObjectAssignmentWhenExists() {
+        // given
+        SystemObjectAttributeClassId id = new SystemObjectAttributeClassId(1L, 1L);
+        SystemObjectAttributeClass systemObjectAttributeClass =
+                systemObjectAttributeClassList.stream().filter(soac ->
+                        soac.getId().equals(id)).findFirst().orElseThrow();
+        SystemObjectAttributeClassRequestDto systemObjectAttributeClassRequestDto =
+                SystemObjectAttributeClassRequestDto.builder()
+                        .attributeClassId(id.getAttributeClassId())
+                        .systemObjectTypeId(id.getSystemObjectTypeId())
+                        .required(systemObjectAttributeClass.isRequired())
+                        .classDefaultValue("NEW " + systemObjectAttributeClass.getClassDefaultValue())
+                        .build();
+        given(systemObjectAttributeClassRepository.existsById(any(SystemObjectAttributeClassId.class)))
+                .willReturn(systemObjectAttributeClassList.stream().anyMatch(soac -> soac.getId().equals(id)));
+        given(systemObjectAttributeClassRepository.save(any(SystemObjectAttributeClass.class))).willAnswer(
+                i -> i.getArgument(0, SystemObjectAttributeClass.class));
+
+        // when
+        SystemObjectAttributeClassResponseDto systemObjectAttributeClassResponseDto =
+                systemObjectAttributeClassService.editSystemObjectAttributeClass(
+                        id.getAttributeClassId(), id.getSystemObjectTypeId(), systemObjectAttributeClassRequestDto);
+
+        // then
+        assertThat(systemObjectAttributeClassResponseDto).isNotNull();
+        assertThat(systemObjectAttributeClassResponseDto.getAttributeClassId()).isEqualTo(id.getAttributeClassId());
+        assertThat(systemObjectAttributeClassResponseDto.getSystemObjectTypeId()).isEqualTo(id.getSystemObjectTypeId());
+        assertThat(systemObjectAttributeClassResponseDto.getClassDefaultValue())
+                .isEqualTo(systemObjectAttributeClassRequestDto.getClassDefaultValue());
+    }
+
+    @Test
+    @Description("Should throw EntityNotFoundException when trying to edit non existing " +
+                 "attribute class to system object type assignment")
+    void shouldThrowExceptionWhenTryingToEditNonExistingAssignment() {
+        // given
+        SystemObjectAttributeClassId id = new SystemObjectAttributeClassId(1L, 100L);
+        given(systemObjectAttributeClassRepository.existsById(any(SystemObjectAttributeClassId.class)))
+                .willReturn(systemObjectAttributeClassList.stream().anyMatch(soac -> soac.getId().equals(id)));
+
+        // when
+        assertThatThrownBy(() -> systemObjectAttributeClassService.editSystemObjectAttributeClass(
+                id.getAttributeClassId(), id.getSystemObjectTypeId(), new SystemObjectAttributeClassRequestDto()))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessage(SYSTEM_OBJECT_ATTRIBUTE_CLASS_NOT_FOUND_EX_MSG);
     }
 
 }

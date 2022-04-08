@@ -134,7 +134,7 @@ class BoardGameServiceTest {
     @DisplayName("Should return only one board game details with description")
     void shouldReturnSingleBoardGameDetailsById() {
         // given
-        long id = 1l;
+        long id = 1L;
         Optional<BoardGame> returnedBoardGame = boardGameList.stream()
                 .filter(bg -> bg.getId() == id)
                 .findAny();
@@ -177,9 +177,7 @@ class BoardGameServiceTest {
         boardGame.getBoardGameDescription().setBoardGameId(boardGame.getId());
         BoardGameResponseDto expectedResponse = BoardGameMapper.mapToBoardGameResponseDto(boardGame);
         given(boardGameRepository.existsByName(anyString())).willReturn(
-                boardGameList.stream()
-                        .filter(bg -> bg.getName().equals(boardGameRequestDto.getName()))
-                        .count() > 0);
+                boardGameList.stream().anyMatch(bg -> bg.getName().equals(boardGameRequestDto.getName())));
         given(boardGameRepository.save(any(BoardGame.class))).willAnswer(
                 i -> {
                     BoardGame bg = i.getArgument(0, BoardGame.class);
@@ -206,9 +204,7 @@ class BoardGameServiceTest {
         BoardGameRequestDto boardGameRequestDto = new BoardGameRequestDto(
                 boardGameName, 1, 1, 5, 2, 150, "DESCRIPTION");
         given(boardGameRepository.existsByName(anyString()))
-                .willReturn(boardGameList.stream()
-                        .filter(bg -> bg.getName().equals(boardGameName))
-                        .count() > 0);
+                .willReturn(boardGameList.stream().anyMatch(bg -> bg.getName().equals(boardGameName)));
 
         // when
         assertThatThrownBy(() -> boardGameService.addBoardGame(boardGameRequestDto))
@@ -220,17 +216,17 @@ class BoardGameServiceTest {
     @DisplayName("Should edit board game when exists")
     void shouldEditBoardGameWhenExists() {
         // given
-        long id = 1l;
+        long id = 1L;
         BoardGame boardGame = boardGameList.stream().filter(bg -> bg.getId() == id).findFirst().orElseThrow();
         BoardGameRequestDto boardGameRequestDto = BoardGameRequestDto.builder()
                 .name(boardGame.getName())
                 .recommendedAge(boardGame.getRecommendedAge()*2)
                 .build();
         given(boardGameRepository.existsById(anyLong())).willReturn(
-                boardGameList.stream().filter(bg -> bg.getId() == id).count() > 0);
+                boardGameList.stream().anyMatch(bg -> bg.getId() == id));
         given(boardGameRepository.existsByNameAndIdNot(anyString(), anyLong())).willReturn(
-                boardGameList.stream().filter(bg -> bg.getId() != id &&
-                        bg.getName().equals(boardGameRequestDto.getName())).count() > 0);
+                boardGameList.stream().anyMatch(bg -> bg.getId() != id &&
+                        bg.getName().equals(boardGameRequestDto.getName())));
         given(boardGameRepository.save(any(BoardGame.class))).willAnswer(
                 i -> {
                     BoardGame bg = i.getArgument(0, BoardGame.class);
@@ -251,11 +247,9 @@ class BoardGameServiceTest {
     @DisplayName("Should throw EntityNotFoundException when trying to edit non existing board game")
     void shouldThrowExceptionWhenTryingToEditNonExistingBoardGame() {
         // given
-        long id = 100l;
+        long id = 100L;
         given(boardGameRepository.existsById(anyLong()))
-                .willReturn(boardGameList.stream()
-                        .filter(bg -> bg.getId() == id)
-                        .count() > 0);
+                .willReturn(boardGameList.stream().anyMatch(bg -> bg.getId() == id));
 
         // when
         assertThatThrownBy(() -> boardGameService.editBoardGame(id, new BoardGameRequestDto()))
@@ -267,20 +261,16 @@ class BoardGameServiceTest {
     @DisplayName("Should throw EntityExistsException when trying to set new name that already exists")
     void shouldThrowExceptionWhenTryingToSetNameThatAlreadyExists() {
         // given
-        long id = 1l;
+        long id = 1L;
         BoardGame boardGame = boardGameList.stream().filter(bg -> bg.getId() == id).findFirst().orElseThrow();
         BoardGameRequestDto boardGameRequestDto = new BoardGameRequestDto(
                 boardGameList.get(1).getName(), boardGame.getRecommendedAge(), boardGame.getMinPlayersNumber(),
                 boardGame.getMaxPlayersNumber(), boardGame.getComplexity(), boardGame.getPlayingTime(),
                 boardGame.getBoardGameDescription().getDescription());
         given(boardGameRepository.existsById(anyLong()))
-                .willReturn(boardGameList.stream()
-                        .filter(bg -> bg.getId() == id)
-                        .count() > 0);
+                .willReturn(boardGameList.stream().anyMatch(bg -> bg.getId() == id));
         given(boardGameRepository.existsByNameAndIdNot(anyString(), anyLong()))
-                .willReturn(boardGameList.stream()
-                        .filter(bg -> bg.getId() != id && bg.getName().equals(boardGameRequestDto.getName()))
-                        .count() > 0);
+                .willReturn(boardGameList.stream().anyMatch(bg -> bg.getId() != id && bg.getName().equals(boardGameRequestDto.getName())));
 
         // when
         assertThatThrownBy(() -> boardGameService.editBoardGame(id, boardGameRequestDto))
@@ -293,11 +283,9 @@ class BoardGameServiceTest {
     @DisplayName("Should remove board game by id when id exists in database")
     void shouldRemoveBoardGameByIdWhenIdExists () {
         // given
-        long id = 3l;
+        long id = 3L;
         given(boardGameRepository.existsById(anyLong()))
-                .willReturn(boardGameList.stream()
-                        .filter(bg -> bg.getId() == id)
-                        .count() > 0);
+                .willReturn(boardGameList.stream().anyMatch(bg -> bg.getId() == id));
         willDoNothing().given(boardGameRepository).deleteById(anyLong());
 
         // when
@@ -311,11 +299,9 @@ class BoardGameServiceTest {
     @DisplayName("Should throw EntityNotFoundException when trying to remove non existing board game")
     void shouldThrowExceptionWhenTryingToRemoveNonExistingBoardGame() {
         // given
-        long id = 100l;
+        long id = 100L;
         given(boardGameRepository.existsById(anyLong()))
-                .willReturn(boardGameList.stream()
-                        .filter(bg -> bg.getId() == id)
-                        .count() > 0);
+                .willReturn(boardGameList.stream().anyMatch(bg -> bg.getId() == id));
 
         // when
         assertThatThrownBy(() -> boardGameService.deleteBoardGame(id))

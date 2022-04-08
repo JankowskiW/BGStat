@@ -85,7 +85,7 @@ class SystemObjectTypeServiceTest {
     @Description("Should return only one system object type details")
     void shouldReturnSingleSystemObjectTypeDetailsById() {
         // given
-        long id = 1l;
+        long id = 1L;
         Optional<SystemObjectType> returnedSystemObjectType = systemObjectTypeList
                 .stream()
                 .filter(sot -> sot.getId() == id)
@@ -124,9 +124,7 @@ class SystemObjectTypeServiceTest {
         SystemObjectType expectedResponse = SystemObjectTypeMapper.mapToSystemObjectType(systemObjectTypeRequestDto);
         expectedResponse.setId(systemObjectTypeList.size()+1);
         given(systemObjectTypeRepository.existsByName(anyString())).willReturn(
-            systemObjectTypeList.stream()
-                    .filter(sot -> sot.getName().equals(systemObjectTypeRequestDto.getName()))
-                    .count() > 0);
+                systemObjectTypeList.stream().anyMatch(sot -> sot.getName().equals(systemObjectTypeRequestDto.getName())));
         given(systemObjectTypeRepository.save(any(SystemObjectType.class))).willAnswer(
                 i -> {
                     SystemObjectType sot = i.getArgument(0, SystemObjectType.class);
@@ -152,9 +150,7 @@ class SystemObjectTypeServiceTest {
         SystemObjectTypeRequestDto systemObjectTypeRequestDto = new SystemObjectTypeRequestDto(
                 systemObjectTypeName, "DESCRIPTION", false);
         given(systemObjectTypeRepository.existsByName(anyString()))
-                .willReturn(systemObjectTypeList.stream()
-                        .filter(sot -> sot.getName().equals(systemObjectTypeName))
-                        .count() > 0);
+                .willReturn(systemObjectTypeList.stream().anyMatch(sot -> sot.getName().equals(systemObjectTypeName)));
 
         // when
         assertThatThrownBy(() -> systemObjectTypeService.addSystemObjectType(systemObjectTypeRequestDto))
@@ -166,17 +162,17 @@ class SystemObjectTypeServiceTest {
     @Description("Should edit system object type when exists")
     void shouldEditSystemObjectTypeWhenExists() {
         // given
-        long id = 1l;
+        long id = 1L;
         SystemObjectType systemObjectType = systemObjectTypeList.stream().filter(sot -> sot.getId() == id).findFirst().orElseThrow();
         SystemObjectTypeRequestDto systemObjectTypeRequestDto = SystemObjectTypeRequestDto.builder()
                 .name(systemObjectType.getName())
                 .description("NEW " + systemObjectType.getDescription())
                 .build();
         given(systemObjectTypeRepository.existsById(anyLong())).willReturn(
-                systemObjectTypeList.stream().filter(sot -> sot.getId() == id).count() > 0);
+                systemObjectTypeList.stream().anyMatch(sot -> sot.getId() == id));
         given(systemObjectTypeRepository.existsByNameAndIdNot(anyString(), anyLong())).willReturn(
-                systemObjectTypeList.stream().filter(sot -> sot.getId() != id &&
-                        sot.getName().equals(systemObjectTypeRequestDto.getName())).count() > 0);
+                systemObjectTypeList.stream().anyMatch(sot -> sot.getId() != id &&
+                        sot.getName().equals(systemObjectTypeRequestDto.getName())));
         given(systemObjectTypeRepository.save(any(SystemObjectType.class))).willAnswer(
                 i -> {
                     SystemObjectType sot = i.getArgument(0, SystemObjectType.class);
@@ -197,9 +193,9 @@ class SystemObjectTypeServiceTest {
     @Description("Should throw EntityNotFoundException when trying to edit non existing system object type")
     void shouldThrowExceptionWhenTryingToEditNonExistingSystemObjectType() {
         // given
-        long id = 100l;
+        long id = 100L;
         given(systemObjectTypeRepository.existsById(anyLong())).willReturn(
-                systemObjectTypeList.stream().filter(sot -> sot.getId() == id).count() > 0);
+                systemObjectTypeList.stream().anyMatch(sot -> sot.getId() == id));
 
         // when
         assertThatThrownBy(() -> systemObjectTypeService.editSystemObjectType(id, new SystemObjectTypeRequestDto()))
@@ -211,19 +207,15 @@ class SystemObjectTypeServiceTest {
     @Description("Should throw EntityExistsException when trying to set new name that already exists")
     void shouldThrowExceptionWhenTryingToSetNameThatAlreadyExists() {
         // given
-        long id = 1l;
+        long id = 1L;
         SystemObjectType systemObjectType = systemObjectTypeList.stream().filter(sot -> sot.getId() == id).findFirst().orElseThrow();
         SystemObjectTypeRequestDto systemObjectTypeRequestDto = new SystemObjectTypeRequestDto(
                 systemObjectTypeList.get(1).getName(), systemObjectType.getDescription(), systemObjectType.isArchived());
         given(systemObjectTypeRepository.existsById(anyLong()))
-                .willReturn(systemObjectTypeList.stream()
-                        .filter(sot -> sot.getId() == id)
-                        .count() > 0);
+                .willReturn(systemObjectTypeList.stream().anyMatch(sot -> sot.getId() == id));
         given(systemObjectTypeRepository.existsByNameAndIdNot(anyString(), anyLong()))
-                .willReturn(systemObjectTypeList.stream()
-                        .filter(sot -> sot.getId() != id &&
-                                sot.getName().equals(systemObjectTypeRequestDto.getName()))
-                        .count() > 0);
+                .willReturn(systemObjectTypeList.stream().anyMatch(sot -> sot.getId() != id &&
+                        sot.getName().equals(systemObjectTypeRequestDto.getName())));
 
         // when
         assertThatThrownBy(() -> systemObjectTypeService.editSystemObjectType(id, systemObjectTypeRequestDto))
@@ -235,11 +227,9 @@ class SystemObjectTypeServiceTest {
     @Description("Should remove system object type when id exists in database")
     void shouldRemoveSystemObjectTypeWhenIdExists() {
         // given
-        long id = 1l;
+        long id = 1L;
         given(systemObjectTypeRepository.existsById(anyLong()))
-                .willReturn(systemObjectTypeList.stream()
-                        .filter(sot -> sot.getId() == id)
-                        .count() > 0);
+                .willReturn(systemObjectTypeList.stream().anyMatch(sot -> sot.getId() == id));
         willDoNothing().given(systemObjectTypeRepository).deleteById(anyLong());
 
         // when
@@ -253,9 +243,9 @@ class SystemObjectTypeServiceTest {
     @Description("Should throw EntityNotFoundException when trying to remove non existing system object type")
     void shouldThrowExceptionWhenTryingToRemoveNonExistingSystemObjectType() {
         // given
-        long id = 100l;
+        long id = 100L;
         given(systemObjectTypeRepository.existsById(anyLong()))
-                .willReturn(systemObjectTypeList.stream().filter(sot -> sot.getId() == id).count() > 0);
+                .willReturn(systemObjectTypeList.stream().anyMatch(sot -> sot.getId() == id));
 
         // when
         assertThatThrownBy(() -> systemObjectTypeService.deleteSystemObjectType(id))

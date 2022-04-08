@@ -64,10 +64,9 @@ public class SystemObjectAttributeClassServiceTestHelper {
     }
 
     public static SystemObjectAttributeClassRequestDto createSystemObjectAttributeClassRequestDto(
-            long attributeClassId, long systemObjectTypeId
-    ) {
+            SystemObjectAttributeClassId id) {
         return new SystemObjectAttributeClassRequestDto(
-                attributeClassId, systemObjectTypeId, false, "DEFAULT");
+                id.getAttributeClassId(), id.getSystemObjectTypeId(), false, "DEFAULT");
     }
 
     private static SystemObjectAttributeClass createSystemObjectAttributeClass(

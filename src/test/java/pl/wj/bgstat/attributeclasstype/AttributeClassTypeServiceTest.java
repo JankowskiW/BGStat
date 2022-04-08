@@ -121,7 +121,7 @@ class AttributeClassTypeServiceTest {
     @Description("Should return only one attribute class type details")
     void shouldReturnSingleAttributeClassTypeDetails() {
         // given
-        long id = 1l;
+        long id = 1L;
         Optional<AttributeClassType> returnedAttributeClassType = attributeClassTypeList.stream()
                 .filter(act -> act.getId() == id)
                 .findAny();
@@ -159,9 +159,7 @@ class AttributeClassTypeServiceTest {
         AttributeClassType expectedResponse = AttributeClassTypeMapper.mapToAttributeClassType(attributeClassTypeRequestDto);
         expectedResponse.setId(attributeClassTypeList.size()+1);
         given(attributeClassTypeRepository.existsByName(anyString())).willReturn(
-                attributeClassTypeList.stream()
-                        .filter(act -> act.getName().equals(attributeClassTypeRequestDto.getName()))
-                        .count() > 0);
+                attributeClassTypeList.stream().anyMatch(act -> act.getName().equals(attributeClassTypeRequestDto.getName())));
         given(attributeClassTypeRepository.save(any(AttributeClassType.class))).willAnswer(
                 i -> {
                     AttributeClassType act = i.getArgument(0, AttributeClassType.class);
@@ -187,9 +185,7 @@ class AttributeClassTypeServiceTest {
         AttributeClassTypeRequestDto attributeClassTypeRequestDto = new AttributeClassTypeRequestDto(
                 attributeClassTypeName, "DESCRIPTION", false);
         given(attributeClassTypeRepository.existsByName(anyString()))
-                .willReturn(attributeClassTypeList.stream()
-                        .filter(act -> act.getName().equals(attributeClassTypeName))
-                        .count() > 0);
+                .willReturn(attributeClassTypeList.stream().anyMatch(act -> act.getName().equals(attributeClassTypeName)));
 
         // when
         assertThatThrownBy(() -> attributeClassTypeService.addAttributeClassType(attributeClassTypeRequestDto))
@@ -201,7 +197,7 @@ class AttributeClassTypeServiceTest {
     @Description("Should edit attribute class type when exists")
     void shouldEditAttributeClassTypeWhenExists() {
         // given
-        long id = 1l;
+        long id = 1L;
         AttributeClassType attributeClassType = attributeClassTypeList.stream().filter(act -> act.getId() == id).findFirst().orElseThrow();
         AttributeClassTypeRequestDto attributeClassTypeRequestDto = AttributeClassTypeRequestDto.builder()
                 .name(attributeClassType.getName())
@@ -209,10 +205,10 @@ class AttributeClassTypeServiceTest {
                 .archived(true)
                 .build();
         given(attributeClassTypeRepository.existsById(anyLong())).willReturn(
-                attributeClassTypeList.stream().filter(act -> act.getId() == id).count() > 0);
+                attributeClassTypeList.stream().anyMatch(act -> act.getId() == id));
         given(attributeClassTypeRepository.existsByNameAndIdNot(anyString(), anyLong())).willReturn(
-                attributeClassTypeList.stream().filter(act -> act.getId() != id &&
-                        act.getName().equals(attributeClassType.getName())).count() > 0);
+                attributeClassTypeList.stream().anyMatch(act -> act.getId() != id &&
+                        act.getName().equals(attributeClassType.getName())));
         given(attributeClassTypeRepository.save(any(AttributeClassType.class))).willAnswer(
                 i -> {
                     AttributeClassType act = i.getArgument(0, AttributeClassType.class);
@@ -233,9 +229,9 @@ class AttributeClassTypeServiceTest {
     @Description("Should throw EntityNotFoundException when trying to edit non existing attribute class type")
     void shouldThrowExceptionWhenTryingToEditNonExistingAttributeClassType() {
         // given
-        long id = 100l;
+        long id = 100L;
         given(attributeClassTypeRepository.existsById(anyLong())).willReturn(
-                attributeClassTypeList.stream().filter(act -> act.getId() == id).count() > 0);
+                attributeClassTypeList.stream().anyMatch(act -> act.getId() == id));
 
         // when
         assertThatThrownBy(() -> attributeClassTypeService.editAttributeClassType(id, new AttributeClassTypeRequestDto()))
@@ -247,19 +243,16 @@ class AttributeClassTypeServiceTest {
     @Description("Should throw EntityExistsException when trying to set new name that already exists")
     void shouldThrowExceptionWhenTryingToSetNameThatAlreadyExists() {
         // given
-        long id = 1l;
+        long id = 1L;
         AttributeClassType attributeClassType = attributeClassTypeList.stream().filter(act -> act.getId() == id).findFirst().orElseThrow();
         AttributeClassTypeRequestDto attributeClassTypeRequestDto = new AttributeClassTypeRequestDto(
                 attributeClassTypeList.get(1).getName(), attributeClassType.getDescription(), attributeClassType.isArchived());
         given(attributeClassTypeRepository.existsById(anyLong()))
-                .willReturn(attributeClassTypeList.stream()
-                                .filter(act -> act.getId() == id)
-                                .count() > 0);
+                .willReturn(attributeClassTypeList.stream().anyMatch(act -> act.getId() == id));
         given(attributeClassTypeRepository.existsByNameAndIdNot(anyString(), anyLong()))
-                .willReturn(attributeClassTypeList.stream()
-                        .filter(act -> act.getId() != id &&
-                                act.getName().equals(attributeClassTypeRequestDto.getName()))
-                        .count() > 0);
+                .willReturn(attributeClassTypeList.stream().anyMatch(act ->
+                        act.getId() != id &&
+                        act.getName().equals(attributeClassTypeRequestDto.getName())));
 
         // when
         assertThatThrownBy(() -> attributeClassTypeService.editAttributeClassType(id, attributeClassTypeRequestDto))
@@ -271,9 +264,9 @@ class AttributeClassTypeServiceTest {
     @Description("Should remove attribute class type when id exists in database")
     void shouldRemoveAttributeClassTypeWhenIdExists() {
         // given
-        long id = 1l;
+        long id = 1L;
         given(attributeClassTypeRepository.existsById(anyLong())).willReturn(
-                attributeClassTypeList.stream().filter(act -> act.getId() == id).count() > 0);
+                attributeClassTypeList.stream().anyMatch(act -> act.getId() == id));
         willDoNothing().given(attributeClassTypeRepository).deleteById(anyLong());
 
         // when
@@ -287,9 +280,9 @@ class AttributeClassTypeServiceTest {
     @Description("Should throw EntityNotFoundException when trying to remove non existing attribute class type")
     void shouldThrowExceptionWhenTryingToRemoveNonExistingAttributeClassType() {
         // given
-        long id = 100l;
+        long id = 100L;
         given(attributeClassTypeRepository.existsById(anyLong())).willReturn(
-                attributeClassTypeList.stream().filter(act -> act.getId() == id).count() > 0);
+                attributeClassTypeList.stream().anyMatch(act -> act.getId() == id));
 
         // when
         assertThatThrownBy(() -> attributeClassTypeService.deleteAttributeClassType(id))
