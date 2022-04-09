@@ -7,8 +7,10 @@ import org.springframework.web.bind.annotation.*;
 import pl.wj.bgstat.attributeclass.model.dto.AttributeClassHeaderDto;
 import pl.wj.bgstat.attributeclass.model.dto.AttributeClassRequestDto;
 import pl.wj.bgstat.attributeclass.model.dto.AttributeClassResponseDto;
+import pl.wj.bgstat.systemobjectattributeclass.model.dto.SystemObjectAttributeClassResponseDto;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -40,6 +42,11 @@ public class AttributeClassController {
     @DeleteMapping("/{id}")
     public void deleteAttributeClass(@PathVariable long id) {
         attributeClassService.deleteAttributeClass(id);
+    }
+
+    @GetMapping("/{id}/system-object-types")
+    public List<SystemObjectAttributeClassResponseDto> getAllSystemObjectTypeToAttributeClassAssignments(@PathVariable long id) {
+       return  attributeClassService.getAllSystemObjectTypeToAttributeClassAssignments(id);
     }
 
 }

@@ -15,14 +15,18 @@ public interface SystemObjectAttributeClassRepository extends JpaRepository<Syst
     @Query("SELECT new pl.wj.bgstat.systemobjectattributeclass.model.dto.SystemObjectAttributeClassResponseDto(" +
             "soac.id.attributeClassId, soac.id.systemObjectTypeId, soac.required, " +
             "soac.classDefaultValue, soac.attributeClass.name, soac.systemObjectType.name) " +
-            "FROM SystemObjectAttributeClass soac LEFT JOIN FETCH soac.attributeClass ac LEFT JOIN FETCH soac.systemObjectType sot " +
+            "FROM SystemObjectAttributeClass soac LEFT JOIN soac.attributeClass ac LEFT JOIN soac.systemObjectType sot " +
             "WHERE soac.id.attributeClassId = :attributeClassId")
-    List<SystemObjectAttributeClassResponseDto> findAllResponseDtosByAttributeClassId(long attributeClassId);
+    List<SystemObjectAttributeClassResponseDto> findAllAssignmentsByAttributeClassId(long attributeClassId);
 
     @Query("SELECT new pl.wj.bgstat.systemobjectattributeclass.model.dto.SystemObjectAttributeClassResponseDto(" +
             "soac.id.attributeClassId, soac.id.systemObjectTypeId, soac.required, " +
             "soac.classDefaultValue, soac.attributeClass.name, soac.systemObjectType.name) " +
-            "FROM SystemObjectAttributeClass soac LEFT JOIN FETCH soac.attributeClass ac LEFT JOIN FETCH soac.systemObjectType sot " +
+            "FROM SystemObjectAttributeClass soac LEFT JOIN soac.attributeClass ac LEFT JOIN soac.systemObjectType sot " +
             "WHERE soac.id.systemObjectTypeId = :systemObjectTypeId")
-    List<SystemObjectAttributeClassResponseDto> findAllResponseDtosBySystemObjectTypeId(long systemObjectTypeId);
+    List<SystemObjectAttributeClassResponseDto> findAllAssignmentsBySystemObjectTypeId(long systemObjectTypeId);
+
+    @Query("SELECT CASE WHEN COUNT(soac) > 0 THEN TRUE ELSE FALSE END " +
+            "FROM SystemObjectAttributeClass soac WHERE soac.id.systemObjectTypeId = :id")
+    boolean existsBySystemObjectTypeId(long id);
 }

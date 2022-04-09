@@ -310,12 +310,12 @@ class AttributeClassServiceTest {
                     .collect(Collectors.toList());
         given(attributeClassRepository.existsById(anyLong())).willReturn(
                 attributeClassList.stream().anyMatch(ac -> ac.getId() == id));
-        given(systemObjectAttributeClassRepository.findAllResponseDtosByAttributeClassId(anyLong()))
+        given(systemObjectAttributeClassRepository.findAllAssignmentsByAttributeClassId(anyLong()))
                 .willReturn(responseDtoList);
 
         // when
         List<SystemObjectAttributeClassResponseDto> assignedAttributeClassList =
-                attributeClassService.getAllAttributeClassToSystemObjectTypeAssignments(id);
+                attributeClassService.getAllSystemObjectTypeToAttributeClassAssignments(id);
 
         // then
         assertThat(assignedAttributeClassList)
@@ -337,12 +337,12 @@ class AttributeClassServiceTest {
                         .collect(Collectors.toList());
         given(attributeClassRepository.existsById(anyLong())).willReturn(
                 attributeClassList.stream().anyMatch(ac -> ac.getId() == id));
-        given(systemObjectAttributeClassRepository.findAllResponseDtosByAttributeClassId(anyLong()))
+        given(systemObjectAttributeClassRepository.findAllAssignmentsByAttributeClassId(anyLong()))
                 .willReturn(responseDtoList);
 
         // when
         List<SystemObjectAttributeClassResponseDto> assignedAttributeClassList =
-                attributeClassService.getAllAttributeClassToSystemObjectTypeAssignments(id);
+                attributeClassService.getAllSystemObjectTypeToAttributeClassAssignments(id);
 
         // then
         assertThat(assignedAttributeClassList)
@@ -359,7 +359,7 @@ class AttributeClassServiceTest {
                 attributeClassList.stream().anyMatch(ac -> ac.getId() == id));
 
         // when
-        assertThatThrownBy(() -> attributeClassService.getAllAttributeClassToSystemObjectTypeAssignments(id))
+        assertThatThrownBy(() -> attributeClassService.getAllSystemObjectTypeToAttributeClassAssignments(id))
                 .isInstanceOf(EntityNotFoundException.class)
                 .hasMessage(ATTRIBUTE_CLASS_NOT_FOUND_EX_MSG + id);
     }

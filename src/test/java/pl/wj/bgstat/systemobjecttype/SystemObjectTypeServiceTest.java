@@ -13,6 +13,7 @@ import pl.wj.bgstat.systemobjecttype.model.SystemObjectType;
 import pl.wj.bgstat.systemobjecttype.model.SystemObjectTypeMapper;
 import pl.wj.bgstat.systemobjecttype.model.dto.SystemObjectTypeHeaderDto;
 import pl.wj.bgstat.systemobjecttype.model.dto.SystemObjectTypeRequestDto;
+import pl.wj.bgstat.systemobjecttype.model.dto.SystemObjectTypeResponseDto;
 
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
@@ -27,8 +28,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.verify;
-import static pl.wj.bgstat.exception.ExceptionHelper.SYSTEM_OBJECT_TYPE_EXISTS_EX_MSG;
-import static pl.wj.bgstat.exception.ExceptionHelper.SYSTEM_OBJECT_TYPE_NOT_FOUND_EX_MSG;
+import static pl.wj.bgstat.exception.ExceptionHelper.*;
 
 @ExtendWith(MockitoExtension.class)
 class SystemObjectTypeServiceTest {
@@ -96,20 +96,21 @@ class SystemObjectTypeServiceTest {
     void shouldReturnSingleSystemObjectTypeDetailsById() {
         // given
         long id = 1L;
-        Optional<SystemObjectType> returnedSystemObjectType = systemObjectTypeList
+        Optional<SystemObjectType> systemObjectType = systemObjectTypeList
                 .stream()
                 .filter(sot -> sot.getId() == id)
                 .findAny();
-        given(systemObjectTypeRepository.findById(anyLong())).willReturn(returnedSystemObjectType);
+        SystemObjectTypeResponseDto expectedResponse = SystemObjectTypeMapper.mapToSystemObjectTypeResponseDto(systemObjectType.get());
+        given(systemObjectTypeRepository.findById(anyLong())).willReturn(systemObjectType);
 
         // when
-        SystemObjectType systemObjectType = systemObjectTypeService.getSingleSystemObjectType(id);
+        SystemObjectTypeResponseDto systemObjectTypeResponseDto = systemObjectTypeService.getSingleSystemObjectType(id);
 
         // then
-        assertThat(systemObjectType)
+        assertThat(systemObjectTypeResponseDto)
                 .isNotNull()
                 .usingRecursiveComparison()
-                .isEqualTo(returnedSystemObjectType.get());
+                .isEqualTo(expectedResponse);
     }
 
     @Test
@@ -143,10 +144,10 @@ class SystemObjectTypeServiceTest {
                 });
 
         // when
-        SystemObjectType systemObjectTypeResponse = systemObjectTypeService.addSystemObjectType(systemObjectTypeRequestDto);
+        SystemObjectTypeResponseDto systemObjectTypeResponseDto = systemObjectTypeService.addSystemObjectType(systemObjectTypeRequestDto);
 
         // then
-        assertThat(systemObjectTypeResponse)
+        assertThat(systemObjectTypeResponseDto)
                 .isNotNull()
                 .usingRecursiveComparison()
                 .isEqualTo(expectedResponse);
@@ -191,12 +192,12 @@ class SystemObjectTypeServiceTest {
                 });
 
         // when
-        SystemObjectType systemObjectTypeResponse = systemObjectTypeService.editSystemObjectType(id, systemObjectTypeRequestDto);
+        SystemObjectTypeResponseDto systemObjectTypeResponseDto = systemObjectTypeService.editSystemObjectType(id, systemObjectTypeRequestDto);
 
         // then
-        assertThat(systemObjectTypeResponse).isNotNull();
-        assertThat(systemObjectTypeResponse.getId()).isEqualTo(id);
-        assertThat(systemObjectTypeResponse.getDescription()).isEqualTo(systemObjectTypeRequestDto.getDescription());
+        assertThat(systemObjectTypeResponseDto).isNotNull();
+        assertThat(systemObjectTypeResponseDto.getId()).isEqualTo(id);
+        assertThat(systemObjectTypeResponseDto.getDescription()).isEqualTo(systemObjectTypeRequestDto.getDescription());
     }
 
     @Test
@@ -264,6 +265,22 @@ class SystemObjectTypeServiceTest {
     }
 
     @Test
+    @Description("Should throw EntityExistsException when trying to remove system object type with assigned attribute classes")
+    void shouldThrowExceptionWhenTryingToRemoveSystemObjectTypeWithAssignedAttributeClass() {
+        // given
+        long id = 1L;
+        given(systemObjectTypeRepository.existsById(anyLong()))
+                .willReturn(systemObjectTypeList.stream().anyMatch(sot -> sot.getId() == id));
+        given(systemObjectAttributeClassRepository.existsBySystemObjectTypeId(anyLong()))
+                .willReturn(assignedAtrributeClassList.stream().anyMatch(aac -> aac.getSystemObjectTypeId() == id));
+
+        //when
+        assertThatThrownBy(() -> systemObjectTypeService.deleteSystemObjectType(id))
+                .isInstanceOf(EntityExistsException.class)
+                .hasMessage(DELETE_STATEMENT_CONFLICTED_WITH_REFERENCE_CONSTRAINT);
+    }
+
+    @Test
     @Description("Should return all attribute classes by system object type id")
     void shouldReturnAllAttributeClassesBySystemObjectTypeId() {
          // given
@@ -274,12 +291,12 @@ class SystemObjectTypeServiceTest {
                         .collect(Collectors.toList());
         given(systemObjectTypeRepository.existsById(anyLong())).willReturn(
                 systemObjectTypeList.stream().anyMatch(sot -> sot.getId() == id));
-        given(systemObjectAttributeClassRepository.findAllResponseDtosBySystemObjectTypeId(anyLong()))
+        given(systemObjectAttributeClassRepository.findAllAssignmentsBySystemObjectTypeId(anyLong()))
                 .willReturn(responseDtoList);
 
          // when
         List<SystemObjectAttributeClassResponseDto> assignedSystemObjectTypeList =
-                systemObjectTypeService.getAllSystemObjectTypeToAttributeClassAssignments(id);
+                systemObjectTypeService.getAllAttributeClassToSystemObjectTypeAssignments(id);
 
          // then
         assertThat(assignedSystemObjectTypeList)
@@ -300,12 +317,12 @@ class SystemObjectTypeServiceTest {
                         .collect(Collectors.toList());
         given(systemObjectTypeRepository.existsById(anyLong())).willReturn(
                 systemObjectTypeList.stream().anyMatch(sot -> sot.getId() == id));
-        given(systemObjectAttributeClassRepository.findAllResponseDtosBySystemObjectTypeId(anyLong()))
+        given(systemObjectAttributeClassRepository.findAllAssignmentsBySystemObjectTypeId(anyLong()))
                 .willReturn(responseDtoList);
 
         // when
         List<SystemObjectAttributeClassResponseDto> assignedSystemobjectTypeList =
-                systemObjectTypeService.getAllSystemObjectTypeToAttributeClassAssignments(id);
+                systemObjectTypeService.getAllAttributeClassToSystemObjectTypeAssignments(id);
 
         // then
         assertThat(assignedSystemobjectTypeList)
@@ -322,7 +339,7 @@ class SystemObjectTypeServiceTest {
                 systemObjectTypeList.stream().anyMatch(sot -> sot.getId() == id));
 
         // when
-        assertThatThrownBy(() -> systemObjectTypeService.getAllSystemObjectTypeToAttributeClassAssignments(id))
+        assertThatThrownBy(() -> systemObjectTypeService.getAllAttributeClassToSystemObjectTypeAssignments(id))
                 .isInstanceOf(EntityNotFoundException.class)
                 .hasMessage(SYSTEM_OBJECT_TYPE_NOT_FOUND_EX_MSG + id);
     }

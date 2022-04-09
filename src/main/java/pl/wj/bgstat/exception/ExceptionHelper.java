@@ -26,4 +26,5 @@ public class ExceptionHelper {
     // System Object Attribute Class Module
     public static final String SYSTEM_OBJECT_ATTRIBUTE_CLASS_EXISTS_EX_MSG = "Attribute class to system object type assignment already exists in database";
     public static final String SYSTEM_OBJECT_ATTRIBUTE_CLASS_NOT_FOUND_EX_MSG = "No such attribute class to system object type assignment";
+    public static final String DELETE_STATEMENT_CONFLICTED_WITH_REFERENCE_CONSTRAINT = "Delete statement conflicted with the reference constraint";
 }

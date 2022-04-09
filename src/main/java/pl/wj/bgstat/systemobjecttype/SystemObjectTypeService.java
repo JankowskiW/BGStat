@@ -8,13 +8,13 @@ import pl.wj.bgstat.systemobjecttype.model.SystemObjectType;
 import pl.wj.bgstat.systemobjecttype.model.SystemObjectTypeMapper;
 import pl.wj.bgstat.systemobjecttype.model.dto.SystemObjectTypeHeaderDto;
 import pl.wj.bgstat.systemobjecttype.model.dto.SystemObjectTypeRequestDto;
+import pl.wj.bgstat.systemobjecttype.model.dto.SystemObjectTypeResponseDto;
 
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
-import static pl.wj.bgstat.exception.ExceptionHelper.SYSTEM_OBJECT_TYPE_EXISTS_EX_MSG;
-import static pl.wj.bgstat.exception.ExceptionHelper.SYSTEM_OBJECT_TYPE_NOT_FOUND_EX_MSG;
+import static pl.wj.bgstat.exception.ExceptionHelper.*;
 
 @Service
 @RequiredArgsConstructor
@@ -27,20 +27,21 @@ public class SystemObjectTypeService {
         return systemObjectTypeRepository.findAllSystemObjectTypeHeaders();
     }
 
-    public SystemObjectType getSingleSystemObjectType(long id) {
-        return systemObjectTypeRepository.findById(id).orElseThrow(
+    public SystemObjectTypeResponseDto getSingleSystemObjectType(long id) {
+        SystemObjectType systemObjectType = systemObjectTypeRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException(SYSTEM_OBJECT_TYPE_NOT_FOUND_EX_MSG + id));
+        return SystemObjectTypeMapper.mapToSystemObjectTypeResponseDto(systemObjectType);
     }
 
-    public SystemObjectType addSystemObjectType(SystemObjectTypeRequestDto systemObjectTypeRequestDto) {
+    public SystemObjectTypeResponseDto addSystemObjectType(SystemObjectTypeRequestDto systemObjectTypeRequestDto) {
         if (systemObjectTypeRepository.existsByName(systemObjectTypeRequestDto.getName()))
             throw new EntityExistsException(SYSTEM_OBJECT_TYPE_EXISTS_EX_MSG);
         SystemObjectType systemObjectType = SystemObjectTypeMapper.mapToSystemObjectType(systemObjectTypeRequestDto);
         systemObjectTypeRepository.save(systemObjectType);
-        return systemObjectType;
+        return SystemObjectTypeMapper.mapToSystemObjectTypeResponseDto(systemObjectType);
     }
 
-    public SystemObjectType editSystemObjectType(long id, SystemObjectTypeRequestDto systemObjectTypeRequestDto) {
+    public SystemObjectTypeResponseDto editSystemObjectType(long id, SystemObjectTypeRequestDto systemObjectTypeRequestDto) {
         if (!systemObjectTypeRepository.existsById(id))
             throw new EntityNotFoundException(SYSTEM_OBJECT_TYPE_NOT_FOUND_EX_MSG + id);
         if (systemObjectTypeRepository.existsByNameAndIdNot(systemObjectTypeRequestDto.getName(), id))
@@ -48,18 +49,18 @@ public class SystemObjectTypeService {
 
         SystemObjectType systemObjectType = SystemObjectTypeMapper.mapToSystemObjectType(id, systemObjectTypeRequestDto);
         systemObjectTypeRepository.save(systemObjectType);
-        return systemObjectType;
+        return SystemObjectTypeMapper.mapToSystemObjectTypeResponseDto(systemObjectType);
     }
 
     public void deleteSystemObjectType(long id) {
         if(!systemObjectTypeRepository.existsById(id))
             throw new EntityNotFoundException(SYSTEM_OBJECT_TYPE_NOT_FOUND_EX_MSG + id);
-        // TODO: check if object is related to any attribute class and if it is then throw an exception
+        if(systemObjectAttributeClassRepository.existsBySystemObjectTypeId(id))
+            throw new EntityExistsException(DELETE_STATEMENT_CONFLICTED_WITH_REFERENCE_CONSTRAINT);
         systemObjectTypeRepository.deleteById(id);
     }
-
-    public List<SystemObjectAttributeClassResponseDto> getAllSystemObjectTypeToAttributeClassAssignments(long id) {
+    public List<SystemObjectAttributeClassResponseDto> getAllAttributeClassToSystemObjectTypeAssignments(long id) {
         if (!systemObjectTypeRepository.existsById(id)) throw new EntityNotFoundException(SYSTEM_OBJECT_TYPE_NOT_FOUND_EX_MSG + id);
-        return systemObjectAttributeClassRepository.findAllResponseDtosBySystemObjectTypeId(id);
+        return systemObjectAttributeClassRepository.findAllAssignmentsBySystemObjectTypeId(id);
     }
 }

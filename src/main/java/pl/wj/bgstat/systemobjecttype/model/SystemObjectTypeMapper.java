@@ -3,6 +3,7 @@ package pl.wj.bgstat.systemobjecttype.model;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import pl.wj.bgstat.systemobjecttype.model.dto.SystemObjectTypeRequestDto;
+import pl.wj.bgstat.systemobjecttype.model.dto.SystemObjectTypeResponseDto;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class SystemObjectTypeMapper {
@@ -19,5 +20,15 @@ public class SystemObjectTypeMapper {
         systemObjectType.setDescription(systemObjectTypeRequestDto.getDescription());
         systemObjectType.setArchived(systemObjectTypeRequestDto.isArchived());
         return systemObjectType;
+    }
+
+    public static SystemObjectTypeResponseDto mapToSystemObjectTypeResponseDto(SystemObjectType systemObjectType) {
+        return SystemObjectTypeResponseDto.builder()
+                .id(systemObjectType.getId())
+                .name(systemObjectType.getName())
+                .description(systemObjectType.getDescription())
+                .archived(systemObjectType.isArchived())
+                .build();
+
     }
 }

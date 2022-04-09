@@ -59,8 +59,8 @@ public class AttributeClassService {
         attributeClassRepository.deleteById(id);
     }
 
-    public List<SystemObjectAttributeClassResponseDto> getAllAttributeClassToSystemObjectTypeAssignments(long id) {
+    public List<SystemObjectAttributeClassResponseDto> getAllSystemObjectTypeToAttributeClassAssignments(long id) {
         if (!attributeClassRepository.existsById(id)) throw new EntityNotFoundException(ATTRIBUTE_CLASS_NOT_FOUND_EX_MSG + id);
-        return systemObjectAttributeClassRepository.findAllResponseDtosByAttributeClassId(id);
+        return systemObjectAttributeClassRepository.findAllAssignmentsByAttributeClassId(id);
     }
 }
