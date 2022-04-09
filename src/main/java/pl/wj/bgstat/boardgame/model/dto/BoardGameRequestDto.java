@@ -23,7 +23,7 @@ public class BoardGameRequestDto {
     private int maxPlayersNumber;
     @NotNull @Min(1) @Max(10)
     private int complexity;
-    @NotNull(message = "Field ") @Min(1)
+    @NotNull @Min(1)
     private int playingTime;
     @NotBlank
     private String description;

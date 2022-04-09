@@ -1,13 +1,11 @@
 package pl.wj.bgstat.systemobjectattributeclass;
 
 import lombok.RequiredArgsConstructor;
-import org.hibernate.cfg.NotYetImplementedException;
 import org.springframework.web.bind.annotation.*;
-import pl.wj.bgstat.attributeclass.model.AttributeClass;
-import pl.wj.bgstat.systemobjectattributeclass.model.SystemObjectAttributeClass;
+import pl.wj.bgstat.systemobjectattributeclass.model.dto.SystemObjectAttributeClassRequestDto;
+import pl.wj.bgstat.systemobjectattributeclass.model.dto.SystemObjectAttributeClassResponseDto;
 
-import java.util.ArrayList;
-import java.util.List;
+import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
@@ -16,5 +14,22 @@ public class SystemObjectAttributeClassController {
 
     private final SystemObjectAttributeClassService systemObjectAttributeClassService;
 
+    @PostMapping("/{attributeClassId},{systemObjectTypeId}")
+    public SystemObjectAttributeClassResponseDto addSystemObjectAttributeClass(
+            @RequestBody @Valid SystemObjectAttributeClassRequestDto systemObjectAttributeClassRequestDto) {
+        return systemObjectAttributeClassService.addSystemObjectAttributeClass(systemObjectAttributeClassRequestDto);
+    }
 
+    @PutMapping("/{attributeClassId},{systemObjectTypeId}")
+    public SystemObjectAttributeClassResponseDto editSystemobjectAttributeClass(
+            @PathVariable long attributeClassId, @PathVariable long systemObjectTypeId,
+            @RequestBody @Valid SystemObjectAttributeClassRequestDto systemObjectAttributeClassRequestDto) {
+        return systemObjectAttributeClassService.editSystemObjectAttributeClass(
+                attributeClassId, systemObjectTypeId, systemObjectAttributeClassRequestDto);
+    }
+
+    @DeleteMapping("/{attributeClassId},{systemObjectTypeId}")
+    public void deleteSystemObjectAttributeClass(@PathVariable long attributeClassId, @PathVariable long systemObjectTypeId) {
+        systemObjectAttributeClassService.deleteSystemObjectAttributeClass(attributeClassId, systemObjectTypeId);
+    }
 }

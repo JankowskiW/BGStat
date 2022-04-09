@@ -1,12 +1,14 @@
 package pl.wj.bgstat.attributeclass;
 
 import lombok.RequiredArgsConstructor;
-import org.hibernate.cfg.NotYetImplementedException;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import pl.wj.bgstat.attributeclass.model.AttributeClass;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.web.bind.annotation.*;
+import pl.wj.bgstat.attributeclass.model.dto.AttributeClassHeaderDto;
+import pl.wj.bgstat.attributeclass.model.dto.AttributeClassRequestDto;
+import pl.wj.bgstat.attributeclass.model.dto.AttributeClassResponseDto;
+
+import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
@@ -15,11 +17,29 @@ public class AttributeClassController {
 
     private final AttributeClassService attributeClassService;
 
-    @GetMapping("/{id}")
-    public AttributeClass getSingleAttributeClass(@PathVariable long id) {
-//        return attributeClassService.getSingleAttributeClass(id);
-        throw new NotYetImplementedException();
+    @GetMapping("")
+    public Page<AttributeClassHeaderDto> getAttributeClassHeaders(Pageable pageable) {
+        return attributeClassService.getAttributeClassHeaders(pageable);
     }
 
+    @GetMapping("/{id}")
+    public AttributeClassResponseDto getSingleAttributeClass(@PathVariable long id) {
+        return attributeClassService.getSingleAttributeClass(id);
+    }
+
+    @PostMapping("")
+    public AttributeClassResponseDto addAttributeClass(@RequestBody @Valid AttributeClassRequestDto attributeClassRequestDto) {
+        return attributeClassService.addAttributeClass(attributeClassRequestDto);
+    }
+
+    @PutMapping("/{id}")
+    public AttributeClassResponseDto editAttributeClass(@PathVariable long id, @RequestBody @Valid AttributeClassRequestDto attributeClassRequestDto) {
+        return attributeClassService.editAttributeClass(id, attributeClassRequestDto);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteAttributeClass(@PathVariable long id) {
+        attributeClassService.deleteAttributeClass(id);
+    }
 
 }

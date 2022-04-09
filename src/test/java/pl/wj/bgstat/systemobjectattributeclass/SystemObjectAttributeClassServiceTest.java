@@ -80,8 +80,7 @@ class SystemObjectAttributeClassServiceTest {
 
         // when
         SystemObjectAttributeClassResponseDto systemObjectAttributeClassResponseDto =
-                systemObjectAttributeClassService.addSystemObjectAttributeClass(
-                        id.getAttributeClassId(), id.getSystemObjectTypeId(), systemObjectAttributeClassRequestDto);
+                systemObjectAttributeClassService.addSystemObjectAttributeClass(systemObjectAttributeClassRequestDto);
 
         // then
         assertThat(systemObjectAttributeClassResponseDto)
@@ -103,8 +102,7 @@ class SystemObjectAttributeClassServiceTest {
                 attributeClassList.stream().anyMatch(ac -> ac.getId() == id.getAttributeClassId()));
 
         // when
-        assertThatThrownBy(() -> systemObjectAttributeClassService.addSystemObjectAttributeClass(
-                id.getAttributeClassId(), id.getSystemObjectTypeId(), systemObjectAttributeClassRequestDto))
+        assertThatThrownBy(() -> systemObjectAttributeClassService.addSystemObjectAttributeClass(systemObjectAttributeClassRequestDto))
                     .isInstanceOf(EntityNotFoundException.class)
                     .hasMessage(ATTRIBUTE_CLASS_NOT_FOUND_EX_MSG + id.getAttributeClassId());
     }
@@ -121,7 +119,7 @@ class SystemObjectAttributeClassServiceTest {
 
         // when
         assertThatThrownBy(() -> systemObjectAttributeClassService.addSystemObjectAttributeClass(
-                id.getAttributeClassId(), id.getSystemObjectTypeId(), systemObjectAttributeClassRequestDto))
+                systemObjectAttributeClassRequestDto))
                     .isInstanceOf(EntityNotFoundException.class)
                     .hasMessage(SYSTEM_OBJECT_TYPE_NOT_FOUND_EX_MSG + id.getSystemObjectTypeId());
     }
@@ -142,7 +140,7 @@ class SystemObjectAttributeClassServiceTest {
 
         // when
         assertThatThrownBy(() -> systemObjectAttributeClassService.addSystemObjectAttributeClass(
-                id.getAttributeClassId(), id.getSystemObjectTypeId(), systemObjectAttributeClassRequestDto))
+                systemObjectAttributeClassRequestDto))
                     .isInstanceOf(EntityExistsException.class)
                     .hasMessage(SYSTEM_OBJECT_ATTRIBUTE_CLASS_EXISTS_EX_MSG);
     }

@@ -24,17 +24,27 @@ public class SystemObjectAttributeClassService {
     private final AttributeClassRepository attributeClassRepository;
 
     public SystemObjectAttributeClassResponseDto addSystemObjectAttributeClass(
-            long attributeClassId, long systemObjectTypeId,
             SystemObjectAttributeClassRequestDto systemObjectAttributeClassRequestDto) {
-        if (!systemObjectTypeRepository.existsById(systemObjectTypeId))
+        if (!systemObjectTypeRepository.existsById(systemObjectAttributeClassRequestDto.getSystemObjectTypeId()))
             throw new EntityNotFoundException(SYSTEM_OBJECT_TYPE_NOT_FOUND_EX_MSG
                     + systemObjectAttributeClassRequestDto.getSystemObjectTypeId());
-        if (!attributeClassRepository.existsById(attributeClassId))
+        if (!attributeClassRepository.existsById(systemObjectAttributeClassRequestDto.getAttributeClassId()))
             throw new EntityNotFoundException(ATTRIBUTE_CLASS_NOT_FOUND_EX_MSG
                     + systemObjectAttributeClassRequestDto.getAttributeClassId());
-        SystemObjectAttributeClassId id = new SystemObjectAttributeClassId(attributeClassId, systemObjectTypeId);
+        SystemObjectAttributeClassId id = new SystemObjectAttributeClassId(
+                systemObjectAttributeClassRequestDto.getAttributeClassId(), systemObjectAttributeClassRequestDto.getSystemObjectTypeId());
         if (systemObjectAttributeClassRepository.existsById(id))
                 throw new EntityExistsException(SYSTEM_OBJECT_ATTRIBUTE_CLASS_EXISTS_EX_MSG);
+        SystemObjectAttributeClass systemObjectAttributeClass = SystemObjectAttributeClassMapper
+                .mapToSystemObjectAttributeClass(id, systemObjectAttributeClassRequestDto);
+        systemObjectAttributeClassRepository.save(systemObjectAttributeClass);
+        return SystemObjectAttributeClassMapper.mapToSystemObjectAttributeClassResponseDto(systemObjectAttributeClass);
+    }
+
+    public SystemObjectAttributeClassResponseDto editSystemObjectAttributeClass(
+            long attributeClassId, long systemObjectTypeId, SystemObjectAttributeClassRequestDto systemObjectAttributeClassRequestDto) {
+        SystemObjectAttributeClassId id = new SystemObjectAttributeClassId(attributeClassId, systemObjectTypeId);
+        if (!systemObjectAttributeClassRepository.existsById(id)) throw new EntityNotFoundException(SYSTEM_OBJECT_ATTRIBUTE_CLASS_NOT_FOUND_EX_MSG);
         SystemObjectAttributeClass systemObjectAttributeClass = SystemObjectAttributeClassMapper
                 .mapToSystemObjectAttributeClass(id, systemObjectAttributeClassRequestDto);
         systemObjectAttributeClassRepository.save(systemObjectAttributeClass);
@@ -46,15 +56,5 @@ public class SystemObjectAttributeClassService {
         if (!systemObjectAttributeClassRepository.existsById(id))
             throw new EntityNotFoundException(SYSTEM_OBJECT_ATTRIBUTE_CLASS_NOT_FOUND_EX_MSG);
         systemObjectAttributeClassRepository.deleteById(id);
-    }
-
-    public SystemObjectAttributeClassResponseDto editSystemObjectAttributeClass(
-            long attributeClassId, long systemObjectTypeId, SystemObjectAttributeClassRequestDto systemObjectAttributeClassRequestDto) {
-        SystemObjectAttributeClassId id = new SystemObjectAttributeClassId(attributeClassId, systemObjectTypeId);
-        if (!systemObjectAttributeClassRepository.existsById(id)) throw new EntityNotFoundException(SYSTEM_OBJECT_ATTRIBUTE_CLASS_NOT_FOUND_EX_MSG);
-        SystemObjectAttributeClass systemObjectAttributeClass = SystemObjectAttributeClassMapper
-                .mapToSystemObjectAttributeClass(id, systemObjectAttributeClassRequestDto);
-        systemObjectAttributeClassRepository.save(systemObjectAttributeClass);
-        return SystemObjectAttributeClassMapper.mapToSystemObjectAttributeClassResponseDto(systemObjectAttributeClass);
     }
 }

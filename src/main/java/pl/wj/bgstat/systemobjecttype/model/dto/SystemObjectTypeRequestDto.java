@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Getter
 @Builder
@@ -17,5 +18,6 @@ public class SystemObjectTypeRequestDto {
     private String name;
     @NotBlank
     private String description;
+    @NotNull
     private boolean archived;
 }
