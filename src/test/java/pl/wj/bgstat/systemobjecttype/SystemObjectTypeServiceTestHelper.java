@@ -1,5 +1,6 @@
 package pl.wj.bgstat.systemobjecttype;
 
+import pl.wj.bgstat.systemobjectattributeclass.model.dto.SystemObjectAttributeClassResponseDto;
 import pl.wj.bgstat.systemobjecttype.model.SystemObjectType;
 import pl.wj.bgstat.systemobjecttype.model.dto.SystemObjectTypeHeaderDto;
 import pl.wj.bgstat.systemobjecttype.model.dto.SystemObjectTypeRequestDto;
@@ -37,5 +38,26 @@ public class SystemObjectTypeServiceTestHelper {
                 "Name No. " + (currentSize + 1),
                 "DESCRIPTION OF Name No. " + (currentSize + 1),
                 false);
+    }
+
+    public static List<SystemObjectAttributeClassResponseDto> populateSystemObjectAttributeClassResponseDtoList(int numberOfElements) {
+        List<SystemObjectAttributeClassResponseDto> systemObjectAttributeClassResponseDtoList = new ArrayList<>();
+        for (int i = 1; i < numberOfElements; i++) {
+            systemObjectAttributeClassResponseDtoList.add(createSystemObjectAttributeClassResponseDto(i, i));
+            systemObjectAttributeClassResponseDtoList.add(createSystemObjectAttributeClassResponseDto(i+1, i));
+        }
+        return systemObjectAttributeClassResponseDtoList;
+    }
+
+    private static SystemObjectAttributeClassResponseDto createSystemObjectAttributeClassResponseDto(
+            long attributeClassId, long systemObjectTypeId) {
+        return SystemObjectAttributeClassResponseDto.builder()
+                .attributeClassId(attributeClassId)
+                .systemObjectTypeId(systemObjectTypeId)
+                .required(false)
+                .classDefaultValue("DEFAULT VAL " + attributeClassId)
+                .attributeClassName("CLASS NAME " + attributeClassId)
+                .systemObjectTypeName("OBJECT TYPE NAME " + systemObjectTypeId)
+                .build();
     }
 }

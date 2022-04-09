@@ -50,13 +50,13 @@ class AttributeClassServiceTest {
 
     private List<AttributeClass> attributeClassList;
     private List<AttributeClassHeaderDto> attributeClassHeaderList;
-    private List<SystemObjectAttributeClassResponseDto> systemObjectAttributeClassResponseDtoList;
+    private List<SystemObjectAttributeClassResponseDto> assignedSystemObjectTypeList;
 
     @BeforeEach
     void setUp() {
         attributeClassList = AttributeClassServiceTestHelper.populateAttributeClassList(NUMBER_OF_ELEMENTS);
         attributeClassHeaderList = AttributeClassServiceTestHelper.populateAttributeClassHeaderDtoList(attributeClassList);
-        systemObjectAttributeClassResponseDtoList =
+        assignedSystemObjectTypeList =
                 AttributeClassServiceTestHelper.populateSystemObjectAttributeClassResponseDtoList(NUMBER_OF_ELEMENTS - 1);
     }
 
@@ -305,8 +305,8 @@ class AttributeClassServiceTest {
         // given
         long id = 1L;
         List<SystemObjectAttributeClassResponseDto> responseDtoList =
-                systemObjectAttributeClassResponseDtoList.stream()
-                    .filter(soac -> soac.getAttributeClassId() == id)
+                assignedSystemObjectTypeList.stream()
+                    .filter(asot -> asot.getAttributeClassId() == id)
                     .collect(Collectors.toList());
         given(attributeClassRepository.existsById(anyLong())).willReturn(
                 attributeClassList.stream().anyMatch(ac -> ac.getId() == id));
@@ -314,11 +314,11 @@ class AttributeClassServiceTest {
                 .willReturn(responseDtoList);
 
         // when
-        List<SystemObjectAttributeClassResponseDto> systemObjectAttributeClassResponseDtoList =
+        List<SystemObjectAttributeClassResponseDto> assignedAttributeClassList =
                 attributeClassService.getAllAttributeClassToSystemObjectTypeAssignments(id);
 
         // then
-        assertThat(systemObjectAttributeClassResponseDtoList)
+        assertThat(assignedAttributeClassList)
                 .isNotNull()
                 .hasSize(responseDtoList.size())
                 .usingRecursiveFieldByFieldElementComparator()
@@ -332,8 +332,8 @@ class AttributeClassServiceTest {
         // given
         long id = NUMBER_OF_ELEMENTS;
         List<SystemObjectAttributeClassResponseDto> responseDtoList =
-                systemObjectAttributeClassResponseDtoList.stream()
-                        .filter(soac -> soac.getAttributeClassId() == id)
+                assignedSystemObjectTypeList.stream()
+                        .filter(asot -> asot.getAttributeClassId() == id)
                         .collect(Collectors.toList());
         given(attributeClassRepository.existsById(anyLong())).willReturn(
                 attributeClassList.stream().anyMatch(ac -> ac.getId() == id));
@@ -341,11 +341,11 @@ class AttributeClassServiceTest {
                 .willReturn(responseDtoList);
 
         // when
-        List<SystemObjectAttributeClassResponseDto> systemObjectAttributeClassResponseDtoList =
+        List<SystemObjectAttributeClassResponseDto> assignedAttributeClassList =
                 attributeClassService.getAllAttributeClassToSystemObjectTypeAssignments(id);
 
         // then
-        assertThat(systemObjectAttributeClassResponseDtoList)
+        assertThat(assignedAttributeClassList)
                 .isNotNull()
                 .isEmpty();
     }

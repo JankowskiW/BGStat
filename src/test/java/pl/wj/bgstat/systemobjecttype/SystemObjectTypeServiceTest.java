@@ -7,6 +7,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import pl.wj.bgstat.systemobjectattributeclass.SystemObjectAttributeClassRepository;
+import pl.wj.bgstat.systemobjectattributeclass.model.dto.SystemObjectAttributeClassResponseDto;
 import pl.wj.bgstat.systemobjecttype.model.SystemObjectType;
 import pl.wj.bgstat.systemobjecttype.model.SystemObjectTypeMapper;
 import pl.wj.bgstat.systemobjecttype.model.dto.SystemObjectTypeHeaderDto;
@@ -17,6 +19,7 @@ import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -32,6 +35,8 @@ class SystemObjectTypeServiceTest {
 
     @Mock
     private SystemObjectTypeRepository systemObjectTypeRepository;
+    @Mock
+    private SystemObjectAttributeClassRepository systemObjectAttributeClassRepository;
     @InjectMocks
     private SystemObjectTypeService systemObjectTypeService;
 
@@ -39,11 +44,15 @@ class SystemObjectTypeServiceTest {
 
     private List<SystemObjectType> systemObjectTypeList;
     private List<SystemObjectTypeHeaderDto> systemObjectTypeHeaderList;
+    private List<SystemObjectAttributeClassResponseDto> assignedAtrributeClassList;
+
 
     @BeforeEach
     void setUp() {
         systemObjectTypeList = SystemObjectTypeServiceTestHelper.populateSystemObjectTypeList(NUMBER_OF_ELEMENTS);
         systemObjectTypeHeaderList = SystemObjectTypeServiceTestHelper.populateSystemObjectTypeHeaderDtoList(systemObjectTypeList);
+        assignedAtrributeClassList =
+                SystemObjectTypeServiceTestHelper.populateSystemObjectAttributeClassResponseDtoList(NUMBER_OF_ELEMENTS - 1);
     }
 
     @Test
@@ -257,18 +266,64 @@ class SystemObjectTypeServiceTest {
     @Test
     @Description("Should return all attribute classes by system object type id")
     void shouldReturnAllAttributeClassesBySystemObjectTypeId() {
+         // given
+        long id = 1L;
+        List<SystemObjectAttributeClassResponseDto> responseDtoList =
+                assignedAtrributeClassList.stream()
+                        .filter(aac -> aac.getSystemObjectTypeId() == id)
+                        .collect(Collectors.toList());
+        given(systemObjectTypeRepository.existsById(anyLong())).willReturn(
+                systemObjectTypeList.stream().anyMatch(sot -> sot.getId() == id));
+        given(systemObjectAttributeClassRepository.findAllResponseDtosBySystemObjectTypeId(anyLong()))
+                .willReturn(responseDtoList);
 
+         // when
+        List<SystemObjectAttributeClassResponseDto> assignedSystemObjectTypeList =
+                systemObjectTypeService.getAllSystemObjectTypeToAttributeClassAssignments(id);
+
+         // then
+        assertThat(assignedSystemObjectTypeList)
+                .isNotNull()
+                .hasSize(responseDtoList.size())
+                .usingRecursiveFieldByFieldElementComparator()
+                .isEqualTo(responseDtoList);
     }
 
     @Test
     @Description("Should return empty list of attribute classes")
     void shouldReturnEmptyListOfAttributeClasses() {
+        // given
+        long id = NUMBER_OF_ELEMENTS;
+        List<SystemObjectAttributeClassResponseDto> responseDtoList =
+                assignedAtrributeClassList.stream()
+                        .filter(aac -> aac.getSystemObjectTypeId() == id)
+                        .collect(Collectors.toList());
+        given(systemObjectTypeRepository.existsById(anyLong())).willReturn(
+                systemObjectTypeList.stream().anyMatch(sot -> sot.getId() == id));
+        given(systemObjectAttributeClassRepository.findAllResponseDtosBySystemObjectTypeId(anyLong()))
+                .willReturn(responseDtoList);
 
+        // when
+        List<SystemObjectAttributeClassResponseDto> assignedSystemobjectTypeList =
+                systemObjectTypeService.getAllSystemObjectTypeToAttributeClassAssignments(id);
+
+        // then
+        assertThat(assignedSystemobjectTypeList)
+                .isNotNull()
+                .isEmpty();
     }
 
     @Test
     @Description("Should throw EntityNotFoundExpception when trying to get attribute classes of non existing system object type")
     void shouldThrowExceptionWhenTryingToGetAttributeClassesOfNonExistingSystemObjectType() {
+        // given
+        long id = 100L;
+        given(systemObjectTypeRepository.existsById(anyLong())).willReturn(
+                systemObjectTypeList.stream().anyMatch(sot -> sot.getId() == id));
 
+        // when
+        assertThatThrownBy(() -> systemObjectTypeService.getAllSystemObjectTypeToAttributeClassAssignments(id))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessage(SYSTEM_OBJECT_TYPE_NOT_FOUND_EX_MSG + id);
     }
 }

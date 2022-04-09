@@ -2,6 +2,8 @@ package pl.wj.bgstat.systemobjecttype;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import pl.wj.bgstat.systemobjectattributeclass.SystemObjectAttributeClassRepository;
+import pl.wj.bgstat.systemobjectattributeclass.model.dto.SystemObjectAttributeClassResponseDto;
 import pl.wj.bgstat.systemobjecttype.model.SystemObjectType;
 import pl.wj.bgstat.systemobjecttype.model.SystemObjectTypeMapper;
 import pl.wj.bgstat.systemobjecttype.model.dto.SystemObjectTypeHeaderDto;
@@ -19,6 +21,7 @@ import static pl.wj.bgstat.exception.ExceptionHelper.SYSTEM_OBJECT_TYPE_NOT_FOUN
 public class SystemObjectTypeService {
 
     private final SystemObjectTypeRepository systemObjectTypeRepository;
+    private final SystemObjectAttributeClassRepository systemObjectAttributeClassRepository;
 
     public List<SystemObjectTypeHeaderDto> getSystemObjectTypeHeaders() {
         return systemObjectTypeRepository.findAllSystemObjectTypeHeaders();
@@ -53,5 +56,10 @@ public class SystemObjectTypeService {
             throw new EntityNotFoundException(SYSTEM_OBJECT_TYPE_NOT_FOUND_EX_MSG + id);
         // TODO: check if object is related to any attribute class and if it is then throw an exception
         systemObjectTypeRepository.deleteById(id);
+    }
+
+    public List<SystemObjectAttributeClassResponseDto> getAllSystemObjectTypeToAttributeClassAssignments(long id) {
+        if (!systemObjectTypeRepository.existsById(id)) throw new EntityNotFoundException(SYSTEM_OBJECT_TYPE_NOT_FOUND_EX_MSG + id);
+        return systemObjectAttributeClassRepository.findAllResponseDtosBySystemObjectTypeId(id);
     }
 }
