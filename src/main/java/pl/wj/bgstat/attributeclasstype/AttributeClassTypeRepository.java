@@ -8,12 +8,14 @@ import org.springframework.stereotype.Repository;
 import pl.wj.bgstat.attributeclasstype.model.AttributeClassType;
 import pl.wj.bgstat.attributeclasstype.model.dto.AttributeClassTypeHeaderDto;
 
+import java.util.List;
+
 @Repository
 public interface AttributeClassTypeRepository extends JpaRepository<AttributeClassType, Long> {
 
     @Query("SELECT new pl.wj.bgstat.attributeclasstype.model.dto.AttributeClassTypeHeaderDto(act.id, act.name, act.archived) " +
            "FROM AttributeClassType act")
-    Page<AttributeClassTypeHeaderDto> findAllAttributeClassTypeHeaders(Pageable pageable);
+    List<AttributeClassTypeHeaderDto> findAllAttributeClassTypeHeaders();
 
     boolean existsByName(String name);
     boolean existsByNameAndIdNot(String name, long id);

@@ -9,6 +9,7 @@ import pl.wj.bgstat.attributeclasstype.model.dto.AttributeClassTypeHeaderDto;
 import pl.wj.bgstat.attributeclasstype.model.dto.AttributeClassTypeRequestDto;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -18,9 +19,9 @@ public class AttributeClassTypeController {
     private final AttributeClassTypeService attributeClassTypeService;
 
     @GetMapping("")
-    public Page<AttributeClassTypeHeaderDto> getAttributeClassTypeHeaders(Pageable pageable) {
+    public List<AttributeClassTypeHeaderDto> getAttributeClassTypeHeaders() {
         // TODO: Create filter by archived
-        return attributeClassTypeService.getAttributeClassTypeHeaders(pageable);
+        return attributeClassTypeService.getAttributeClassTypeHeaders();
     }
 
     @GetMapping("/{id}")

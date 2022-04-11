@@ -11,6 +11,8 @@ import pl.wj.bgstat.attributeclasstype.model.dto.AttributeClassTypeRequestDto;
 import pl.wj.bgstat.exception.ResourceExistsException;
 import pl.wj.bgstat.exception.ResourceNotFoundException;
 
+import java.util.List;
+
 import static pl.wj.bgstat.exception.ExceptionHelper.*;
 
 @Service
@@ -19,8 +21,8 @@ public class AttributeClassTypeService {
 
     private final AttributeClassTypeRepository attributeClassTypeRepository;
 
-    public Page<AttributeClassTypeHeaderDto> getAttributeClassTypeHeaders(Pageable pageable) {
-        return attributeClassTypeRepository.findAllAttributeClassTypeHeaders(pageable);
+    public List<AttributeClassTypeHeaderDto> getAttributeClassTypeHeaders() {
+        return attributeClassTypeRepository.findAllAttributeClassTypeHeaders();
     }
 
     public AttributeClassType getSingleAttributeClassType(long id) {
@@ -50,7 +52,6 @@ public class AttributeClassTypeService {
     public void deleteAttributeClassType(long id) {
         if(!attributeClassTypeRepository.existsById(id))
             throw new ResourceNotFoundException(ATTRIBUTE_CLASS_TYPE_RESOURCE_NAME, ID_FIELD, id);
-        // TODO: check if attribute is related to any object type and if it is then throw an exception
         attributeClassTypeRepository.deleteById(id);
     }
 }

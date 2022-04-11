@@ -59,8 +59,8 @@ class SystemObjectTypeServiceTest {
     @Description("Should return all system object type headers")
     void shouldReturnAllSystemObjectTypeHeaders() {
         // given
-        given(systemObjectTypeRepository.findAllSystemObjectTypeHeaders()).willReturn(
-                systemObjectTypeHeaderList);
+        given(systemObjectTypeRepository.findAllSystemObjectTypeHeaders())
+                .willReturn(systemObjectTypeHeaderList);
 
         // when
         List<SystemObjectTypeHeaderDto> systemObjectTypeHeaders =
@@ -76,7 +76,7 @@ class SystemObjectTypeServiceTest {
 
     @Test
     @Description("Should return empty list of system object type headers when there is no records in db")
-    void shouldReturnEmptySystemObjectTypeHeaderListWhenTableIsEmpty() {
+    void shouldReturnEmptySystemObjectTypeHeaderList() {
         // given
         given(systemObjectTypeRepository.findAllSystemObjectTypeHeaders())
                 .willReturn(new ArrayList<>());
