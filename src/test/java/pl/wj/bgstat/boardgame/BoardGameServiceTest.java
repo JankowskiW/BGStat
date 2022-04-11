@@ -16,9 +16,9 @@ import pl.wj.bgstat.boardgame.model.BoardGameMapper;
 import pl.wj.bgstat.boardgame.model.dto.BoardGameHeaderDto;
 import pl.wj.bgstat.boardgame.model.dto.BoardGameRequestDto;
 import pl.wj.bgstat.boardgame.model.dto.BoardGameResponseDto;
+import pl.wj.bgstat.exception.ResourceExistsException;
+import pl.wj.bgstat.exception.ResourceNotFoundException;
 
-import javax.persistence.EntityExistsException;
-import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -118,19 +118,6 @@ class BoardGameServiceTest {
     }
 
     @Test
-    @DisplayName("Should throw IllegalAccessError when findAllBoardGameHeaders repo method accessing database ")
-    void shouldThrowErrorWhenFindAllHeadersAccessingDb() {
-        // given
-        int pageNumber = 2;
-        willThrow(new IllegalAccessError(DATABASE_ACCESS_ER_MSG)).given(boardGameRepository).findAllBoardGameHeaders(any(Pageable.class));
-
-        // when
-        assertThatThrownBy(() -> boardGameService.getBoardGameHeaders(PageRequest.of(pageNumber, PAGE_SIZE)))
-                .isInstanceOf(IllegalAccessError.class)
-                .hasMessage(DATABASE_ACCESS_ER_MSG);
-    }
-
-    @Test
     @DisplayName("Should return only one board game details with description")
     void shouldReturnSingleBoardGameDetailsById() {
         // given
@@ -152,7 +139,7 @@ class BoardGameServiceTest {
     }
 
     @Test
-    @DisplayName("Should throw EntityNotFoundException when cannot find board game by id")
+    @DisplayName("Should throw ResourceNotFoundException when cannot find board game by id")
     void shouldThrowExceptionWhenCannotFindBoardGameById() {
         // given
         long id = boardGameList.size() + 1;
@@ -163,8 +150,8 @@ class BoardGameServiceTest {
 
         // when
         assertThatThrownBy(() -> boardGameService.getSingleBoardGame(id))
-                .isInstanceOf(EntityNotFoundException.class)
-                .hasMessage(BOARD_GAME_NOT_FOUND_EX_MSG + id);
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage(createResourceNotFoundExceptionMessage(BOARD_GAME_RESOURCE_NAME, ID_FIELD, id));
     }
 
     @Test
@@ -197,7 +184,7 @@ class BoardGameServiceTest {
     }
 
     @Test
-    @DisplayName("Should throw EntityExistsException when board game name already exists in database")
+    @DisplayName("Should throw ResourceExistsException when board game name already exists in database")
     void shouldThrowExceptionWhenBoardGameNameExists() {
         // given
         String boardGameName = "Name No. 1";
@@ -208,8 +195,8 @@ class BoardGameServiceTest {
 
         // when
         assertThatThrownBy(() -> boardGameService.addBoardGame(boardGameRequestDto))
-                .isInstanceOf(EntityExistsException.class)
-                .hasMessage(BOARD_GAME_TYPE_EXISTS_EX_MSG);
+                .isInstanceOf(ResourceExistsException.class)
+                .hasMessage(createResourceExistsExceptionMessage(BOARD_GAME_RESOURCE_NAME, NAME_FIELD));
     }
 
     @Test
@@ -244,7 +231,7 @@ class BoardGameServiceTest {
     }
 
     @Test
-    @DisplayName("Should throw EntityNotFoundException when trying to edit non existing board game")
+    @DisplayName("Should throw ResourceNotFoundException when trying to edit non existing board game")
     void shouldThrowExceptionWhenTryingToEditNonExistingBoardGame() {
         // given
         long id = 100L;
@@ -253,12 +240,12 @@ class BoardGameServiceTest {
 
         // when
         assertThatThrownBy(() -> boardGameService.editBoardGame(id, new BoardGameRequestDto()))
-                .isInstanceOf(EntityNotFoundException.class)
-                .hasMessage(BOARD_GAME_NOT_FOUND_EX_MSG + id);
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage(createResourceNotFoundExceptionMessage(BOARD_GAME_RESOURCE_NAME, ID_FIELD, id));
     }
 
     @Test
-    @DisplayName("Should throw EntityExistsException when trying to set new name that already exists")
+    @DisplayName("Should throw ResourceExistsException when trying to set new name that already exists")
     void shouldThrowExceptionWhenTryingToSetNameThatAlreadyExists() {
         // given
         long id = 1L;
@@ -274,8 +261,8 @@ class BoardGameServiceTest {
 
         // when
         assertThatThrownBy(() -> boardGameService.editBoardGame(id, boardGameRequestDto))
-                .isInstanceOf(EntityExistsException.class)
-                .hasMessage(BOARD_GAME_TYPE_EXISTS_EX_MSG);
+                .isInstanceOf(ResourceExistsException.class)
+                .hasMessage(createResourceExistsExceptionMessage(BOARD_GAME_RESOURCE_NAME, NAME_FIELD));
     }
 
 
@@ -296,7 +283,7 @@ class BoardGameServiceTest {
     }
 
     @Test
-    @DisplayName("Should throw EntityNotFoundException when trying to remove non existing board game")
+    @DisplayName("Should throw ResourceNotFoundException when trying to remove non existing board game")
     void shouldThrowExceptionWhenTryingToRemoveNonExistingBoardGame() {
         // given
         long id = 100L;
@@ -305,7 +292,7 @@ class BoardGameServiceTest {
 
         // when
         assertThatThrownBy(() -> boardGameService.deleteBoardGame(id))
-                .isInstanceOf(EntityNotFoundException.class)
-                .hasMessage(BOARD_GAME_NOT_FOUND_EX_MSG + id);
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage(createResourceNotFoundExceptionMessage(BOARD_GAME_RESOURCE_NAME, ID_FIELD, id));
     }
 }

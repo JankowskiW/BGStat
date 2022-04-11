@@ -9,6 +9,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pl.wj.bgstat.attributeclass.AttributeClassRepository;
 import pl.wj.bgstat.attributeclass.model.AttributeClass;
+import pl.wj.bgstat.exception.ResourceExistsException;
+import pl.wj.bgstat.exception.ResourceNotFoundException;
 import pl.wj.bgstat.systemobjectattributeclass.model.SystemObjectAttributeClass;
 import pl.wj.bgstat.systemobjectattributeclass.model.SystemObjectAttributeClassId;
 import pl.wj.bgstat.systemobjectattributeclass.model.SystemObjectAttributeClassMapper;
@@ -16,9 +18,6 @@ import pl.wj.bgstat.systemobjectattributeclass.model.dto.SystemObjectAttributeCl
 import pl.wj.bgstat.systemobjectattributeclass.model.dto.SystemObjectAttributeClassResponseDto;
 import pl.wj.bgstat.systemobjecttype.SystemObjectTypeRepository;
 import pl.wj.bgstat.systemobjecttype.model.SystemObjectType;
-
-import javax.persistence.EntityExistsException;
-import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -29,7 +28,6 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.verify;
 import static pl.wj.bgstat.exception.ExceptionHelper.*;
-
 
 @ExtendWith(MockitoExtension.class)
 class SystemObjectAttributeClassServiceTest {
@@ -90,7 +88,7 @@ class SystemObjectAttributeClassServiceTest {
     }
 
     @Test
-    @Description("Should throw EntityNotFoundException when trying to assign non existing attribute class to system object type")
+    @Description("Should throw ResourceNotFoundException when trying to assign non existing attribute class to system object type")
     void shouldThrowExceptionWhenTryingToAssignNonExistingAttributeClassToSystemObjectType() {
         // given
         SystemObjectAttributeClassId id = new SystemObjectAttributeClassId(100L, 1L);
@@ -103,12 +101,12 @@ class SystemObjectAttributeClassServiceTest {
 
         // when
         assertThatThrownBy(() -> systemObjectAttributeClassService.addSystemObjectAttributeClass(systemObjectAttributeClassRequestDto))
-                    .isInstanceOf(EntityNotFoundException.class)
-                    .hasMessage(ATTRIBUTE_CLASS_NOT_FOUND_EX_MSG + id.getAttributeClassId());
+                    .isInstanceOf(ResourceNotFoundException.class)
+                    .hasMessage(createResourceNotFoundExceptionMessage(ATTRIBUTE_CLASS_RESOURCE_NAME, ID_FIELD, id.getAttributeClassId()));
     }
 
     @Test
-    @Description("Should throw EntityNotFoundException when trying to assign attribute class to non existing system object type")
+    @Description("Should throw ResourceNotFoundException when trying to assign attribute class to non existing system object type")
     void shouldThrowExceptionWhenTryingToAssignAttributeClassToNonExistingSystemObjectType() {
         // given
         SystemObjectAttributeClassId id = new SystemObjectAttributeClassId(1L, 100L);
@@ -120,12 +118,12 @@ class SystemObjectAttributeClassServiceTest {
         // when
         assertThatThrownBy(() -> systemObjectAttributeClassService.addSystemObjectAttributeClass(
                 systemObjectAttributeClassRequestDto))
-                    .isInstanceOf(EntityNotFoundException.class)
-                    .hasMessage(SYSTEM_OBJECT_TYPE_NOT_FOUND_EX_MSG + id.getSystemObjectTypeId());
+                    .isInstanceOf(ResourceNotFoundException.class)
+                    .hasMessage(createResourceNotFoundExceptionMessage(SYSTEM_OBJECT_TYPE_RESOURCE_NAME, ID_FIELD, id.getSystemObjectTypeId()));
     }
 
     @Test
-    @Description("Should throw EntityExistsException when trying to create existing assignment")
+    @Description("Should throw ResourceExistsException when trying to create existing assignment")
     void shouldThrowExceptionWhenTryingToCreateExistingAssignment() {
         // given
         SystemObjectAttributeClassId id = new SystemObjectAttributeClassId(1L, 1L);
@@ -141,8 +139,8 @@ class SystemObjectAttributeClassServiceTest {
         // when
         assertThatThrownBy(() -> systemObjectAttributeClassService.addSystemObjectAttributeClass(
                 systemObjectAttributeClassRequestDto))
-                    .isInstanceOf(EntityExistsException.class)
-                    .hasMessage(SYSTEM_OBJECT_ATTRIBUTE_CLASS_EXISTS_EX_MSG);
+                    .isInstanceOf(ResourceExistsException.class)
+                    .hasMessage(createResourceExistsExceptionMessage(SYSTEM_OBJECT_ATTRIBUTE_CLASS_RESOURCE_NAME, ID_FIELD));
     }
 
     @Test
@@ -163,7 +161,7 @@ class SystemObjectAttributeClassServiceTest {
     }
 
     @Test
-    @Description("Should throw EntityNotFoundException when trying to remove non existing system object type attribute class")
+    @Description("Should throw ResourceNotFoundException when trying to remove non existing system object type attribute class")
     void shouldThrowExceptionWhenTryingToRemoveNonExistingSystemObjectTypeAttributeClass() {
         // given
         SystemObjectAttributeClassId id = new SystemObjectAttributeClassId(1L, 100L);
@@ -173,8 +171,8 @@ class SystemObjectAttributeClassServiceTest {
         // when
         assertThatThrownBy(() -> systemObjectAttributeClassService.deleteSystemObjectAttributeClass(
                 id.getAttributeClassId(), id.getSystemObjectTypeId()))
-                .isInstanceOf(EntityNotFoundException.class)
-                .hasMessage(SYSTEM_OBJECT_ATTRIBUTE_CLASS_NOT_FOUND_EX_MSG);
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage(createResourceNotFoundExceptionMessage(SYSTEM_OBJECT_ATTRIBUTE_CLASS_RESOURCE_NAME, ID_FIELD, id));
     }
 
     @Test
@@ -211,7 +209,7 @@ class SystemObjectAttributeClassServiceTest {
     }
 
     @Test
-    @Description("Should throw EntityNotFoundException when trying to edit non existing " +
+    @Description("Should throw ResourceNotFoundException when trying to edit non existing " +
                  "attribute class to system object type assignment")
     void shouldThrowExceptionWhenTryingToEditNonExistingAssignment() {
         // given
@@ -222,8 +220,8 @@ class SystemObjectAttributeClassServiceTest {
         // when
         assertThatThrownBy(() -> systemObjectAttributeClassService.editSystemObjectAttributeClass(
                 id.getAttributeClassId(), id.getSystemObjectTypeId(), new SystemObjectAttributeClassRequestDto()))
-                .isInstanceOf(EntityNotFoundException.class)
-                .hasMessage(SYSTEM_OBJECT_ATTRIBUTE_CLASS_NOT_FOUND_EX_MSG);
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage(createResourceNotFoundExceptionMessage(SYSTEM_OBJECT_ATTRIBUTE_CLASS_RESOURCE_NAME, ID_FIELD, id));
     }
 
 }

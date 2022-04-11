@@ -16,11 +16,12 @@ import pl.wj.bgstat.attributeclass.model.AttributeClassMapper;
 import pl.wj.bgstat.attributeclass.model.dto.AttributeClassHeaderDto;
 import pl.wj.bgstat.attributeclass.model.dto.AttributeClassRequestDto;
 import pl.wj.bgstat.attributeclass.model.dto.AttributeClassResponseDto;
+import pl.wj.bgstat.exception.ExceptionHelper;
+import pl.wj.bgstat.exception.ResourceExistsException;
+import pl.wj.bgstat.exception.ResourceNotFoundException;
 import pl.wj.bgstat.systemobjectattributeclass.SystemObjectAttributeClassRepository;
 import pl.wj.bgstat.systemobjectattributeclass.model.dto.SystemObjectAttributeClassResponseDto;
 
-import javax.persistence.EntityExistsException;
-import javax.persistence.EntityNotFoundException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -32,8 +33,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.verify;
-import static pl.wj.bgstat.exception.ExceptionHelper.ATTRIBUTE_CLASS_EXISTS_EX_MSG;
-import static pl.wj.bgstat.exception.ExceptionHelper.ATTRIBUTE_CLASS_NOT_FOUND_EX_MSG;
+import static pl.wj.bgstat.exception.ExceptionHelper.*;
 
 @ExtendWith(MockitoExtension.class)
 class AttributeClassServiceTest {
@@ -146,7 +146,7 @@ class AttributeClassServiceTest {
     }
 
     @Test
-    @Description("Should throw EntityNotFoundException when cannot find attribute class by id")
+    @Description("Should throw ResourceNotFoundException when cannot find attribute class by id")
     void shouldThrowExceptionWhenCannotFindAttributeClassById() {
         // given
         long id = 100L;
@@ -157,8 +157,8 @@ class AttributeClassServiceTest {
 
         // when
         assertThatThrownBy(() -> attributeClassService.getSingleAttributeClass(id))
-                .isInstanceOf(EntityNotFoundException.class)
-                .hasMessage(ATTRIBUTE_CLASS_NOT_FOUND_EX_MSG + id);
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage(ExceptionHelper.createResourceNotFoundExceptionMessage(ATTRIBUTE_CLASS_RESOURCE_NAME, ID_FIELD, id));
     }
 
     @Test
@@ -189,7 +189,7 @@ class AttributeClassServiceTest {
     }
 
     @Test
-    @Description("Should throw EntityExistsException when attrybute class already exists in database")
+    @Description("Should throw ResourceExistsException when attribute class already exists in database")
     void shouldThrowExceptionWhenAttributeClassExists() {
         // given
         String attributeClassName = "Name No. 1";
@@ -200,8 +200,8 @@ class AttributeClassServiceTest {
 
         // when
         assertThatThrownBy(() -> attributeClassService.addAttributeClass(attributeClassRequestDto))
-                .isInstanceOf(EntityExistsException.class)
-                .hasMessage(ATTRIBUTE_CLASS_EXISTS_EX_MSG);
+                .isInstanceOf(ResourceExistsException.class)
+                .hasMessage(createResourceExistsExceptionMessage(ATTRIBUTE_CLASS_RESOURCE_NAME, NAME_FIELD));
     }
 
     @Test
@@ -237,7 +237,7 @@ class AttributeClassServiceTest {
     }
 
     @Test
-    @Description("Should throw EntityNotFoundException when trying to edit non existing attribute class")
+    @Description("Should throw ResourceNotFoundException when trying to edit non existing attribute class")
     void shouldThrowExceptionWhenTryingToEditNonExistingAttributeClass() {
         // given
         long id = 100L;
@@ -246,12 +246,12 @@ class AttributeClassServiceTest {
 
         // when
         assertThatThrownBy(() -> attributeClassService.editAttributeClass(id, new AttributeClassRequestDto()))
-                .isInstanceOf(EntityNotFoundException.class)
-                .hasMessage(ATTRIBUTE_CLASS_NOT_FOUND_EX_MSG + id);
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage(createResourceNotFoundExceptionMessage(ATTRIBUTE_CLASS_RESOURCE_NAME, ID_FIELD, id));
     }
 
     @Test
-    @Description("Should throw EntityExistsException when trying to set new name that already exists")
+    @Description("Should throw ResourceExistsException when trying to set new name that already exists")
     void shouldThrowExceptionWhenTryingToSetNameThatAlreadyExists() {
         // given
         long id = 1L;
@@ -265,8 +265,8 @@ class AttributeClassServiceTest {
 
         // when
         assertThatThrownBy(() -> attributeClassService.editAttributeClass(id, attributeClassRequestDto))
-                .isInstanceOf(EntityExistsException.class)
-                .hasMessage(ATTRIBUTE_CLASS_EXISTS_EX_MSG);
+                .isInstanceOf(ResourceExistsException.class)
+                .hasMessage(createResourceExistsExceptionMessage(ATTRIBUTE_CLASS_RESOURCE_NAME, NAME_FIELD));
     }
 
     @Test
@@ -286,7 +286,7 @@ class AttributeClassServiceTest {
     }
 
     @Test
-    @Description("Should throw EntityNotFoundException when trying to remove non existing attrybute class")
+    @Description("Should throw ResourceNotFoundException when trying to remove non existing attribute class")
     void shouldThrowExceptionWhenTryingToRemoveNonExistingAttributeClass() {
         // given
         long id = 100L;
@@ -295,8 +295,8 @@ class AttributeClassServiceTest {
 
         // then
         assertThatThrownBy(() -> attributeClassService.deleteAttributeClass(id))
-                .isInstanceOf(EntityNotFoundException.class)
-                .hasMessage(ATTRIBUTE_CLASS_NOT_FOUND_EX_MSG + id);
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage(createResourceNotFoundExceptionMessage(ATTRIBUTE_CLASS_RESOURCE_NAME, ID_FIELD, id));
     }
 
     @Test
@@ -360,8 +360,8 @@ class AttributeClassServiceTest {
 
         // when
         assertThatThrownBy(() -> attributeClassService.getAllSystemObjectTypeToAttributeClassAssignments(id))
-                .isInstanceOf(EntityNotFoundException.class)
-                .hasMessage(ATTRIBUTE_CLASS_NOT_FOUND_EX_MSG + id);
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage(createResourceNotFoundExceptionMessage(ATTRIBUTE_CLASS_RESOURCE_NAME, ID_FIELD, id));
     }
 
 }

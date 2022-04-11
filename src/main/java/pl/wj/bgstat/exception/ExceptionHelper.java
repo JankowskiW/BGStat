@@ -2,29 +2,20 @@ package pl.wj.bgstat.exception;
 
 public class ExceptionHelper {
 
-    public static final String DATABASE_ACCESS_ER_MSG = "Database access error";
+    public static final String SYSTEM_OBJECT_ATTRIBUTE_CLASS_RESOURCE_NAME = "System object attribute class";
+    public static final String SYSTEM_OBJECT_TYPE_RESOURCE_NAME = "System object type";
+    public static final String ATTRIBUTE_CLASS_RESOURCE_NAME = "Attribute class";
+    public static final String ATTRIBUTE_CLASS_TYPE_RESOURCE_NAME = "Attribute class type";
+    public static final String BOARD_GAME_RESOURCE_NAME = "Board game";
+    public static final String BOARD_GAME_DESCRIPTION_RESOURCE_NAME = "Board game description";
+    public static final String ID_FIELD = "id";
+    public static final String NAME_FIELD = "name";
 
-    // Attribute Class Module
-    public static final String ATTRIBUTE_CLASS_NOT_FOUND_EX_MSG = "No such attribute class with id: ";
-    public static final String ATTRIBUTE_CLASS_EXISTS_EX_MSG = "Attribute class with given name already exists in database";
+    public static String createResourceExistsExceptionMessage(String resource, String field) {
+        return String.format("%s with specified %s already exists in database", resource, field);
+    }
 
-    // Attribute Class Type Module
-    public static final String ATTRIBUTE_CLASS_TYPE_NOT_FOUND_EX_MSG = "No such attribute class type with id: ";
-    public static final String ATTRIBUTE_CLASS_TYPE_EXISTS_EX_MSG = "Attribute class type with given name already exists in database";
-
-    // Board Game Module
-    public static final String BOARD_GAME_NOT_FOUND_EX_MSG = "No such board game type with id: ";
-    public static final String BOARD_GAME_TYPE_EXISTS_EX_MSG = "Board game type with given name already exists in database";
-
-    // Board Game Description Module
-    public static final String BOARD_GAME_DESCRIPTION_NOT_FOUND_EX_MSG = "No such board game description type with id: ";
-
-    // System Object Type Module
-    public static final String SYSTEM_OBJECT_TYPE_NOT_FOUND_EX_MSG = "No such system object type with id: ";
-    public static final String SYSTEM_OBJECT_TYPE_EXISTS_EX_MSG = "System object type with given name already exists in database";
-
-    // System Object Attribute Class Module
-    public static final String SYSTEM_OBJECT_ATTRIBUTE_CLASS_EXISTS_EX_MSG = "Attribute class to system object type assignment already exists in database";
-    public static final String SYSTEM_OBJECT_ATTRIBUTE_CLASS_NOT_FOUND_EX_MSG = "No such attribute class to system object type assignment";
-    public static final String DELETE_STATEMENT_CONFLICTED_WITH_REFERENCE_CONSTRAINT = "Delete statement conflicted with the reference constraint";
+    public static String createResourceNotFoundExceptionMessage(String resource, String field, Object value) {
+        return String.format("No such %s with %s: '%s'", resource, field, value);
+    }
 }

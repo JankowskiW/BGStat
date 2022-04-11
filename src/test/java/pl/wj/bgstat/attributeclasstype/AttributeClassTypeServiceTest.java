@@ -15,9 +15,9 @@ import pl.wj.bgstat.attributeclasstype.model.AttributeClassType;
 import pl.wj.bgstat.attributeclasstype.model.AttributeClassTypeMapper;
 import pl.wj.bgstat.attributeclasstype.model.dto.AttributeClassTypeHeaderDto;
 import pl.wj.bgstat.attributeclasstype.model.dto.AttributeClassTypeRequestDto;
+import pl.wj.bgstat.exception.ResourceExistsException;
+import pl.wj.bgstat.exception.ResourceNotFoundException;
 
-import javax.persistence.EntityExistsException;
-import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -30,8 +30,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.verify;
-import static pl.wj.bgstat.exception.ExceptionHelper.ATTRIBUTE_CLASS_TYPE_EXISTS_EX_MSG;
-import static pl.wj.bgstat.exception.ExceptionHelper.ATTRIBUTE_CLASS_TYPE_NOT_FOUND_EX_MSG;
+import static pl.wj.bgstat.exception.ExceptionHelper.*;
 
 @ExtendWith(MockitoExtension.class)
 class AttributeClassTypeServiceTest {
@@ -138,7 +137,7 @@ class AttributeClassTypeServiceTest {
     }
 
     @Test
-    @Description("Should throw EntityNotFoundException when cannot find attribute class type by id")
+    @Description("Should throw ResourceNotFoundException when cannot find attribute class type by id")
     void shouldThrowExceptionWhenCannotFindAttributeClassTypeById() {
         // given
         long id = attributeClassTypeList.size() + 1;
@@ -147,8 +146,8 @@ class AttributeClassTypeServiceTest {
 
         // when
         assertThatThrownBy(() -> attributeClassTypeService.getSingleAttributeClassType(id))
-                .isInstanceOf(EntityNotFoundException.class)
-                .hasMessage(ATTRIBUTE_CLASS_TYPE_NOT_FOUND_EX_MSG + id);
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage(createResourceNotFoundExceptionMessage(ATTRIBUTE_CLASS_TYPE_RESOURCE_NAME, ID_FIELD, id));
     }
 
     @Test
@@ -189,8 +188,8 @@ class AttributeClassTypeServiceTest {
 
         // when
         assertThatThrownBy(() -> attributeClassTypeService.addAttributeClassType(attributeClassTypeRequestDto))
-                .isInstanceOf(EntityExistsException.class)
-                .hasMessage(ATTRIBUTE_CLASS_TYPE_EXISTS_EX_MSG);
+                .isInstanceOf(ResourceExistsException.class)
+                .hasMessage(createResourceExistsExceptionMessage(ATTRIBUTE_CLASS_TYPE_RESOURCE_NAME, NAME_FIELD));
     }
 
     @Test
@@ -226,7 +225,7 @@ class AttributeClassTypeServiceTest {
     }
 
     @Test
-    @Description("Should throw EntityNotFoundException when trying to edit non existing attribute class type")
+    @Description("Should throw ResourceNotFoundException when trying to edit non existing attribute class type")
     void shouldThrowExceptionWhenTryingToEditNonExistingAttributeClassType() {
         // given
         long id = 100L;
@@ -235,12 +234,12 @@ class AttributeClassTypeServiceTest {
 
         // when
         assertThatThrownBy(() -> attributeClassTypeService.editAttributeClassType(id, new AttributeClassTypeRequestDto()))
-                .isInstanceOf(EntityNotFoundException.class)
-                .hasMessage(ATTRIBUTE_CLASS_TYPE_NOT_FOUND_EX_MSG + id);
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage(createResourceNotFoundExceptionMessage(ATTRIBUTE_CLASS_TYPE_RESOURCE_NAME, ID_FIELD, id));
     }
 
     @Test
-    @Description("Should throw EntityExistsException when trying to set new name that already exists")
+    @Description("Should throw ResourceExistsException when trying to set new name that already exists")
     void shouldThrowExceptionWhenTryingToSetNameThatAlreadyExists() {
         // given
         long id = 1L;
@@ -256,8 +255,8 @@ class AttributeClassTypeServiceTest {
 
         // when
         assertThatThrownBy(() -> attributeClassTypeService.editAttributeClassType(id, attributeClassTypeRequestDto))
-                .isInstanceOf(EntityExistsException.class)
-                .hasMessage(ATTRIBUTE_CLASS_TYPE_EXISTS_EX_MSG);
+                .isInstanceOf(ResourceExistsException.class)
+                .hasMessage(createResourceExistsExceptionMessage(ATTRIBUTE_CLASS_TYPE_RESOURCE_NAME, NAME_FIELD));
     }
 
     @Test
@@ -277,7 +276,7 @@ class AttributeClassTypeServiceTest {
     }
 
     @Test
-    @Description("Should throw EntityNotFoundException when trying to remove non existing attribute class type")
+    @Description("Should throw ResourceNotFoundException when trying to remove non existing attribute class type")
     void shouldThrowExceptionWhenTryingToRemoveNonExistingAttributeClassType() {
         // given
         long id = 100L;
@@ -286,7 +285,7 @@ class AttributeClassTypeServiceTest {
 
         // when
         assertThatThrownBy(() -> attributeClassTypeService.deleteAttributeClassType(id))
-                .isInstanceOf(EntityNotFoundException.class)
-                .hasMessage(ATTRIBUTE_CLASS_TYPE_NOT_FOUND_EX_MSG + id);
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage(createResourceNotFoundExceptionMessage(ATTRIBUTE_CLASS_TYPE_RESOURCE_NAME, ID_FIELD, id));
     }
 }

@@ -7,6 +7,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import pl.wj.bgstat.exception.ResourceExistsException;
+import pl.wj.bgstat.exception.ResourceNotFoundException;
 import pl.wj.bgstat.systemobjectattributeclass.SystemObjectAttributeClassRepository;
 import pl.wj.bgstat.systemobjectattributeclass.model.dto.SystemObjectAttributeClassResponseDto;
 import pl.wj.bgstat.systemobjecttype.model.SystemObjectType;
@@ -15,8 +17,6 @@ import pl.wj.bgstat.systemobjecttype.model.dto.SystemObjectTypeHeaderDto;
 import pl.wj.bgstat.systemobjecttype.model.dto.SystemObjectTypeRequestDto;
 import pl.wj.bgstat.systemobjecttype.model.dto.SystemObjectTypeResponseDto;
 
-import javax.persistence.EntityExistsException;
-import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -114,7 +114,7 @@ class SystemObjectTypeServiceTest {
     }
 
     @Test
-    @Description("Should throw EntityNotFoundException when cannot find system object type by id")
+    @Description("Should throw ResourceNotFoundException when cannot find system object type by id")
     void shouldThrowExceptionWhenCannotFindSystemObjectTypeById() {
         // given
         long id = systemObjectTypeList.size() + 1;
@@ -123,8 +123,8 @@ class SystemObjectTypeServiceTest {
 
         // when
         assertThatThrownBy(() -> systemObjectTypeService.getSingleSystemObjectType(id))
-                .isInstanceOf(EntityNotFoundException.class)
-                .hasMessage(SYSTEM_OBJECT_TYPE_NOT_FOUND_EX_MSG + id);
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage(createResourceNotFoundExceptionMessage(SYSTEM_OBJECT_TYPE_RESOURCE_NAME, ID_FIELD, id));
     }
 
     @Test
@@ -154,7 +154,7 @@ class SystemObjectTypeServiceTest {
     }
 
     @Test
-    @Description("Should throw EntityExistsException when system object type already exists in database")
+    @Description("Should throw ResourceExistsException when system object type already exists in database")
     void shouldThrowExceptionWhenSystemObjectTypeExists() {
         // given
         String systemObjectTypeName = "Name No. 1";
@@ -165,8 +165,8 @@ class SystemObjectTypeServiceTest {
 
         // when
         assertThatThrownBy(() -> systemObjectTypeService.addSystemObjectType(systemObjectTypeRequestDto))
-                .isInstanceOf(EntityExistsException.class)
-                .hasMessage(SYSTEM_OBJECT_TYPE_EXISTS_EX_MSG);
+                .isInstanceOf(ResourceExistsException.class)
+                .hasMessage(createResourceExistsExceptionMessage(SYSTEM_OBJECT_TYPE_RESOURCE_NAME, NAME_FIELD));
     }
 
     @Test
@@ -201,7 +201,7 @@ class SystemObjectTypeServiceTest {
     }
 
     @Test
-    @Description("Should throw EntityNotFoundException when trying to edit non existing system object type")
+    @Description("Should throw ResourceNotFoundException when trying to edit non existing system object type")
     void shouldThrowExceptionWhenTryingToEditNonExistingSystemObjectType() {
         // given
         long id = 100L;
@@ -210,12 +210,12 @@ class SystemObjectTypeServiceTest {
 
         // when
         assertThatThrownBy(() -> systemObjectTypeService.editSystemObjectType(id, new SystemObjectTypeRequestDto()))
-                .isInstanceOf(EntityNotFoundException.class)
-                .hasMessage(SYSTEM_OBJECT_TYPE_NOT_FOUND_EX_MSG + id);
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage(createResourceNotFoundExceptionMessage(SYSTEM_OBJECT_TYPE_RESOURCE_NAME, ID_FIELD, id));
     }
 
     @Test
-    @Description("Should throw EntityExistsException when trying to set new name that already exists")
+    @Description("Should throw ResourceExistsException when trying to set new name that already exists")
     void shouldThrowExceptionWhenTryingToSetNameThatAlreadyExists() {
         // given
         long id = 1L;
@@ -230,8 +230,8 @@ class SystemObjectTypeServiceTest {
 
         // when
         assertThatThrownBy(() -> systemObjectTypeService.editSystemObjectType(id, systemObjectTypeRequestDto))
-                .isInstanceOf(EntityExistsException.class)
-                .hasMessage(SYSTEM_OBJECT_TYPE_EXISTS_EX_MSG);
+                .isInstanceOf(ResourceExistsException.class)
+                .hasMessage(createResourceExistsExceptionMessage(SYSTEM_OBJECT_TYPE_RESOURCE_NAME, NAME_FIELD));
     }
 
     @Test
@@ -251,7 +251,7 @@ class SystemObjectTypeServiceTest {
     }
 
     @Test
-    @Description("Should throw EntityNotFoundException when trying to remove non existing system object type")
+    @Description("Should throw ResourceNotFoundException when trying to remove non existing system object type")
     void shouldThrowExceptionWhenTryingToRemoveNonExistingSystemObjectType() {
         // given
         long id = 100L;
@@ -260,12 +260,12 @@ class SystemObjectTypeServiceTest {
 
         // when
         assertThatThrownBy(() -> systemObjectTypeService.deleteSystemObjectType(id))
-                .isInstanceOf(EntityNotFoundException.class)
-                .hasMessage(SYSTEM_OBJECT_TYPE_NOT_FOUND_EX_MSG + id);
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage(createResourceNotFoundExceptionMessage(SYSTEM_OBJECT_TYPE_RESOURCE_NAME, ID_FIELD, id));
     }
 
     @Test
-    @Description("Should throw EntityExistsException when trying to remove system object type with assigned attribute classes")
+    @Description("Should throw ResourceExistsException when trying to remove system object type with assigned attribute classes")
     void shouldThrowExceptionWhenTryingToRemoveSystemObjectTypeWithAssignedAttributeClass() {
         // given
         long id = 1L;
@@ -276,8 +276,8 @@ class SystemObjectTypeServiceTest {
 
         //when
         assertThatThrownBy(() -> systemObjectTypeService.deleteSystemObjectType(id))
-                .isInstanceOf(EntityExistsException.class)
-                .hasMessage(DELETE_STATEMENT_CONFLICTED_WITH_REFERENCE_CONSTRAINT);
+                .isInstanceOf(ResourceExistsException.class)
+                .hasMessage(createResourceExistsExceptionMessage(SYSTEM_OBJECT_ATTRIBUTE_CLASS_RESOURCE_NAME, ID_FIELD));
     }
 
     @Test
@@ -340,7 +340,7 @@ class SystemObjectTypeServiceTest {
 
         // when
         assertThatThrownBy(() -> systemObjectTypeService.getAllAttributeClassToSystemObjectTypeAssignments(id))
-                .isInstanceOf(EntityNotFoundException.class)
-                .hasMessage(SYSTEM_OBJECT_TYPE_NOT_FOUND_EX_MSG + id);
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage(createResourceNotFoundExceptionMessage(SYSTEM_OBJECT_TYPE_RESOURCE_NAME, ID_FIELD, id));
     }
 }

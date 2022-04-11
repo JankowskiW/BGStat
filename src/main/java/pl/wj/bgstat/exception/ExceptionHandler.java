@@ -1,22 +1,17 @@
-package pl.wj.bgstat.exception.boardgame;
+package pl.wj.bgstat.exception;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import pl.wj.bgstat.exception.ExceptionBody;
 
-import javax.persistence.EntityExistsException;
-import javax.persistence.EntityNotFoundException;
 import java.time.ZonedDateTime;
 
 @RestControllerAdvice
-public class BoardGameExceptionHandler {
+public class ExceptionHandler {
 
-    @ExceptionHandler(EntityNotFoundException.class)
+    @org.springframework.web.bind.annotation.ExceptionHandler(ResourceNotFoundException.class)
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
-    public ExceptionBody handleBoardGameNotFoundException(EntityNotFoundException e) {
+    public ExceptionBody handleResourceNotFoundException(ResourceNotFoundException e) {
         return new ExceptionBody(
                 e.getMessage(),
                 HttpStatus.NOT_FOUND,
@@ -24,9 +19,9 @@ public class BoardGameExceptionHandler {
         );
     }
 
-    @ExceptionHandler(EntityExistsException.class)
+    @org.springframework.web.bind.annotation.ExceptionHandler(ResourceExistsException.class)
     @ResponseStatus(value = HttpStatus.CONFLICT)
-    public ExceptionBody handleBoardGameAlreadyExistsException(EntityExistsException e) {
+    public ExceptionBody handleResourceExistsException(ResourceExistsException e) {
         return new ExceptionBody(
                 e.getMessage(),
                 HttpStatus.CONFLICT,

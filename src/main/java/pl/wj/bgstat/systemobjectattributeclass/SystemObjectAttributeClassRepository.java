@@ -29,4 +29,8 @@ public interface SystemObjectAttributeClassRepository extends JpaRepository<Syst
     @Query("SELECT CASE WHEN COUNT(soac) > 0 THEN TRUE ELSE FALSE END " +
             "FROM SystemObjectAttributeClass soac WHERE soac.id.systemObjectTypeId = :id")
     boolean existsBySystemObjectTypeId(long id);
+
+    @Query("SELECT CASE WHEN COUNT(soac) > 0 THEN TRUE ELSE FALSE END " +
+            "FROM SystemObjectAttributeClass soac WHERE soac.id.attributeClassId = :id")
+    boolean existsByAttributeClassId(long id);
 }

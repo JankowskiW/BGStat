@@ -8,12 +8,10 @@ import pl.wj.bgstat.attributeclasstype.model.AttributeClassType;
 import pl.wj.bgstat.attributeclasstype.model.AttributeClassTypeMapper;
 import pl.wj.bgstat.attributeclasstype.model.dto.AttributeClassTypeHeaderDto;
 import pl.wj.bgstat.attributeclasstype.model.dto.AttributeClassTypeRequestDto;
+import pl.wj.bgstat.exception.ResourceExistsException;
+import pl.wj.bgstat.exception.ResourceNotFoundException;
 
-import javax.persistence.EntityExistsException;
-import javax.persistence.EntityNotFoundException;
-
-import static pl.wj.bgstat.exception.ExceptionHelper.ATTRIBUTE_CLASS_TYPE_EXISTS_EX_MSG;
-import static pl.wj.bgstat.exception.ExceptionHelper.ATTRIBUTE_CLASS_TYPE_NOT_FOUND_EX_MSG;
+import static pl.wj.bgstat.exception.ExceptionHelper.*;
 
 @Service
 @RequiredArgsConstructor
@@ -27,12 +25,12 @@ public class AttributeClassTypeService {
 
     public AttributeClassType getSingleAttributeClassType(long id) {
         return attributeClassTypeRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException(ATTRIBUTE_CLASS_TYPE_NOT_FOUND_EX_MSG + id));
+                () -> new ResourceNotFoundException(ATTRIBUTE_CLASS_TYPE_RESOURCE_NAME, ID_FIELD, id));
     }
 
     public AttributeClassType addAttributeClassType(AttributeClassTypeRequestDto attributeClassTypeRequestDto) {
         if (attributeClassTypeRepository.existsByName(attributeClassTypeRequestDto.getName()))
-            throw new EntityExistsException(ATTRIBUTE_CLASS_TYPE_EXISTS_EX_MSG);
+            throw new ResourceExistsException(ATTRIBUTE_CLASS_TYPE_RESOURCE_NAME, NAME_FIELD);
         AttributeClassType attributeClassType = AttributeClassTypeMapper.mapToAttributeClassType(attributeClassTypeRequestDto);
         attributeClassTypeRepository.save(attributeClassType);
         return attributeClassType;
@@ -40,9 +38,9 @@ public class AttributeClassTypeService {
 
     public AttributeClassType editAttributeClassType(long id, AttributeClassTypeRequestDto attributeClassTypeRequestDto) {
         if (!attributeClassTypeRepository.existsById(id))
-            throw new EntityNotFoundException(ATTRIBUTE_CLASS_TYPE_NOT_FOUND_EX_MSG + id);
+            throw new ResourceNotFoundException(ATTRIBUTE_CLASS_TYPE_RESOURCE_NAME, ID_FIELD, id);
         if (attributeClassTypeRepository.existsByNameAndIdNot(attributeClassTypeRequestDto.getName(), id))
-            throw new EntityExistsException(ATTRIBUTE_CLASS_TYPE_EXISTS_EX_MSG);
+            throw new ResourceExistsException(ATTRIBUTE_CLASS_TYPE_RESOURCE_NAME, NAME_FIELD);
 
         AttributeClassType attributeClassType = AttributeClassTypeMapper.mapToAttributeClassType(id, attributeClassTypeRequestDto);
         attributeClassTypeRepository.save(attributeClassType);
@@ -51,7 +49,7 @@ public class AttributeClassTypeService {
 
     public void deleteAttributeClassType(long id) {
         if(!attributeClassTypeRepository.existsById(id))
-            throw new EntityNotFoundException(ATTRIBUTE_CLASS_TYPE_NOT_FOUND_EX_MSG + id);
+            throw new ResourceNotFoundException(ATTRIBUTE_CLASS_TYPE_RESOURCE_NAME, ID_FIELD, id);
         // TODO: check if attribute is related to any object type and if it is then throw an exception
         attributeClassTypeRepository.deleteById(id);
     }
