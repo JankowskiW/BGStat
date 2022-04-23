@@ -8,5 +8,4 @@ public class BgStatApplication {
     public static void main(String[] args) {
         SpringApplication.run(BgStatApplication.class, args);
     }
-
 }

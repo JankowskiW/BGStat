@@ -1,10 +1,13 @@
 package pl.wj.bgstat.systemobjectattributeclass.model;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import pl.wj.bgstat.attributeclass.model.AttributeClass;
 import pl.wj.bgstat.systemobjectattributeclass.model.dto.SystemObjectAttributeClassRequestDto;
 import pl.wj.bgstat.systemobjectattributeclass.model.dto.SystemObjectAttributeClassResponseDto;
 import pl.wj.bgstat.systemobjecttype.model.SystemObjectType;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class SystemObjectAttributeClassMapper {
 
     public static SystemObjectAttributeClass mapToSystemObjectAttributeClass(
@@ -20,21 +23,6 @@ public class SystemObjectAttributeClassMapper {
         systemObjectAttributeClass.setClassDefaultValue(systemObjectAttributeClassRequestDto.getClassDefaultValue());
         return systemObjectAttributeClass;
     }
-
-//    public static SystemObjectAttributeClass mapToSystemObjectAttributeClass(
-//            SystemObjectAttributeClassRequestDto systemObjectAttributeClassRequestDto) {
-//        SystemObjectAttributeClass systemObjectAttributeClass = new SystemObjectAttributeClass();
-//        systemObjectAttributeClass.setId(new SystemObjectAttributeClassId());
-//        systemObjectAttributeClass.getId().setAttributeClassId(systemObjectAttributeClassRequestDto.getAttributeClassId());
-//        systemObjectAttributeClass.getId().setSystemObjectTypeId(systemObjectAttributeClassRequestDto.getSystemObjectTypeId());
-//        systemObjectAttributeClass.setRequired(systemObjectAttributeClass.isRequired());
-//        systemObjectAttributeClass.setAttributeClass(new AttributeClass());
-//        systemObjectAttributeClass.getAttributeClass().setId(systemObjectAttributeClassRequestDto.getAttributeClassId());
-//        systemObjectAttributeClass.setSystemObjectType(new SystemObjectType());
-//        systemObjectAttributeClass.getSystemObjectType().setId(systemObjectAttributeClassRequestDto.getSystemObjectTypeId());
-//        systemObjectAttributeClass.setClassDefaultValue(systemObjectAttributeClassRequestDto.getClassDefaultValue());
-//        return systemObjectAttributeClass;
-//    }
 
     public static SystemObjectAttributeClassResponseDto mapToSystemObjectAttributeClassResponseDto(
             SystemObjectAttributeClass systemObjectAttributeClass) {

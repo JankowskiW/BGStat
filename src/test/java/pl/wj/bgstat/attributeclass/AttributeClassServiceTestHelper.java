@@ -13,7 +13,7 @@ import java.util.Set;
 
 public class AttributeClassServiceTestHelper {
 
-    private final static int NUMBER_OF_TYPES = 6;
+    private static final int NUMBER_OF_TYPES = 6;
 
     public static List<AttributeClass> populateAttributeClassList(int numberOfElements) {
         List<AttributeClass> attributeClassList = new ArrayList<>();

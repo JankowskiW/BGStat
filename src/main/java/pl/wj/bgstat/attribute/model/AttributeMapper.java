@@ -1,11 +1,13 @@
 package pl.wj.bgstat.attribute.model;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import pl.wj.bgstat.attribute.model.dto.AttributeRequestDto;
 import pl.wj.bgstat.attribute.model.dto.AttributeResponseDto;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class AttributeMapper {
-
-    public Attribute mapToAttribute(AttributeRequestDto attributeRequestDto) {
+    public static Attribute mapToAttribute(AttributeRequestDto attributeRequestDto) {
         Attribute attribute = new Attribute();
         attribute.setObjectTypeId(attributeRequestDto.getObjectTypeId());
         attribute.setObjectId(attributeRequestDto.getObjectId());
@@ -14,7 +16,7 @@ public class AttributeMapper {
         return attribute;
     }
 
-    public AttributeResponseDto mapToAttributeResponseDto(Attribute attribute) {
+    public static AttributeResponseDto mapToAttributeResponseDto(Attribute attribute) {
         return AttributeResponseDto.builder()
                 .objectTypeId(attribute.getObjectTypeId())
                 .objectId(attribute.getObjectId())

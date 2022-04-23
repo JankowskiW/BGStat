@@ -1,9 +1,12 @@
 package pl.wj.bgstat.attributeclass.model;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import pl.wj.bgstat.attributeclass.model.dto.AttributeClassRequestDto;
 import pl.wj.bgstat.attributeclass.model.dto.AttributeClassResponseDto;
 import pl.wj.bgstat.attributeclasstype.model.AttributeClassType;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class AttributeClassMapper {
 
     public static AttributeClass mapToAttributeClass(long id, AttributeClassRequestDto attributeClassRequestDto) {
