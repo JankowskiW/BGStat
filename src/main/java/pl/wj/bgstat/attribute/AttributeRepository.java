@@ -6,4 +6,7 @@ import pl.wj.bgstat.attribute.model.Attribute;
 
 @Repository
 public interface AttributeRepository extends JpaRepository<Attribute, Long> {
+    boolean existsByObjectIdAndObjectTypeIdAndAttributeClassId(long objectId, long objectTypeId, long attributeClassId);
+    boolean existsByObjectIdAndObjectTypeIdAndAttributeClassIdAndValueNot(
+            long objectId, long objectTypeId, long attributeClassId, String value);
 }

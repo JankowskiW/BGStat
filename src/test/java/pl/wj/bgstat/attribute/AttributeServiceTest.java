@@ -7,17 +7,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.w3c.dom.Attr;
 import pl.wj.bgstat.attribute.model.Attribute;
 import pl.wj.bgstat.attribute.model.AttributeMapper;
 import pl.wj.bgstat.attribute.model.dto.AttributeRequestDto;
 import pl.wj.bgstat.attribute.model.dto.AttributeResponseDto;
-import pl.wj.bgstat.attributeclass.model.AttributeClassMapper;
-import pl.wj.bgstat.exception.ExceptionHelper;
 import pl.wj.bgstat.exception.ResourceExistsException;
 import pl.wj.bgstat.exception.ResourceNotFoundException;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -76,7 +72,7 @@ class AttributeServiceTest {
         // when
         assertThatThrownBy(() -> attributeService.getSingleAttribute(id))
                 .isInstanceOf(ResourceNotFoundException.class)
-                .hasMessage(ExceptionHelper.createResourceNotFoundExceptionMessage(
+                .hasMessage(createResourceNotFoundExceptionMessage(
                         ATTRIBTUE_RESOURCE_NAME, ID_FIELD, id));
     }
 
@@ -92,7 +88,7 @@ class AttributeServiceTest {
         Attribute attribute = AttributeMapper.mapToAttribute(attributeRequestDto);
         attribute.setId(attributeList.size()+1);
         AttributeResponseDto expectedResponse = AttributeMapper.mapToAttributeResponseDto(attribute);
-        given(attributeRepository.existsByObjectIdAndObjectTypeIdAndAttributeClass(anyLong(), anyLong(), anyLong())).willReturn(
+        given(attributeRepository.existsByObjectIdAndObjectTypeIdAndAttributeClassId(anyLong(), anyLong(), anyLong())).willReturn(
                 attributeList.stream().anyMatch(a ->
                         a.getObjectTypeId() == objectTypeId &&
                         a.getObjectId() == objectId &&
@@ -126,7 +122,7 @@ class AttributeServiceTest {
         Attribute attribute = AttributeMapper.mapToAttribute(attributeRequestDto);
         attribute.setId(attributeList.size()+1);
         AttributeResponseDto expectedResponse = AttributeMapper.mapToAttributeResponseDto(attribute);
-        given(attributeRepository.existsByObjectIdAndObjectTypeIdAndAttributeClassAndValueNot(
+        given(attributeRepository.existsByObjectIdAndObjectTypeIdAndAttributeClassIdAndValueNot(
                 anyLong(), anyLong(), anyLong(), anyString())).willReturn(
                 attributeList.stream().anyMatch(a ->
                         a.getObjectTypeId() == objectTypeId &&
@@ -158,7 +154,7 @@ class AttributeServiceTest {
         long attributeClassId = 1L;
         AttributeRequestDto attributeRequestDto = new AttributeRequestDto(
                 objectId, objectTypeId, attributeClassId, "VAL NO. " + (attributeList.size() + 1), false);
-        given(attributeRepository.existsByObjectIdAndObjectTypeIdAndAttributeClass(anyLong(), anyLong(), anyLong())).willReturn(
+        given(attributeRepository.existsByObjectIdAndObjectTypeIdAndAttributeClassId(anyLong(), anyLong(), anyLong())).willReturn(
                 attributeList.stream().anyMatch(a ->
                         a.getObjectTypeId() == objectTypeId &&
                                 a.getObjectId() == objectId &&
@@ -177,10 +173,16 @@ class AttributeServiceTest {
         long objectId = attributeList.size();
         long objectTypeId = 1L;
         long attributeClassId = 3L;
+        String value = "VAL No. " + attributeList.size();
         AttributeRequestDto attributeRequestDto = new AttributeRequestDto(
-                objectId, objectTypeId, attributeClassId, "VAL No. " + attributeList.size(), true);
-        given(attributeRepository.existsByObjectIdAndObjectTypeIdAndAttributeClassAndValueNot(
-                anyLong(), anyLong(), anyLong(), anyString()));
+                objectId, objectTypeId, attributeClassId, value, true);
+        given(attributeRepository.existsByObjectIdAndObjectTypeIdAndAttributeClassIdAndValueNot(
+                anyLong(), anyLong(), anyLong(), anyString())).willReturn(
+                attributeList.stream().anyMatch(a ->
+                        a.getObjectTypeId() == objectTypeId &&
+                                a.getObjectId() == objectId &&
+                                a.getAttributeClassId() == attributeClassId &&
+                                !a.getValue().equals(value)));
 
         // when
         assertThatThrownBy(() -> attributeService.addAttribute(attributeRequestDto))
