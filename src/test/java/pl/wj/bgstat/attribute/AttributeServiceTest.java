@@ -20,6 +20,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static pl.wj.bgstat.exception.ExceptionHelper.*;
 
@@ -175,7 +176,7 @@ class AttributeServiceTest {
         long objectId = attributeList.size();
         long objectTypeId = 1L;
         long attributeClassId = 3L;
-        String value = "VAL No. " + attributeList.size();
+        String value = "VAL NO. " + attributeList.size();
         AttributeRequestDto attributeRequestDto = new AttributeRequestDto(
                 objectId, objectTypeId, attributeClassId, value, true);
         given(attributeRepository.existsByObjectIdAndObjectTypeIdAndAttributeClassIdAndValueNot(
@@ -194,13 +195,67 @@ class AttributeServiceTest {
     }
 
     @Test
-    @Description("Should edit and return edited attribute when exists")
-    void shouldEditAttributeWhenExists() {
+    @Description("Should edit and return edited singlevalued attribute when exists")
+    void shouldEditSinglevaluedAttributeWhenExists() {
+        // given
+        long id = 1L;
+        long objectId = 1L;
+        long objectTypeId = 1L;
+        long attributeClassId = 1L;
+        String value = "NEW VAL";
+        AttributeRequestDto attributeRequestDto = new AttributeRequestDto(
+                objectId, objectTypeId, attributeClassId, value, false);
+        AttributeResponseDto expectedResponse = AttributeMapper.mapToAttributeResponseDto(attributeRequestDto, id);
+        given(attributeRepository.existsById(anyLong())).willReturn(attributeList.stream().anyMatch(a -> a.getId() == id));
+
+        // when
+        AttributeResponseDto attributeResponseDto = attributeService.editAttribute(id, attributeRequestDto);
+
+        // then
+        assertThat(attributeResponseDto)
+                .isNotNull()
+                .usingRecursiveComparison()
+                .isEqualTo(expectedResponse);
     }
 
     @Test
     @Description("Should throw ResourceNotFoundException when trying to edit non existing attribute")
     void shouldThrowExceptionWhenTryingToEditNonExistingAttribute() {
+        // given
+        long id = 100L;
+
+        given(attributeRepository.existsById(anyLong())).willReturn(
+                attributeList.stream().anyMatch(a -> a.getId() == id));
+
+        // when
+        assertThatThrownBy(() -> attributeService.editAttribute(id, new AttributeRequestDto()))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage(createResourceNotFoundExceptionMessage(ATTRIBTUE_RESOURCE_NAME, ID_FIELD, id));
+    }
+
+    @Test
+    @Description("Should throw ResourceExistsException when object has attribute of given class with new value")
+    void shouldThrowExceptionWhenObjectHasAttributeOfGivenClassWithNewValue() {
+        // given
+        long id = attributeList.size();
+        long objectId = attributeList.size();
+        long objectTypeId = 1L;
+        long attributeClassId = 3L;
+        String value = "VAL NO. " + attributeList.size();
+        AttributeRequestDto attributeRequestDto = new AttributeRequestDto(objectId, objectTypeId, attributeClassId, value, true);
+        given(attributeRepository.existsByObjectIdAndObjectTypeIdAndAttributeClassIdAndValueAndIdNot(
+                anyLong(), anyLong(), anyLong(), anyString(), anyLong())).willReturn(
+                        attributeList.stream().anyMatch(a ->
+                                a.getObjectId() == objectId &&
+                                a.getObjectTypeId() == objectTypeId &&
+                                a.getAttributeClassId() == attributeClassId &&
+                                a.getValue().equals(value) &&
+                                a.getId() != id));
+
+        // when
+        assertThatThrownBy(() -> attributeService.editAttribute(id, attributeRequestDto))
+                .isInstanceOf(ResourceExistsException.class)
+                .hasMessage(createResourceExistsExceptionMessage(ATTRIBTUE_RESOURCE_NAME));
     }
 
     @Test

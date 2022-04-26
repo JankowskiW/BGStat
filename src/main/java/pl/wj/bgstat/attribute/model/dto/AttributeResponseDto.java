@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AttributeResponseDto {
+    private long id;
     private long objectTypeId;
     private long objectId;
     private long attributeClassId;

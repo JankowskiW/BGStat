@@ -1,7 +1,6 @@
 package pl.wj.bgstat.attribute;
 
 import lombok.RequiredArgsConstructor;
-import org.hibernate.cfg.NotYetImplementedException;
 import org.springframework.stereotype.Service;
 import pl.wj.bgstat.attribute.model.Attribute;
 import pl.wj.bgstat.attribute.model.AttributeMapper;
@@ -37,8 +36,22 @@ public class AttributeService {
                     attributeRequestDto.getAttributeClassId()))
                 throw new ResourceExistsException(ATTRIBTUE_RESOURCE_NAME);
         }
-        Attribute attribute = attributeRepository.save(AttributeMapper.mapToAttribute(attributeRequestDto));
+
+        Attribute attribute = AttributeMapper.mapToAttribute(attributeRequestDto);
+        attributeRepository.save(attribute);
         return AttributeMapper.mapToAttributeResponseDto(attribute);
     }
 
+    public AttributeResponseDto editAttribute(long id, AttributeRequestDto attributeRequestDto) {
+        if (attributeRequestDto.isMultivaluedAttributeClassType()) {
+            if (!attributeRepository.existsByObjectIdAndObjectTypeIdAndAttributeClassIdAndValueAndIdNot(
+                    attributeRequestDto.getObjectId(), attributeRequestDto.getObjectTypeId(),
+                    attributeRequestDto.getAttributeClassId(), attributeRequestDto.getValue(), id))
+                throw new ResourceExistsException(ATTRIBTUE_RESOURCE_NAME);
+        }
+        if (!attributeRepository.existsById(id)) throw new ResourceNotFoundException(ATTRIBTUE_RESOURCE_NAME, ID_FIELD, id);
+        Attribute attribute = AttributeMapper.mapToAttribute(id, attributeRequestDto);
+        attributeRepository.save(attribute);
+        return AttributeMapper.mapToAttributeResponseDto(attribute);
+    }
 }
