@@ -13,6 +13,5 @@ public class AttributeResponseDto {
     private long objectTypeId;
     private long objectId;
     private long attributeClassId;
-    private int attributeOrdinalNumber;
     private String value;
 }

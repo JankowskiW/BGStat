@@ -16,7 +16,12 @@ public class ExceptionHelper {
         return String.format("%s with specified %s already exists in database", resource, field);
     }
 
+    public static String createResourceExistsExceptionMessage(String resource) {
+        return String.format("%s already exists in database", resource);
+    }
+
     public static String createResourceNotFoundExceptionMessage(String resource, String field, Object value) {
         return String.format("No such %s with %s: '%s'", resource, field, value);
     }
+
 }

@@ -21,7 +21,6 @@ public class AttributeMapper {
                 .objectTypeId(attribute.getObjectTypeId())
                 .objectId(attribute.getObjectId())
                 .attributeClassId(attribute.getAttributeClassId())
-                .attributeOrdinalNumber(attribute.getAttributeOrdinalNumber())
                 .value(attribute.getValue())
                 .build();
     }

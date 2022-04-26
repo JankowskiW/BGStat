@@ -14,4 +14,5 @@ public class AttributeRequestDto {
     private long objectId;
     private long attributeClassId;
     private String value;
+    private boolean multivaluedAttributeClassType;
 }

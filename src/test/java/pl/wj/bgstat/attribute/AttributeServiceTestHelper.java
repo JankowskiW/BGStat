@@ -1,33 +1,44 @@
 package pl.wj.bgstat.attribute;
 
 import pl.wj.bgstat.attribute.model.Attribute;
+import pl.wj.bgstat.attribute.model.dto.AttributeRequestDto;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class AttributeServiceTestHelper {
 
+    private static final int NUMBER_OF_ELEMENTS = 20;
     private static final int NUMBER_OF_OBJECTS = 5;
-    private static final int NUMBER_OF_OBJECT_TYPES = 2;
-    private static final int NUMBER_OF_ATTRIBUTE_CLASSES = 2;
 
-    public static List<Attribute> populateAttributeList(int numberOfElements) {
+    public static List<Attribute> populateAttributeList() {
+        int ordinalNumber = 0;
         List<Attribute> attributeList = new ArrayList<>();
         Attribute attribute;
-        for (int i = 1; i <= numberOfElements; i++) {
+
+        // Assuming that attributeClassId == 3 is an attribute class of multivalued type
+        for (int i = 1; i <= NUMBER_OF_ELEMENTS; i++) {
             attribute = new Attribute();
             attribute.setId(i);
             attribute.setValue("VAL NO. " + i);
-            if (i <= numberOfElements/4) {
-                attribute.setAttributeOrdinalNumber(i);
-                attribute.setObjectId(1);
+
+            if (i <= 5) {
                 attribute.setObjectTypeId(1);
+                attribute.setObjectId(i);
                 attribute.setAttributeClassId(1);
+            } else if (i <= 10) {
+                attribute.setObjectTypeId(2);
+                attribute.setObjectId(i);
+                attribute.setAttributeClassId(1);
+            } else if (i <= 15) {
+                attribute.setObjectTypeId(1);
+                attribute.setObjectId(i);
+                attribute.setAttributeClassId(2);
             } else {
-                attribute.setAttributeOrdinalNumber(1);
-                attribute.setObjectId(i-(numberOfElements/4));
-                attribute.setObjectTypeId(i-(numberOfElements/4));
-                attribute.setAttributeClassId(i-(numberOfElements/4));
+                ordinalNumber++;
+                attribute.setObjectTypeId(1);
+                attribute.setObjectId(NUMBER_OF_ELEMENTS);
+                attribute.setAttributeClassId(3);
             }
             attributeList.add(attribute);
         }

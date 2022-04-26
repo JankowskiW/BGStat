@@ -7,20 +7,25 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.w3c.dom.Attr;
 import pl.wj.bgstat.attribute.model.Attribute;
 import pl.wj.bgstat.attribute.model.AttributeMapper;
+import pl.wj.bgstat.attribute.model.dto.AttributeRequestDto;
 import pl.wj.bgstat.attribute.model.dto.AttributeResponseDto;
+import pl.wj.bgstat.attributeclass.model.AttributeClassMapper;
 import pl.wj.bgstat.exception.ExceptionHelper;
+import pl.wj.bgstat.exception.ResourceExistsException;
 import pl.wj.bgstat.exception.ResourceNotFoundException;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
-import static pl.wj.bgstat.exception.ExceptionHelper.ID_FIELD;
+import static pl.wj.bgstat.exception.ExceptionHelper.*;
 
 @ExtendWith(MockitoExtension.class)
 class AttributeServiceTest {
@@ -30,13 +35,12 @@ class AttributeServiceTest {
     @InjectMocks
     private AttributeService attributeService;
 
-    private static final int NUMBER_OF_ELEMENTS = 20;
 
     private List<Attribute> attributeList;
 
     @BeforeEach
     void setUp() {
-        attributeList = AttributeServiceTestHelper.populateAttributeList(NUMBER_OF_ELEMENTS);
+        attributeList = AttributeServiceTestHelper.populateAttributeList();
     }
 
     @Test
@@ -73,27 +77,121 @@ class AttributeServiceTest {
         assertThatThrownBy(() -> attributeService.getSingleAttribute(id))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessage(ExceptionHelper.createResourceNotFoundExceptionMessage(
-                        ExceptionHelper.ATTRIBTUE_RESOURCE_NAME, ID_FIELD, id));
+                        ATTRIBTUE_RESOURCE_NAME, ID_FIELD, id));
     }
 
     @Test
-    @Description("Should create and return created attribute")
+    @Description("Should create and return created attribute of non multivalued attribute type")
     void shouldReturnCreatedAttribute() {
+        // given
+        long objectId = attributeList.size()+1;
+        long objectTypeId = 1L;
+        long attributeClassId = 1L;
+        AttributeRequestDto attributeRequestDto = new AttributeRequestDto(
+                objectId, objectTypeId, attributeClassId, "VAL NO. " + (attributeList.size() + 1), false);
+        Attribute attribute = AttributeMapper.mapToAttribute(attributeRequestDto);
+        attribute.setId(attributeList.size()+1);
+        AttributeResponseDto expectedResponse = AttributeMapper.mapToAttributeResponseDto(attribute);
+        given(attributeRepository.existsByObjectIdAndObjectTypeIdAndAttributeClass(anyLong(), anyLong(), anyLong())).willReturn(
+                attributeList.stream().anyMatch(a ->
+                        a.getObjectTypeId() == objectTypeId &&
+                        a.getObjectId() == objectId &&
+                        a.getAttributeClassId() == attributeClassId));
+        given(attributeRepository.save(any(Attribute.class))).willAnswer(
+                i -> {
+                    Attribute a = i.getArgument(0, Attribute.class);
+                    a.setId(attribute.getId());
+                    return a;
+                });
+
+        // when
+        AttributeResponseDto attributeResponseDto = attributeService.addAttribute(attributeRequestDto);
+
+        // then
+        assertThat(attributeResponseDto)
+                .isNotNull()
+                .usingRecursiveComparison()
+                .isEqualTo(expectedResponse);
     }
 
     @Test
-    @Description("ShouldCreateAttributeAndIncrementOrdinalNumberWhenAttributeTypeIsList")
-    void shouldCreateAttributeAndIncrementOrdinalNumberWhenAttributeTypeIsList() {
+    @Description("Should create and return created attribute when attribute has multivalued type")
+    void shouldReturnCreatedAttributeWhenAttributeHasMultivaluedType() {
+        // given
+        long objectId = attributeList.size();
+        long objectTypeId = 1L;
+        long attributeClassId = 3L;
+        AttributeRequestDto attributeRequestDto = new AttributeRequestDto(
+                objectId, objectTypeId, attributeClassId, "VAL NO. " + (attributeList.size() + 1), true);
+        Attribute attribute = AttributeMapper.mapToAttribute(attributeRequestDto);
+        attribute.setId(attributeList.size()+1);
+        AttributeResponseDto expectedResponse = AttributeMapper.mapToAttributeResponseDto(attribute);
+        given(attributeRepository.existsByObjectIdAndObjectTypeIdAndAttributeClassAndValueNot(
+                anyLong(), anyLong(), anyLong(), anyString())).willReturn(
+                attributeList.stream().anyMatch(a ->
+                        a.getObjectTypeId() == objectTypeId &&
+                        a.getObjectId() == objectId &&
+                        a.getAttributeClassId() == attributeClassId));
+        given(attributeRepository.save(any(Attribute.class))).willAnswer(
+                i -> {
+                    Attribute a = i.getArgument(0, Attribute.class);
+                    a.setId(attribute.getId());
+                    return a;
+                });
+
+        // when
+        AttributeResponseDto attributeResponseDto = attributeService.addAttribute(attributeRequestDto);
+
+        // then
+        assertThat(attributeResponseDto)
+                .isNotNull()
+                .usingRecursiveComparison()
+                .isEqualTo(expectedResponse);
     }
 
     @Test
-    @Description("Should throw ResourceExistsException when cannot add given attribute to object")
-    void shouldThrowExceptionWhenCannotAddGivenAttributeToObject() {
+    @Description("Should throw ResourceExistsException when cannot add attribute of singlevalued type to object")
+    void shouldThrowExceptionWhenCannotAddAttributeOfSinglevaluedType() {
+        // given
+        long objectId = 1L;
+        long objectTypeId = 1L;
+        long attributeClassId = 1L;
+        AttributeRequestDto attributeRequestDto = new AttributeRequestDto(
+                objectId, objectTypeId, attributeClassId, "VAL NO. " + (attributeList.size() + 1), false);
+        given(attributeRepository.existsByObjectIdAndObjectTypeIdAndAttributeClass(anyLong(), anyLong(), anyLong())).willReturn(
+                attributeList.stream().anyMatch(a ->
+                        a.getObjectTypeId() == objectTypeId &&
+                                a.getObjectId() == objectId &&
+                                a.getAttributeClassId() == attributeClassId));
+
+        // when
+        assertThatThrownBy(() -> attributeService.addAttribute(attributeRequestDto))
+                .isInstanceOf(ResourceExistsException.class)
+                .hasMessage(createResourceExistsExceptionMessage(ATTRIBTUE_RESOURCE_NAME));
+    }
+
+    @Test
+    @Description("Should throw ResourceExistsException when cannot add attribute of multivalued type to object")
+    void shouldThrowExceptionWhenCannotAddAttributeOfMultivaluedType() {
+        // given
+        long objectId = attributeList.size();
+        long objectTypeId = 1L;
+        long attributeClassId = 3L;
+        AttributeRequestDto attributeRequestDto = new AttributeRequestDto(
+                objectId, objectTypeId, attributeClassId, "VAL No. " + attributeList.size(), true);
+        given(attributeRepository.existsByObjectIdAndObjectTypeIdAndAttributeClassAndValueNot(
+                anyLong(), anyLong(), anyLong(), anyString()));
+
+        // when
+        assertThatThrownBy(() -> attributeService.addAttribute(attributeRequestDto))
+                .isInstanceOf(ResourceExistsException.class)
+                .hasMessage(createResourceExistsExceptionMessage(ATTRIBTUE_RESOURCE_NAME));
+
     }
 
     @Test
     @Description("Should edit and return edited attribute when exists")
-    void shouldAttributeWhenExists() {
+    void shouldEditAttributeWhenExists() {
     }
 
     @Test
