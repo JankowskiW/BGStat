@@ -7,6 +7,7 @@ import pl.wj.bgstat.attribute.model.Attribute;
 import pl.wj.bgstat.attribute.model.AttributeMapper;
 import pl.wj.bgstat.attribute.model.dto.AttributeRequestDto;
 import pl.wj.bgstat.attribute.model.dto.AttributeResponseDto;
+import pl.wj.bgstat.exception.ResourceExistsException;
 import pl.wj.bgstat.exception.ResourceNotFoundException;
 
 import static pl.wj.bgstat.exception.ExceptionHelper.ATTRIBTUE_RESOURCE_NAME;
@@ -25,7 +26,19 @@ public class AttributeService {
     }
 
     public AttributeResponseDto addAttribute(AttributeRequestDto attributeRequestDto) {
-        throw new NotYetImplementedException();
+        if (attributeRequestDto.isMultivaluedAttributeClassType()) {
+            if (attributeRepository.existsByObjectIdAndObjectTypeIdAndAttributeClassIdAndValueNot(
+                    attributeRequestDto.getObjectId(), attributeRequestDto.getObjectTypeId(),
+                    attributeRequestDto.getAttributeClassId(), attributeRequestDto.getValue()))
+                throw new ResourceExistsException(ATTRIBTUE_RESOURCE_NAME);
+        } else {
+            if (attributeRepository.existsByObjectIdAndObjectTypeIdAndAttributeClassId(
+                    attributeRequestDto.getObjectId(), attributeRequestDto.getObjectTypeId(),
+                    attributeRequestDto.getAttributeClassId()))
+                throw new ResourceExistsException(ATTRIBTUE_RESOURCE_NAME);
+        }
+        Attribute attribute = attributeRepository.save(AttributeMapper.mapToAttribute(attributeRequestDto));
+        return AttributeMapper.mapToAttributeResponseDto(attribute);
     }
 
 }

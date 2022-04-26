@@ -117,8 +117,9 @@ class AttributeServiceTest {
         long objectId = attributeList.size();
         long objectTypeId = 1L;
         long attributeClassId = 3L;
+        String value = "VAL No. " + (attributeList.size() + 1);
         AttributeRequestDto attributeRequestDto = new AttributeRequestDto(
-                objectId, objectTypeId, attributeClassId, "VAL NO. " + (attributeList.size() + 1), true);
+                objectId, objectTypeId, attributeClassId, value, true);
         Attribute attribute = AttributeMapper.mapToAttribute(attributeRequestDto);
         attribute.setId(attributeList.size()+1);
         AttributeResponseDto expectedResponse = AttributeMapper.mapToAttributeResponseDto(attribute);
@@ -127,7 +128,8 @@ class AttributeServiceTest {
                 attributeList.stream().anyMatch(a ->
                         a.getObjectTypeId() == objectTypeId &&
                         a.getObjectId() == objectId &&
-                        a.getAttributeClassId() == attributeClassId));
+                        a.getAttributeClassId() == attributeClassId &&
+                        a.getValue().equals(value)));
         given(attributeRepository.save(any(Attribute.class))).willAnswer(
                 i -> {
                     Attribute a = i.getArgument(0, Attribute.class);

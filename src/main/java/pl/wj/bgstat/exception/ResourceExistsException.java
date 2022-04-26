@@ -6,4 +6,7 @@ public class ResourceExistsException extends EntityExistsException {
     public ResourceExistsException(String resource, String field) {
         super(ExceptionHelper.createResourceExistsExceptionMessage(resource, field));
     }
+    public ResourceExistsException(String resource) {
+        super(ExceptionHelper.createResourceExistsExceptionMessage(resource));
+    }
 }
