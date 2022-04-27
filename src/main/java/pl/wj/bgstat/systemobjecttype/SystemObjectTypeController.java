@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import pl.wj.bgstat.systemobjectattributeclass.model.dto.SystemObjectAttributeClassResponseDto;
 import pl.wj.bgstat.systemobjecttype.model.SystemObjectType;
+import pl.wj.bgstat.systemobjecttype.model.SystemObjectTypeArchivedStatus;
 import pl.wj.bgstat.systemobjecttype.model.dto.SystemObjectTypeHeaderDto;
 import pl.wj.bgstat.systemobjecttype.model.dto.SystemObjectTypeRequestDto;
 import pl.wj.bgstat.systemobjecttype.model.dto.SystemObjectTypeResponseDto;
@@ -19,9 +20,9 @@ public class SystemObjectTypeController {
     private final SystemObjectTypeService systemObjectTypeService;
 
     @GetMapping("")
-    public List<SystemObjectTypeHeaderDto> getSystemObjectTypeHeaders() {
-        // TODO: Create filter by archived
-        return systemObjectTypeService.getSystemObjectTypeHeaders();
+    public List<SystemObjectTypeHeaderDto> getSystemObjectTypeHeaders(
+            @RequestParam(required = false, defaultValue = "ACTIVE") SystemObjectTypeArchivedStatus archivedStatus) {
+        return systemObjectTypeService.getSystemObjectTypeHeaders(archivedStatus);
     }
 
     @GetMapping("/{id}")

@@ -8,6 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pl.wj.bgstat.attributeclasstype.model.AttributeClassType;
+import pl.wj.bgstat.attributeclasstype.model.AttributeClassTypeArchivedStatus;
 import pl.wj.bgstat.attributeclasstype.model.AttributeClassTypeMapper;
 import pl.wj.bgstat.attributeclasstype.model.dto.AttributeClassTypeHeaderDto;
 import pl.wj.bgstat.attributeclasstype.model.dto.AttributeClassTypeRequestDto;
@@ -17,6 +18,7 @@ import pl.wj.bgstat.exception.ResourceNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -49,12 +51,12 @@ class AttributeClassTypeServiceTest {
     @Description("Should return all attribute class type headers")
     void shouldReturnAllAttributeClassTypeHeaders() {
         // given
-        given(attributeClassTypeRepository.findAllAttributeClassTypeHeaders())
+        given(attributeClassTypeRepository.findAttributeClassTypeHeaders())
                 .willReturn(attributeClassTypeHeaderList);
 
         // when
         List<AttributeClassTypeHeaderDto> attributeClassTypeHeaders =
-                attributeClassTypeService.getAttributeClassTypeHeaders();
+                attributeClassTypeService.getAttributeClassTypeHeaders(AttributeClassTypeArchivedStatus.ALL);
 
         // then
         assertThat(attributeClassTypeHeaders)
@@ -64,17 +66,58 @@ class AttributeClassTypeServiceTest {
                 .isEqualTo(attributeClassTypeHeaderList);
     }
 
+    @Test
+    @Description("Should return only active attribute class type headers")
+    void shouldReturnActiveAttributeClassTypeHeaders() {
+        // given
+        given(attributeClassTypeRepository.findAttributeClassTypeHeaders(anyBoolean()))
+                .willReturn(attributeClassTypeHeaderList.stream().filter(
+                        acth -> !acth.isArchived()).collect(Collectors.toList()));
+
+        // when
+        List<AttributeClassTypeHeaderDto> attributeClassTypeHeaders =
+                attributeClassTypeService.getAttributeClassTypeHeaders(AttributeClassTypeArchivedStatus.ACTIVE);
+
+        // then
+        assertThat(attributeClassTypeHeaders)
+                .isNotNull()
+                .hasSize(NUMBER_OF_ELEMENTS/2 + 1)
+                .usingRecursiveFieldByFieldElementComparator()
+                .isEqualTo(attributeClassTypeHeaderList.stream().filter(
+                        acth -> !acth.isArchived()).collect(Collectors.toList()));
+    }
+
+    @Test
+    @Description("Should return only active attribute class type headers")
+    void shouldReturnArchivedAttributeClassTypeHeaders() {
+        // given
+        given(attributeClassTypeRepository.findAttributeClassTypeHeaders(anyBoolean()))
+                .willReturn(attributeClassTypeHeaderList.stream().filter(
+                        AttributeClassTypeHeaderDto::isArchived).collect(Collectors.toList()));
+
+        // when
+        List<AttributeClassTypeHeaderDto> attributeClassTypeHeaders =
+                attributeClassTypeService.getAttributeClassTypeHeaders(AttributeClassTypeArchivedStatus.ARCHIVED);
+
+        // then
+        assertThat(attributeClassTypeHeaders)
+                .isNotNull()
+                .hasSize(NUMBER_OF_ELEMENTS/2)
+                .usingRecursiveFieldByFieldElementComparator()
+                .isEqualTo(attributeClassTypeHeaderList.stream().filter(
+                        AttributeClassTypeHeaderDto::isArchived).collect(Collectors.toList()));
+    }
 
     @Test
     @Description("Should return empty list of attribute class type headers when there is no records in db")
     void shouldReturnEmptyListOfAttributeClassTypeHeaderList() {
         // given
-        given(attributeClassTypeRepository.findAllAttributeClassTypeHeaders())
+        given(attributeClassTypeRepository.findAttributeClassTypeHeaders())
                 .willReturn(new ArrayList<>());
 
         // when
         List<AttributeClassTypeHeaderDto> attributeClassTypeHeaders =
-                attributeClassTypeService.getAttributeClassTypeHeaders();
+                attributeClassTypeService.getAttributeClassTypeHeaders(AttributeClassTypeArchivedStatus.ALL);
 
         // then
         assertThat(attributeClassTypeHeaders)

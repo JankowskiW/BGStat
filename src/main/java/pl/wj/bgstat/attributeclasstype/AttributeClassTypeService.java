@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import pl.wj.bgstat.attributeclasstype.model.AttributeClassType;
+import pl.wj.bgstat.attributeclasstype.model.AttributeClassTypeArchivedStatus;
 import pl.wj.bgstat.attributeclasstype.model.AttributeClassTypeMapper;
 import pl.wj.bgstat.attributeclasstype.model.dto.AttributeClassTypeHeaderDto;
 import pl.wj.bgstat.attributeclasstype.model.dto.AttributeClassTypeRequestDto;
@@ -21,8 +22,12 @@ public class AttributeClassTypeService {
 
     private final AttributeClassTypeRepository attributeClassTypeRepository;
 
-    public List<AttributeClassTypeHeaderDto> getAttributeClassTypeHeaders() {
-        return attributeClassTypeRepository.findAllAttributeClassTypeHeaders();
+    public List<AttributeClassTypeHeaderDto> getAttributeClassTypeHeaders(AttributeClassTypeArchivedStatus archivedStatus) {
+        if (archivedStatus.equals(AttributeClassTypeArchivedStatus.ALL)) {
+            return attributeClassTypeRepository.findAttributeClassTypeHeaders();
+        } else {
+            return attributeClassTypeRepository.findAttributeClassTypeHeaders(archivedStatus.equals(AttributeClassTypeArchivedStatus.ARCHIVED));
+        }
     }
 
     public AttributeClassType getSingleAttributeClassType(long id) {

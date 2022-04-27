@@ -7,6 +7,7 @@ import pl.wj.bgstat.exception.ResourceNotFoundException;
 import pl.wj.bgstat.systemobjectattributeclass.SystemObjectAttributeClassRepository;
 import pl.wj.bgstat.systemobjectattributeclass.model.dto.SystemObjectAttributeClassResponseDto;
 import pl.wj.bgstat.systemobjecttype.model.SystemObjectType;
+import pl.wj.bgstat.systemobjecttype.model.SystemObjectTypeArchivedStatus;
 import pl.wj.bgstat.systemobjecttype.model.SystemObjectTypeMapper;
 import pl.wj.bgstat.systemobjecttype.model.dto.SystemObjectTypeHeaderDto;
 import pl.wj.bgstat.systemobjecttype.model.dto.SystemObjectTypeRequestDto;
@@ -23,8 +24,12 @@ public class SystemObjectTypeService {
     private final SystemObjectTypeRepository systemObjectTypeRepository;
     private final SystemObjectAttributeClassRepository systemObjectAttributeClassRepository;
 
-    public List<SystemObjectTypeHeaderDto> getSystemObjectTypeHeaders() {
-        return systemObjectTypeRepository.findAllSystemObjectTypeHeaders();
+    public List<SystemObjectTypeHeaderDto> getSystemObjectTypeHeaders(SystemObjectTypeArchivedStatus archivedStatus) {
+        if (archivedStatus.equals(SystemObjectTypeArchivedStatus.ALL)) {
+            return systemObjectTypeRepository.findSystemObjectTypeHeaders();
+        } else {
+            return systemObjectTypeRepository.findSystemObjectTypeHeaders(archivedStatus.equals(SystemObjectTypeArchivedStatus.ARCHIVED));
+        }
     }
 
     public SystemObjectTypeResponseDto getSingleSystemObjectType(long id) {

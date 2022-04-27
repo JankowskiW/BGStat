@@ -12,6 +12,7 @@ import pl.wj.bgstat.exception.ResourceNotFoundException;
 import pl.wj.bgstat.systemobjectattributeclass.SystemObjectAttributeClassRepository;
 import pl.wj.bgstat.systemobjectattributeclass.model.dto.SystemObjectAttributeClassResponseDto;
 import pl.wj.bgstat.systemobjecttype.model.SystemObjectType;
+import pl.wj.bgstat.systemobjecttype.model.SystemObjectTypeArchivedStatus;
 import pl.wj.bgstat.systemobjecttype.model.SystemObjectTypeMapper;
 import pl.wj.bgstat.systemobjecttype.model.dto.SystemObjectTypeHeaderDto;
 import pl.wj.bgstat.systemobjecttype.model.dto.SystemObjectTypeRequestDto;
@@ -59,12 +60,12 @@ class SystemObjectTypeServiceTest {
     @Description("Should return all system object type headers")
     void shouldReturnAllSystemObjectTypeHeaders() {
         // given
-        given(systemObjectTypeRepository.findAllSystemObjectTypeHeaders())
+        given(systemObjectTypeRepository.findSystemObjectTypeHeaders())
                 .willReturn(systemObjectTypeHeaderList);
 
         // when
         List<SystemObjectTypeHeaderDto> systemObjectTypeHeaders =
-                systemObjectTypeService.getSystemObjectTypeHeaders();
+                systemObjectTypeService.getSystemObjectTypeHeaders(SystemObjectTypeArchivedStatus.ALL);
 
         // then
         assertThat(systemObjectTypeHeaders)
@@ -75,15 +76,57 @@ class SystemObjectTypeServiceTest {
     }
 
     @Test
+    @Description("Should return only active system object type headers")
+    void shouldReturnActiveSystemObjectTypeHeaders() {
+        // given
+        given(systemObjectTypeRepository.findSystemObjectTypeHeaders(anyBoolean()))
+                .willReturn(systemObjectTypeHeaderList.stream().filter(
+                        soth -> !soth.isArchived()).collect(Collectors.toList()));
+
+        // when
+        List<SystemObjectTypeHeaderDto> systemObjectTypeHeaders =
+                systemObjectTypeService.getSystemObjectTypeHeaders(SystemObjectTypeArchivedStatus.ARCHIVED);
+
+        // then
+        assertThat(systemObjectTypeHeaders)
+                .isNotNull()
+                .hasSize(NUMBER_OF_ELEMENTS/2+1)
+                .usingRecursiveFieldByFieldElementComparator()
+                .isEqualTo(systemObjectTypeHeaderList.stream().filter(
+                        soth -> !soth.isArchived()).collect(Collectors.toList()));
+    }
+
+    @Test
+    @Description("Should return only archived system object type headers")
+    void shouldReturnArchivedSystemObjectTypeHeaders() {
+        // given
+        given(systemObjectTypeRepository.findSystemObjectTypeHeaders(anyBoolean()))
+                .willReturn(systemObjectTypeHeaderList.stream().filter(
+                        SystemObjectTypeHeaderDto::isArchived).collect(Collectors.toList()));
+
+        // when
+        List<SystemObjectTypeHeaderDto> systemObjectTypeHeaders =
+                systemObjectTypeService.getSystemObjectTypeHeaders(SystemObjectTypeArchivedStatus.ACTIVE);
+
+        // then
+        assertThat(systemObjectTypeHeaders)
+                .isNotNull()
+                .hasSize(NUMBER_OF_ELEMENTS/2)
+                .usingRecursiveFieldByFieldElementComparator()
+                .isEqualTo(systemObjectTypeHeaderList.stream().filter(
+                        SystemObjectTypeHeaderDto::isArchived).collect(Collectors.toList()));
+    }
+
+    @Test
     @Description("Should return empty list of system object type headers when there is no records in db")
     void shouldReturnEmptySystemObjectTypeHeaderList() {
         // given
-        given(systemObjectTypeRepository.findAllSystemObjectTypeHeaders())
+        given(systemObjectTypeRepository.findSystemObjectTypeHeaders())
                 .willReturn(new ArrayList<>());
 
         // when
         List<SystemObjectTypeHeaderDto> systemObjectTypeHeaders =
-                systemObjectTypeService.getSystemObjectTypeHeaders();
+                systemObjectTypeService.getSystemObjectTypeHeaders(SystemObjectTypeArchivedStatus.ALL);
 
         // then
         assertThat(systemObjectTypeHeaders)

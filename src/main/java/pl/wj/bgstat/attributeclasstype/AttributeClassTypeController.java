@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 import pl.wj.bgstat.attributeclasstype.model.AttributeClassType;
+import pl.wj.bgstat.attributeclasstype.model.AttributeClassTypeArchivedStatus;
 import pl.wj.bgstat.attributeclasstype.model.dto.AttributeClassTypeHeaderDto;
 import pl.wj.bgstat.attributeclasstype.model.dto.AttributeClassTypeRequestDto;
 
@@ -19,9 +20,9 @@ public class AttributeClassTypeController {
     private final AttributeClassTypeService attributeClassTypeService;
 
     @GetMapping("")
-    public List<AttributeClassTypeHeaderDto> getAttributeClassTypeHeaders() {
-        // TODO: Create filter by archived
-        return attributeClassTypeService.getAttributeClassTypeHeaders();
+    public List<AttributeClassTypeHeaderDto> getAttributeClassTypeHeaders(
+            @RequestParam(required = false, defaultValue = "ACTIVE") AttributeClassTypeArchivedStatus archivedStatus) {
+        return attributeClassTypeService.getAttributeClassTypeHeaders(archivedStatus);
     }
 
     @GetMapping("/{id}")

@@ -18,7 +18,7 @@ public class SystemObjectTypeServiceTestHelper {
             systemObjectType.setId(i);
             systemObjectType.setName("Name No. " + i);
             systemObjectType.setDescription("DESCRIPTION OF " + systemObjectType.getName());
-            systemObjectType.setArchived(false);
+            systemObjectType.setArchived(i%2==0);
             systemObjectTypeList.add(systemObjectType);
         }
         return systemObjectTypeList;

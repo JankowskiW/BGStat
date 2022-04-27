@@ -15,7 +15,10 @@ public interface AttributeClassTypeRepository extends JpaRepository<AttributeCla
 
     @Query("SELECT new pl.wj.bgstat.attributeclasstype.model.dto.AttributeClassTypeHeaderDto(act.id, act.name, act.archived) " +
            "FROM AttributeClassType act")
-    List<AttributeClassTypeHeaderDto> findAllAttributeClassTypeHeaders();
+    List<AttributeClassTypeHeaderDto> findAttributeClassTypeHeaders();
+    @Query("SELECT new pl.wj.bgstat.attributeclasstype.model.dto.AttributeClassTypeHeaderDto(act.id, act.name, act.archived) " +
+            "FROM AttributeClassType act WHERE act.archived = :archived")
+    List<AttributeClassTypeHeaderDto> findAttributeClassTypeHeaders(boolean archived);
 
     boolean existsByName(String name);
     boolean existsByNameAndIdNot(String name, long id);

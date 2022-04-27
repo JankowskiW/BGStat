@@ -17,7 +17,7 @@ public class AttributeClassTypeServiceTestHelper {
             attributeClassType.setId(i);
             attributeClassType.setName("Name No. " + i);
             attributeClassType.setDescription("DESCRIPTION OF " + attributeClassType.getName());
-            attributeClassType.setArchived(false);
+            attributeClassType.setArchived(i%2==0);
             attributeClassTypeList.add(attributeClassType);
         }
         return attributeClassTypeList;
