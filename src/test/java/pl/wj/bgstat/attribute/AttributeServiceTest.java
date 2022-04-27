@@ -22,6 +22,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willDoNothing;
+import static org.mockito.Mockito.verify;
 import static pl.wj.bgstat.exception.ExceptionHelper.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -261,15 +263,31 @@ class AttributeServiceTest {
     @Test
     @Description("Should remove attribute when id exists in database")
     void shouldRemoveAttributeWhenIdExists() {
+        // given
+        long id = 1L;
+        given(attributeRepository.existsById(id)).willReturn(
+                attributeList.stream().anyMatch(a -> a.getId() == id));
+        willDoNothing().given(attributeRepository).deleteById(anyLong());
+
+        // when
+        attributeService.deleteAttribute(id);
+
+        // then
+        verify(attributeRepository).deleteById(id);
 
     }
 
     @Test
     @Description("Should throw ResourceNotFoundException when trying to remove non existing attribute")
     void shouldThrowExceptionWhenTryingToRemoveNonExistingAttribute() {
+        // given
+        long id = 100L;
+        given(attributeRepository.existsById(id)).willReturn(
+                attributeList.stream().anyMatch(a -> a.getId() == id));
 
+        // then
+        assertThatThrownBy(() -> attributeService.deleteAttribute(id))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage(createResourceNotFoundExceptionMessage(ATTRIBTUE_RESOURCE_NAME, ID_FIELD, id));
     }
-
-
-
 }

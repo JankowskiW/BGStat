@@ -54,4 +54,9 @@ public class AttributeService {
         attributeRepository.save(attribute);
         return AttributeMapper.mapToAttributeResponseDto(attribute);
     }
+
+    public void deleteAttribute(long id) {
+         if (!attributeRepository.existsById(id)) throw new ResourceNotFoundException(ATTRIBTUE_RESOURCE_NAME, ID_FIELD, id);
+         attributeRepository.deleteById(id);
+    }
 }
