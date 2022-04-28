@@ -1,7 +1,7 @@
 package pl.wj.bgstat.systemobjectattributeclass;
 
-import jdk.jfr.Description;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -18,6 +18,7 @@ import pl.wj.bgstat.systemobjectattributeclass.model.dto.SystemObjectAttributeCl
 import pl.wj.bgstat.systemobjectattributeclass.model.dto.SystemObjectAttributeClassResponseDto;
 import pl.wj.bgstat.systemobjecttype.SystemObjectTypeRepository;
 import pl.wj.bgstat.systemobjecttype.model.SystemObjectType;
+
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -57,7 +58,7 @@ class SystemObjectAttributeClassServiceTest {
     }
 
     @Test
-    @Description("Should return created assignment of attribute class to system object type")
+    @DisplayName("Should return created assignment of attribute class to system object type")
     void shouldReturnAssignmentOfAttributeClassToSystemObjectType() {
         // given
         SystemObjectAttributeClassId id = new SystemObjectAttributeClassId(1L, 3L);
@@ -88,7 +89,7 @@ class SystemObjectAttributeClassServiceTest {
     }
 
     @Test
-    @Description("Should throw ResourceNotFoundException when trying to assign non existing attribute class to system object type")
+    @DisplayName("Should throw ResourceNotFoundException when trying to assign non existing attribute class to system object type")
     void shouldThrowExceptionWhenTryingToAssignNonExistingAttributeClassToSystemObjectType() {
         // given
         SystemObjectAttributeClassId id = new SystemObjectAttributeClassId(100L, 1L);
@@ -106,7 +107,7 @@ class SystemObjectAttributeClassServiceTest {
     }
 
     @Test
-    @Description("Should throw ResourceNotFoundException when trying to assign attribute class to non existing system object type")
+    @DisplayName("Should throw ResourceNotFoundException when trying to assign attribute class to non existing system object type")
     void shouldThrowExceptionWhenTryingToAssignAttributeClassToNonExistingSystemObjectType() {
         // given
         SystemObjectAttributeClassId id = new SystemObjectAttributeClassId(1L, 100L);
@@ -123,7 +124,7 @@ class SystemObjectAttributeClassServiceTest {
     }
 
     @Test
-    @Description("Should throw ResourceExistsException when trying to create existing assignment")
+    @DisplayName("Should throw ResourceExistsException when trying to create existing assignment")
     void shouldThrowExceptionWhenTryingToCreateExistingAssignment() {
         // given
         SystemObjectAttributeClassId id = new SystemObjectAttributeClassId(1L, 1L);
@@ -144,7 +145,7 @@ class SystemObjectAttributeClassServiceTest {
     }
 
     @Test
-    @Description("Should remove attribute class from system object type when assignment exists in database")
+    @DisplayName("Should remove attribute class from system object type when assignment exists in database")
     void shouldRemoveAttributeClassFromSystemObjectTypeWhenAssignmentExists() {
         // given
         SystemObjectAttributeClassId id = new SystemObjectAttributeClassId(1L, 1L);
@@ -161,7 +162,7 @@ class SystemObjectAttributeClassServiceTest {
     }
 
     @Test
-    @Description("Should throw ResourceNotFoundException when trying to remove non existing system object type attribute class")
+    @DisplayName("Should throw ResourceNotFoundException when trying to remove non existing system object type attribute class")
     void shouldThrowExceptionWhenTryingToRemoveNonExistingSystemObjectTypeAttributeClass() {
         // given
         SystemObjectAttributeClassId id = new SystemObjectAttributeClassId(1L, 100L);
@@ -176,7 +177,7 @@ class SystemObjectAttributeClassServiceTest {
     }
 
     @Test
-    @Description("Should edit attribute type to system object assignment when exists")
+    @DisplayName("Should edit attribute type to system object assignment when exists")
     void shouldEditAttributeTypeToSystemObjectAssignmentWhenExists() {
         // given
         SystemObjectAttributeClassId id = new SystemObjectAttributeClassId(1L, 1L);
@@ -209,7 +210,7 @@ class SystemObjectAttributeClassServiceTest {
     }
 
     @Test
-    @Description("Should throw ResourceNotFoundException when trying to edit non existing " +
+    @DisplayName("Should throw ResourceNotFoundException when trying to edit non existing " +
                  "attribute class to system object type assignment")
     void shouldThrowExceptionWhenTryingToEditNonExistingAssignment() {
         // given

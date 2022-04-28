@@ -7,9 +7,7 @@ import pl.wj.bgstat.attributeclasstype.model.AttributeClassType;
 import pl.wj.bgstat.systemobjectattributeclass.model.dto.SystemObjectAttributeClassResponseDto;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class AttributeClassServiceTestHelper {
 

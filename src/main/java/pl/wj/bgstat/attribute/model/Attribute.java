@@ -17,6 +17,4 @@ public class Attribute {
     private long objectId;
     private long attributeClassId;
     private String value;
-
-    // TODO: 11.04.2022 Add relations to every tables that Attributes table has relations
 }

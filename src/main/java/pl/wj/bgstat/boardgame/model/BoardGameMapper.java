@@ -2,13 +2,9 @@ package pl.wj.bgstat.boardgame.model;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import pl.wj.bgstat.boardgamedescription.model.BoardGameDescription;
-import pl.wj.bgstat.boardgame.model.dto.BoardGameHeaderDto;
 import pl.wj.bgstat.boardgame.model.dto.BoardGameRequestDto;
 import pl.wj.bgstat.boardgame.model.dto.BoardGameResponseDto;
-
-import java.util.List;
-import java.util.stream.Collectors;
+import pl.wj.bgstat.boardgamedescription.model.BoardGameDescription;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class BoardGameMapper {
@@ -32,19 +28,6 @@ public class BoardGameMapper {
         boardGame.getBoardGameDescription().setDescription(boardGameRequestDto.getDescription());
         boardGame.getBoardGameDescription().setBoardGame(boardGame);
         return boardGame;
-    }
-
-    public static List<BoardGameHeaderDto> mapToBoardGameHeaderDtos(List<BoardGame> boardGames) {
-        return boardGames.stream()
-                .map(boardGame -> mapToBoardGameHeaderDto(boardGame))
-                .collect(Collectors.toList());
-    }
-
-    private static BoardGameHeaderDto mapToBoardGameHeaderDto(BoardGame boardGame) {
-        return BoardGameHeaderDto.builder()
-                .id(boardGame.getId())
-                .name(boardGame.getName())
-                .build();
     }
 
     public static BoardGameResponseDto mapToBoardGameResponseDto(BoardGame boardGame) {

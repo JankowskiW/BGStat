@@ -9,7 +9,7 @@ import pl.wj.bgstat.attribute.model.dto.AttributeResponseDto;
 import pl.wj.bgstat.exception.ResourceExistsException;
 import pl.wj.bgstat.exception.ResourceNotFoundException;
 
-import static pl.wj.bgstat.exception.ExceptionHelper.ATTRIBTUE_RESOURCE_NAME;
+import static pl.wj.bgstat.exception.ExceptionHelper.ATTRIBUTE_RESOURCE_NAME;
 import static pl.wj.bgstat.exception.ExceptionHelper.ID_FIELD;
 
 @Service
@@ -20,7 +20,7 @@ public class AttributeService {
 
     public AttributeResponseDto getSingleAttribute(long id) {
         Attribute attribute = attributeRepository.findById(id).orElseThrow(
-                () -> new ResourceNotFoundException(ATTRIBTUE_RESOURCE_NAME, ID_FIELD, id));
+                () -> new ResourceNotFoundException(ATTRIBUTE_RESOURCE_NAME, ID_FIELD, id));
         return AttributeMapper.mapToAttributeResponseDto(attribute);
     }
 
@@ -29,12 +29,12 @@ public class AttributeService {
             if (attributeRepository.existsByObjectIdAndObjectTypeIdAndAttributeClassIdAndValueNot(
                     attributeRequestDto.getObjectId(), attributeRequestDto.getObjectTypeId(),
                     attributeRequestDto.getAttributeClassId(), attributeRequestDto.getValue()))
-                throw new ResourceExistsException(ATTRIBTUE_RESOURCE_NAME);
+                throw new ResourceExistsException(ATTRIBUTE_RESOURCE_NAME);
         } else {
             if (attributeRepository.existsByObjectIdAndObjectTypeIdAndAttributeClassId(
                     attributeRequestDto.getObjectId(), attributeRequestDto.getObjectTypeId(),
                     attributeRequestDto.getAttributeClassId()))
-                throw new ResourceExistsException(ATTRIBTUE_RESOURCE_NAME);
+                throw new ResourceExistsException(ATTRIBUTE_RESOURCE_NAME);
         }
 
         Attribute attribute = AttributeMapper.mapToAttribute(attributeRequestDto);
@@ -47,16 +47,16 @@ public class AttributeService {
             if (!attributeRepository.existsByObjectIdAndObjectTypeIdAndAttributeClassIdAndValueAndIdNot(
                     attributeRequestDto.getObjectId(), attributeRequestDto.getObjectTypeId(),
                     attributeRequestDto.getAttributeClassId(), attributeRequestDto.getValue(), id))
-                throw new ResourceExistsException(ATTRIBTUE_RESOURCE_NAME);
+                throw new ResourceExistsException(ATTRIBUTE_RESOURCE_NAME);
         }
-        if (!attributeRepository.existsById(id)) throw new ResourceNotFoundException(ATTRIBTUE_RESOURCE_NAME, ID_FIELD, id);
+        if (!attributeRepository.existsById(id)) throw new ResourceNotFoundException(ATTRIBUTE_RESOURCE_NAME, ID_FIELD, id);
         Attribute attribute = AttributeMapper.mapToAttribute(id, attributeRequestDto);
         attributeRepository.save(attribute);
         return AttributeMapper.mapToAttributeResponseDto(attribute);
     }
 
     public void deleteAttribute(long id) {
-         if (!attributeRepository.existsById(id)) throw new ResourceNotFoundException(ATTRIBTUE_RESOURCE_NAME, ID_FIELD, id);
+         if (!attributeRepository.existsById(id)) throw new ResourceNotFoundException(ATTRIBUTE_RESOURCE_NAME, ID_FIELD, id);
          attributeRepository.deleteById(id);
     }
 }

@@ -3,7 +3,6 @@ package pl.wj.bgstat.systemobjecttype;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import pl.wj.bgstat.systemobjectattributeclass.model.dto.SystemObjectAttributeClassResponseDto;
-import pl.wj.bgstat.systemobjecttype.model.SystemObjectType;
 import pl.wj.bgstat.systemobjecttype.model.SystemObjectTypeArchivedStatus;
 import pl.wj.bgstat.systemobjecttype.model.dto.SystemObjectTypeHeaderDto;
 import pl.wj.bgstat.systemobjecttype.model.dto.SystemObjectTypeRequestDto;

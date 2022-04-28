@@ -1,7 +1,7 @@
 package pl.wj.bgstat.attributeclasstype;
 
-import jdk.jfr.Description;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -48,7 +48,7 @@ class AttributeClassTypeServiceTest {
     }
 
     @Test
-    @Description("Should return all attribute class type headers")
+    @DisplayName("Should return all attribute class type headers")
     void shouldReturnAllAttributeClassTypeHeaders() {
         // given
         given(attributeClassTypeRepository.findAttributeClassTypeHeaders())
@@ -67,7 +67,7 @@ class AttributeClassTypeServiceTest {
     }
 
     @Test
-    @Description("Should return only active attribute class type headers")
+    @DisplayName("Should return only active attribute class type headers")
     void shouldReturnActiveAttributeClassTypeHeaders() {
         // given
         given(attributeClassTypeRepository.findAttributeClassTypeHeaders(anyBoolean()))
@@ -88,7 +88,7 @@ class AttributeClassTypeServiceTest {
     }
 
     @Test
-    @Description("Should return only active attribute class type headers")
+    @DisplayName("Should return only active attribute class type headers")
     void shouldReturnArchivedAttributeClassTypeHeaders() {
         // given
         given(attributeClassTypeRepository.findAttributeClassTypeHeaders(anyBoolean()))
@@ -109,7 +109,7 @@ class AttributeClassTypeServiceTest {
     }
 
     @Test
-    @Description("Should return empty list of attribute class type headers when there is no records in db")
+    @DisplayName("Should return empty list of attribute class type headers when there is no records in db")
     void shouldReturnEmptyListOfAttributeClassTypeHeaderList() {
         // given
         given(attributeClassTypeRepository.findAttributeClassTypeHeaders())
@@ -126,7 +126,7 @@ class AttributeClassTypeServiceTest {
     }
 
     @Test
-    @Description("Should return only one attribute class type details")
+    @DisplayName("Should return only one attribute class type details")
     void shouldReturnSingleAttributeClassTypeDetails() {
         // given
         long id = 1L;
@@ -146,7 +146,7 @@ class AttributeClassTypeServiceTest {
     }
 
     @Test
-    @Description("Should throw ResourceNotFoundException when cannot find attribute class type by id")
+    @DisplayName("Should throw ResourceNotFoundException when cannot find attribute class type by id")
     void shouldThrowExceptionWhenCannotFindAttributeClassTypeById() {
         // given
         long id = attributeClassTypeList.size() + 1;
@@ -160,7 +160,7 @@ class AttributeClassTypeServiceTest {
     }
 
     @Test
-    @Description("Should create and return created attribute class type")
+    @DisplayName("Should create and return created attribute class type")
     void shouldReturnCreatedAttributeClassType() {
         // given
         AttributeClassTypeRequestDto attributeClassTypeRequestDto = AttributeClassTypeServiceTestHelper.createAttributeClassTypeRequestDto(NUMBER_OF_ELEMENTS);
@@ -186,7 +186,7 @@ class AttributeClassTypeServiceTest {
     }
 
     @Test
-    @Description("Should throw EntityExistException when attribute class type already exists in database")
+    @DisplayName("Should throw EntityExistException when attribute class type already exists in database")
     void shouldThrowExceptionWhenAttributeClassTypeExists() {
         // given
         String attributeClassTypeName = "Name No. 1";
@@ -202,7 +202,7 @@ class AttributeClassTypeServiceTest {
     }
 
     @Test
-    @Description("Should edit attribute class type when exists")
+    @DisplayName("Should edit attribute class type when exists")
     void shouldEditAttributeClassTypeWhenExists() {
         // given
         long id = 1L;
@@ -234,7 +234,7 @@ class AttributeClassTypeServiceTest {
     }
 
     @Test
-    @Description("Should throw ResourceNotFoundException when trying to edit non existing attribute class type")
+    @DisplayName("Should throw ResourceNotFoundException when trying to edit non existing attribute class type")
     void shouldThrowExceptionWhenTryingToEditNonExistingAttributeClassType() {
         // given
         long id = 100L;
@@ -248,7 +248,7 @@ class AttributeClassTypeServiceTest {
     }
 
     @Test
-    @Description("Should throw ResourceExistsException when trying to set new name that already exists")
+    @DisplayName("Should throw ResourceExistsException when trying to set new name that already exists")
     void shouldThrowExceptionWhenTryingToSetNameThatAlreadyExists() {
         // given
         long id = 1L;
@@ -269,7 +269,7 @@ class AttributeClassTypeServiceTest {
     }
 
     @Test
-    @Description("Should remove attribute class type when id exists in database")
+    @DisplayName("Should remove attribute class type when id exists in database")
     void shouldRemoveAttributeClassTypeWhenIdExists() {
         // given
         long id = 1L;
@@ -285,7 +285,7 @@ class AttributeClassTypeServiceTest {
     }
 
     @Test
-    @Description("Should throw ResourceNotFoundException when trying to remove non existing attribute class type")
+    @DisplayName("Should throw ResourceNotFoundException when trying to remove non existing attribute class type")
     void shouldThrowExceptionWhenTryingToRemoveNonExistingAttributeClassType() {
         // given
         long id = 100L;

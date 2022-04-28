@@ -1,8 +1,6 @@
 package pl.wj.bgstat.attributeclasstype;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import pl.wj.bgstat.attributeclasstype.model.AttributeClassType;
 import pl.wj.bgstat.attributeclasstype.model.AttributeClassTypeArchivedStatus;

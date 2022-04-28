@@ -21,7 +21,7 @@ public class SystemObjectAttributeClassController {
     }
 
     @PutMapping("/{attributeClassId},{systemObjectTypeId}")
-    public SystemObjectAttributeClassResponseDto editSystemobjectAttributeClass(
+    public SystemObjectAttributeClassResponseDto editSystemObjectAttributeClass(
             @PathVariable long attributeClassId, @PathVariable long systemObjectTypeId,
             @RequestBody @Valid SystemObjectAttributeClassRequestDto systemObjectAttributeClassRequestDto) {
         return systemObjectAttributeClassService.editSystemObjectAttributeClass(

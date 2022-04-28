@@ -1,7 +1,7 @@
 package pl.wj.bgstat.attribute;
 
-import jdk.jfr.Description;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -20,7 +20,6 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.verify;
@@ -43,7 +42,7 @@ class AttributeServiceTest {
     }
 
     @Test
-    @Description("Should return attribute by id when exists in database")
+    @DisplayName("Should return attribute by id when exists in database")
     void shouldReturnAttributeByIdWhenExists() {
         // given
         long id = 1L;
@@ -65,7 +64,7 @@ class AttributeServiceTest {
     }
 
     @Test
-    @Description("Should throw ResourceNotFoundException when cannot find attribute in database")
+    @DisplayName("Should throw ResourceNotFoundException when cannot find attribute in database")
     void shouldThrowExceptionWhenCannotFindAttributeById() {
         // given
         long id = 100L;
@@ -76,11 +75,11 @@ class AttributeServiceTest {
         assertThatThrownBy(() -> attributeService.getSingleAttribute(id))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessage(createResourceNotFoundExceptionMessage(
-                        ATTRIBTUE_RESOURCE_NAME, ID_FIELD, id));
+                        ATTRIBUTE_RESOURCE_NAME, ID_FIELD, id));
     }
 
     @Test
-    @Description("Should create and return created attribute of non multivalued attribute type")
+    @DisplayName("Should create and return created attribute of non multivalued attribute type")
     void shouldReturnCreatedAttribute() {
         // given
         long objectId = attributeList.size()+1;
@@ -114,7 +113,7 @@ class AttributeServiceTest {
     }
 
     @Test
-    @Description("Should create and return created attribute when attribute has multivalued type")
+    @DisplayName("Should create and return created attribute when attribute has multivalued type")
     void shouldReturnCreatedAttributeWhenAttributeHasMultivaluedType() {
         // given
         long objectId = attributeList.size();
@@ -151,8 +150,8 @@ class AttributeServiceTest {
     }
 
     @Test
-    @Description("Should throw ResourceExistsException when cannot add attribute of singlevalued type to object")
-    void shouldThrowExceptionWhenCannotAddAttributeOfSinglevaluedType() {
+    @DisplayName("Should throw ResourceExistsException when cannot add attribute of single valued type to object")
+    void shouldThrowExceptionWhenCannotAddAttributeOfSingleValuedType() {
         // given
         long objectId = 1L;
         long objectTypeId = 1L;
@@ -168,11 +167,11 @@ class AttributeServiceTest {
         // when
         assertThatThrownBy(() -> attributeService.addAttribute(attributeRequestDto))
                 .isInstanceOf(ResourceExistsException.class)
-                .hasMessage(createResourceExistsExceptionMessage(ATTRIBTUE_RESOURCE_NAME));
+                .hasMessage(createResourceExistsExceptionMessage(ATTRIBUTE_RESOURCE_NAME));
     }
 
     @Test
-    @Description("Should throw ResourceExistsException when cannot add attribute of multivalued type to object")
+    @DisplayName("Should throw ResourceExistsException when cannot add attribute of multivalued type to object")
     void shouldThrowExceptionWhenCannotAddAttributeOfMultivaluedType() {
         // given
         long objectId = attributeList.size();
@@ -192,13 +191,13 @@ class AttributeServiceTest {
         // when
         assertThatThrownBy(() -> attributeService.addAttribute(attributeRequestDto))
                 .isInstanceOf(ResourceExistsException.class)
-                .hasMessage(createResourceExistsExceptionMessage(ATTRIBTUE_RESOURCE_NAME));
+                .hasMessage(createResourceExistsExceptionMessage(ATTRIBUTE_RESOURCE_NAME));
 
     }
 
     @Test
-    @Description("Should edit and return edited singlevalued attribute when exists")
-    void shouldEditSinglevaluedAttributeWhenExists() {
+    @DisplayName("Should edit and return edited single valued attribute when exists")
+    void shouldEditSingleValuedAttributeWhenExists() {
         // given
         long id = 1L;
         long objectId = 1L;
@@ -221,7 +220,7 @@ class AttributeServiceTest {
     }
 
     @Test
-    @Description("Should throw ResourceNotFoundException when trying to edit non existing attribute")
+    @DisplayName("Should throw ResourceNotFoundException when trying to edit non existing attribute")
     void shouldThrowExceptionWhenTryingToEditNonExistingAttribute() {
         // given
         long id = 100L;
@@ -232,11 +231,11 @@ class AttributeServiceTest {
         // when
         assertThatThrownBy(() -> attributeService.editAttribute(id, new AttributeRequestDto()))
                 .isInstanceOf(ResourceNotFoundException.class)
-                .hasMessage(createResourceNotFoundExceptionMessage(ATTRIBTUE_RESOURCE_NAME, ID_FIELD, id));
+                .hasMessage(createResourceNotFoundExceptionMessage(ATTRIBUTE_RESOURCE_NAME, ID_FIELD, id));
     }
 
     @Test
-    @Description("Should throw ResourceExistsException when object has attribute of given class with new value")
+    @DisplayName("Should throw ResourceExistsException when object has attribute of given class with new value")
     void shouldThrowExceptionWhenObjectHasAttributeOfGivenClassWithNewValue() {
         // given
         long id = attributeList.size();
@@ -257,11 +256,11 @@ class AttributeServiceTest {
         // when
         assertThatThrownBy(() -> attributeService.editAttribute(id, attributeRequestDto))
                 .isInstanceOf(ResourceExistsException.class)
-                .hasMessage(createResourceExistsExceptionMessage(ATTRIBTUE_RESOURCE_NAME));
+                .hasMessage(createResourceExistsExceptionMessage(ATTRIBUTE_RESOURCE_NAME));
     }
 
     @Test
-    @Description("Should remove attribute when id exists in database")
+    @DisplayName("Should remove attribute when id exists in database")
     void shouldRemoveAttributeWhenIdExists() {
         // given
         long id = 1L;
@@ -278,7 +277,7 @@ class AttributeServiceTest {
     }
 
     @Test
-    @Description("Should throw ResourceNotFoundException when trying to remove non existing attribute")
+    @DisplayName("Should throw ResourceNotFoundException when trying to remove non existing attribute")
     void shouldThrowExceptionWhenTryingToRemoveNonExistingAttribute() {
         // given
         long id = 100L;
@@ -288,6 +287,6 @@ class AttributeServiceTest {
         // then
         assertThatThrownBy(() -> attributeService.deleteAttribute(id))
                 .isInstanceOf(ResourceNotFoundException.class)
-                .hasMessage(createResourceNotFoundExceptionMessage(ATTRIBTUE_RESOURCE_NAME, ID_FIELD, id));
+                .hasMessage(createResourceNotFoundExceptionMessage(ATTRIBUTE_RESOURCE_NAME, ID_FIELD, id));
     }
 }

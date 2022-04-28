@@ -1,7 +1,7 @@
 package pl.wj.bgstat.systemobjecttype;
 
-import jdk.jfr.Description;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -57,7 +57,7 @@ class SystemObjectTypeServiceTest {
     }
 
     @Test
-    @Description("Should return all system object type headers")
+    @DisplayName("Should return all system object type headers")
     void shouldReturnAllSystemObjectTypeHeaders() {
         // given
         given(systemObjectTypeRepository.findSystemObjectTypeHeaders())
@@ -76,7 +76,7 @@ class SystemObjectTypeServiceTest {
     }
 
     @Test
-    @Description("Should return only active system object type headers")
+    @DisplayName("Should return only active system object type headers")
     void shouldReturnActiveSystemObjectTypeHeaders() {
         // given
         given(systemObjectTypeRepository.findSystemObjectTypeHeaders(anyBoolean()))
@@ -97,7 +97,7 @@ class SystemObjectTypeServiceTest {
     }
 
     @Test
-    @Description("Should return only archived system object type headers")
+    @DisplayName("Should return only archived system object type headers")
     void shouldReturnArchivedSystemObjectTypeHeaders() {
         // given
         given(systemObjectTypeRepository.findSystemObjectTypeHeaders(anyBoolean()))
@@ -118,7 +118,7 @@ class SystemObjectTypeServiceTest {
     }
 
     @Test
-    @Description("Should return empty list of system object type headers when there is no records in db")
+    @DisplayName("Should return empty list of system object type headers when there is no records in db")
     void shouldReturnEmptySystemObjectTypeHeaderList() {
         // given
         given(systemObjectTypeRepository.findSystemObjectTypeHeaders())
@@ -135,7 +135,7 @@ class SystemObjectTypeServiceTest {
     }
 
     @Test
-    @Description("Should return only one system object type details")
+    @DisplayName("Should return only one system object type details")
     void shouldReturnSingleSystemObjectTypeDetailsById() {
         // given
         long id = 1L;
@@ -143,7 +143,7 @@ class SystemObjectTypeServiceTest {
                 .stream()
                 .filter(sot -> sot.getId() == id)
                 .findAny();
-        SystemObjectTypeResponseDto expectedResponse = SystemObjectTypeMapper.mapToSystemObjectTypeResponseDto(systemObjectType.get());
+        SystemObjectTypeResponseDto expectedResponse = SystemObjectTypeMapper.mapToSystemObjectTypeResponseDto(systemObjectType.orElseThrow());
         given(systemObjectTypeRepository.findById(anyLong())).willReturn(systemObjectType);
 
         // when
@@ -157,7 +157,7 @@ class SystemObjectTypeServiceTest {
     }
 
     @Test
-    @Description("Should throw ResourceNotFoundException when cannot find system object type by id")
+    @DisplayName("Should throw ResourceNotFoundException when cannot find system object type by id")
     void shouldThrowExceptionWhenCannotFindSystemObjectTypeById() {
         // given
         long id = systemObjectTypeList.size() + 1;
@@ -171,7 +171,7 @@ class SystemObjectTypeServiceTest {
     }
 
     @Test
-    @Description("Should create and return created system object type")
+    @DisplayName("Should create and return created system object type")
     void shouldReturnCreatedSystemObjectType() {
         // given
         SystemObjectTypeRequestDto systemObjectTypeRequestDto = SystemObjectTypeServiceTestHelper.createSystemObjectTypeRequestDto(NUMBER_OF_ELEMENTS);
@@ -197,7 +197,7 @@ class SystemObjectTypeServiceTest {
     }
 
     @Test
-    @Description("Should throw ResourceExistsException when system object type already exists in database")
+    @DisplayName("Should throw ResourceExistsException when system object type already exists in database")
     void shouldThrowExceptionWhenSystemObjectTypeExists() {
         // given
         String systemObjectTypeName = "Name No. 1";
@@ -213,7 +213,7 @@ class SystemObjectTypeServiceTest {
     }
 
     @Test
-    @Description("Should edit system object type when exists")
+    @DisplayName("Should edit system object type when exists")
     void shouldEditSystemObjectTypeWhenExists() {
         // given
         long id = 1L;
@@ -244,7 +244,7 @@ class SystemObjectTypeServiceTest {
     }
 
     @Test
-    @Description("Should throw ResourceNotFoundException when trying to edit non existing system object type")
+    @DisplayName("Should throw ResourceNotFoundException when trying to edit non existing system object type")
     void shouldThrowExceptionWhenTryingToEditNonExistingSystemObjectType() {
         // given
         long id = 100L;
@@ -258,7 +258,7 @@ class SystemObjectTypeServiceTest {
     }
 
     @Test
-    @Description("Should throw ResourceExistsException when trying to set new name that already exists")
+    @DisplayName("Should throw ResourceExistsException when trying to set new name that already exists")
     void shouldThrowExceptionWhenTryingToSetNameThatAlreadyExists() {
         // given
         long id = 1L;
@@ -278,7 +278,7 @@ class SystemObjectTypeServiceTest {
     }
 
     @Test
-    @Description("Should remove system object type when id exists in database")
+    @DisplayName("Should remove system object type when id exists in database")
     void shouldRemoveSystemObjectTypeWhenIdExists() {
         // given
         long id = 1L;
@@ -294,7 +294,7 @@ class SystemObjectTypeServiceTest {
     }
 
     @Test
-    @Description("Should throw ResourceNotFoundException when trying to remove non existing system object type")
+    @DisplayName("Should throw ResourceNotFoundException when trying to remove non existing system object type")
     void shouldThrowExceptionWhenTryingToRemoveNonExistingSystemObjectType() {
         // given
         long id = 100L;
@@ -308,7 +308,7 @@ class SystemObjectTypeServiceTest {
     }
 
     @Test
-    @Description("Should throw ResourceExistsException when trying to remove system object type with assigned attribute classes")
+    @DisplayName("Should throw ResourceExistsException when trying to remove system object type with assigned attribute classes")
     void shouldThrowExceptionWhenTryingToRemoveSystemObjectTypeWithAssignedAttributeClass() {
         // given
         long id = 1L;
@@ -324,7 +324,7 @@ class SystemObjectTypeServiceTest {
     }
 
     @Test
-    @Description("Should return all attribute classes by system object type id")
+    @DisplayName("Should return all attribute classes by system object type id")
     void shouldReturnAllAttributeClassesBySystemObjectTypeId() {
          // given
         long id = 1L;
@@ -350,7 +350,7 @@ class SystemObjectTypeServiceTest {
     }
 
     @Test
-    @Description("Should return empty list of attribute classes")
+    @DisplayName("Should return empty list of attribute classes")
     void shouldReturnEmptyListOfAttributeClasses() {
         // given
         long id = NUMBER_OF_ELEMENTS;
@@ -374,7 +374,7 @@ class SystemObjectTypeServiceTest {
     }
 
     @Test
-    @Description("Should throw EntityNotFoundExpception when trying to get attribute classes of non existing system object type")
+    @DisplayName("Should throw EntityNotFoundExpception when trying to get attribute classes of non existing system object type")
     void shouldThrowExceptionWhenTryingToGetAttributeClassesOfNonExistingSystemObjectType() {
         // given
         long id = 100L;

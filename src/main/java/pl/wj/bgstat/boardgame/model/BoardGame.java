@@ -26,6 +26,4 @@ public class BoardGame {
                          CascadeType.MERGE},
               mappedBy = "boardGame")
     private BoardGameDescription boardGameDescription;
-
-    // TODO: 13.04.2022 Add OneToMany relation to Attribute
 }

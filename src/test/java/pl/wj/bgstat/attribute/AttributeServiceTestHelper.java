@@ -1,7 +1,6 @@
 package pl.wj.bgstat.attribute;
 
 import pl.wj.bgstat.attribute.model.Attribute;
-import pl.wj.bgstat.attribute.model.dto.AttributeRequestDto;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,10 +8,8 @@ import java.util.List;
 public class AttributeServiceTestHelper {
 
     private static final int NUMBER_OF_ELEMENTS = 20;
-    private static final int NUMBER_OF_OBJECTS = 5;
 
     public static List<Attribute> populateAttributeList() {
-        int ordinalNumber = 0;
         List<Attribute> attributeList = new ArrayList<>();
         Attribute attribute;
 
@@ -35,7 +32,6 @@ public class AttributeServiceTestHelper {
                 attribute.setObjectId(i);
                 attribute.setAttributeClassId(2);
             } else {
-                ordinalNumber++;
                 attribute.setObjectTypeId(1);
                 attribute.setObjectId(NUMBER_OF_ELEMENTS);
                 attribute.setAttributeClassId(3);

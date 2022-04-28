@@ -52,6 +52,4 @@ public class BoardGameService {
         if (!boardGameRepository.existsById(id)) throw new ResourceNotFoundException(BOARD_GAME_RESOURCE_NAME, ID_FIELD, id);
         boardGameRepository.deleteById(id);
     }
-
-    // TODO: 13.04.2022 Create a method to getting all attribute types assigned to specific BoardGame by BoardGameId
 }

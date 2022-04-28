@@ -1,7 +1,7 @@
 package pl.wj.bgstat.attributeclass;
 
-import jdk.jfr.Description;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -22,7 +22,9 @@ import pl.wj.bgstat.exception.ResourceNotFoundException;
 import pl.wj.bgstat.systemobjectattributeclass.SystemObjectAttributeClassRepository;
 import pl.wj.bgstat.systemobjectattributeclass.model.dto.SystemObjectAttributeClassResponseDto;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.lang.Math.ceil;
@@ -61,7 +63,7 @@ class AttributeClassServiceTest {
     }
 
     @Test
-    @Description("Should return only one but not last page of attribute class headers")
+    @DisplayName("Should return only one but not last page of attribute class headers")
     void shouldReturnOnlyOneButNotLastPageOfAttributeClassHeaders() {
         // given
         int pageNumber = 2;
@@ -83,7 +85,7 @@ class AttributeClassServiceTest {
     }
 
     @Test
-    @Description("Should return last page of attribute class headers")
+    @DisplayName("Should return last page of attribute class headers")
     void shouldReturnOnlylastPageOfAttrybuteClassHeaders() {
         // given
         int lastPageNumber = (int) ceil(NUMBER_OF_ELEMENTS / (double) PAGE_SIZE);
@@ -107,7 +109,7 @@ class AttributeClassServiceTest {
     }
 
     @Test
-    @Description("Should return empty list of attribute class headers when page number is too hight")
+    @DisplayName("Should return empty list of attribute class headers when page number is too hight")
     void shouldReturnEmptylistOfAttrybuteClassTypeHeaders() {
         // given
         int tooHighPageNumber = (int) ceil(attributeClassHeaderList.size() / (double) PAGE_SIZE) + 1;
@@ -125,7 +127,7 @@ class AttributeClassServiceTest {
     }
 
     @Test
-    @Description("Should return only one attrbute class details")
+    @DisplayName("Should return only one attrbute class details")
     void shouldReturnSingleAttributeClassDeatailsById() {
         // given
         long id = 1L;
@@ -146,7 +148,7 @@ class AttributeClassServiceTest {
     }
 
     @Test
-    @Description("Should throw ResourceNotFoundException when cannot find attribute class by id")
+    @DisplayName("Should throw ResourceNotFoundException when cannot find attribute class by id")
     void shouldThrowExceptionWhenCannotFindAttributeClassById() {
         // given
         long id = 100L;
@@ -162,7 +164,7 @@ class AttributeClassServiceTest {
     }
 
     @Test
-    @Description("Should create and return created attribute class type")
+    @DisplayName("Should create and return created attribute class type")
     void shouldReturnCreatedAttributeClass() {
         // given
         AttributeClassRequestDto attributeClassRequestDto = AttributeClassServiceTestHelper.createAttributeClassRequestDto(NUMBER_OF_ELEMENTS);
@@ -189,7 +191,7 @@ class AttributeClassServiceTest {
     }
 
     @Test
-    @Description("Should throw ResourceExistsException when attribute class already exists in database")
+    @DisplayName("Should throw ResourceExistsException when attribute class already exists in database")
     void shouldThrowExceptionWhenAttributeClassExists() {
         // given
         String attributeClassName = "Name No. 1";
@@ -205,7 +207,7 @@ class AttributeClassServiceTest {
     }
 
     @Test
-    @Description("Should edit attribute class when exists")
+    @DisplayName("Should edit attribute class when exists")
     void shouldEditAttributeClassWhenExists() {
         // given
         long id = 1L;
@@ -237,7 +239,7 @@ class AttributeClassServiceTest {
     }
 
     @Test
-    @Description("Should throw ResourceNotFoundException when trying to edit non existing attribute class")
+    @DisplayName("Should throw ResourceNotFoundException when trying to edit non existing attribute class")
     void shouldThrowExceptionWhenTryingToEditNonExistingAttributeClass() {
         // given
         long id = 100L;
@@ -251,7 +253,7 @@ class AttributeClassServiceTest {
     }
 
     @Test
-    @Description("Should throw ResourceExistsException when trying to set new name that already exists")
+    @DisplayName("Should throw ResourceExistsException when trying to set new name that already exists")
     void shouldThrowExceptionWhenTryingToSetNameThatAlreadyExists() {
         // given
         long id = 1L;
@@ -270,7 +272,7 @@ class AttributeClassServiceTest {
     }
 
     @Test
-    @Description("Should remove attribute class when id exists in database")
+    @DisplayName("Should remove attribute class when id exists in database")
     void shouldRemoveAttributeClassWhenIdExists() {
         // given
         long id = 3L;
@@ -286,7 +288,7 @@ class AttributeClassServiceTest {
     }
 
     @Test
-    @Description("Should throw ResourceNotFoundException when trying to remove non existing attribute class")
+    @DisplayName("Should throw ResourceNotFoundException when trying to remove non existing attribute class")
     void shouldThrowExceptionWhenTryingToRemoveNonExistingAttributeClass() {
         // given
         long id = 100L;
@@ -300,7 +302,7 @@ class AttributeClassServiceTest {
     }
 
     @Test
-    @Description("Should return all system object types by attribute class id")
+    @DisplayName("Should return all system object types by attribute class id")
     void shouldReturnAllSystemObjectTypesByAttributeClassId() {
         // given
         long id = 1L;
@@ -327,7 +329,7 @@ class AttributeClassServiceTest {
     }
 
     @Test
-    @Description("Should return empty list of system object types")
+    @DisplayName("Should return empty list of system object types")
     void shouldReturnEmptyListOfSystemObjectTypes() {
         // given
         long id = NUMBER_OF_ELEMENTS;
@@ -351,7 +353,7 @@ class AttributeClassServiceTest {
     }
 
     @Test
-    @Description("Should throw EntityNotFoundExpception when trying to get system object types of non existing attribute class")
+    @DisplayName("Should throw EntityNotFoundExpception when trying to get system object types of non existing attribute class")
     void shouldThrowExceptionWhenTryingToGetSystemObjectTypesOfNonExistingAttributeClass() {
         // given
         long id = 100L;
