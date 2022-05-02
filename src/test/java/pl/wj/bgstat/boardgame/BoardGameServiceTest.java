@@ -267,7 +267,7 @@ class BoardGameServiceTest {
 
 
     @Test
-    @DisplayName("Should remove board game by id when id exists in database")
+    @DisplayName("Should remove board game and assigned attributes by id when id exists in database")
     void shouldRemoveBoardGameByIdWhenIdExists () {
         // given
         long id = 3L;

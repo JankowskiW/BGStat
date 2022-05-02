@@ -289,4 +289,16 @@ class AttributeServiceTest {
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessage(createResourceNotFoundExceptionMessage(ATTRIBUTE_RESOURCE_NAME, ID_FIELD, id));
     }
+
+    @Test
+    @DisplayName("Should remove attributes by objectTypeId and objectId")
+    void shouldRemoveAttributesByObjectTypeIdAndObjectId() {
+        // given
+        long objectId = 1L;
+        long objectTypeId = 1L;
+
+        // when
+
+        // then
+    }
 }

@@ -14,6 +14,7 @@ import javax.persistence.*;
 public class BoardGameDescription {
     @Id
     private long boardGameId;
+    private long objectTypeId;
     @Column(columnDefinition = "TEXT")
     private String description;
 

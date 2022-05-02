@@ -59,4 +59,5 @@ public class AttributeService {
          if (!attributeRepository.existsById(id)) throw new ResourceNotFoundException(ATTRIBUTE_RESOURCE_NAME, ID_FIELD, id);
          attributeRepository.deleteById(id);
     }
+
 }
