@@ -33,6 +33,7 @@ public class BoardGameMapper {
     public static BoardGameResponseDto mapToBoardGameResponseDto(BoardGame boardGame) {
         return BoardGameResponseDto.builder()
                 .id(boardGame.getId())
+                .objectTypeId(boardGame.getObjectTypeId())
                 .name(boardGame.getName())
                 .playingTime(boardGame.getPlayingTime())
                 .recommendedAge(boardGame.getRecommendedAge())

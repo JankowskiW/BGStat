@@ -12,7 +12,7 @@ public class BoardGameDescriptionServiceTestHelper {
         List<BoardGameDescription> boardGameDescriptionList = new ArrayList<>();
         for (int i = 1; i <= numberOfElements; i++) {
             boardGameDescriptionList.add(
-               new BoardGameDescription(i, 2,"BoardGame Description No." + i, new BoardGame()));
+               new BoardGameDescription(i,"BoardGame Description No." + i, new BoardGame()));
         }
         return boardGameDescriptionList;
     }

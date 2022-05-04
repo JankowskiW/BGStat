@@ -48,9 +48,10 @@ public class BoardGameServiceTestHelper {
         return boardGameHeaderList;
     }
 
-    public static BoardGameRequestDto createBoardGameRequestDto(int currentSize) {
+    public static BoardGameRequestDto createBoardGameRequestDto(int currentSize, long objectTypeId) {
         return new BoardGameRequestDto(
                 "Name No. " + (currentSize + 1),
+                objectTypeId,
                 18,
                 1,
                 4,
@@ -58,4 +59,6 @@ public class BoardGameServiceTestHelper {
                 150,
                 "DESCRIPTION OF Name No. " + (currentSize + 1));
     }
+
+
 }

@@ -11,6 +11,7 @@ import lombok.Setter;
 @Builder
 public class BoardGameResponseDto {
     private long id;
+    private long objectTypeId;
     private String name;
     private int recommendedAge;
     private int minPlayersNumber;

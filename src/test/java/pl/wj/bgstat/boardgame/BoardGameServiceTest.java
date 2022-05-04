@@ -18,6 +18,7 @@ import pl.wj.bgstat.boardgame.model.dto.BoardGameRequestDto;
 import pl.wj.bgstat.boardgame.model.dto.BoardGameResponseDto;
 import pl.wj.bgstat.exception.ResourceExistsException;
 import pl.wj.bgstat.exception.ResourceNotFoundException;
+import pl.wj.bgstat.systemobjecttype.SystemObjectTypeRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,11 +39,14 @@ class BoardGameServiceTest {
 
     @Mock
     private BoardGameRepository boardGameRepository;
+    @Mock
+    private SystemObjectTypeRepository systemObjectTypeRepository;
     @InjectMocks
     private BoardGameService boardGameService;
 
     private static final int PAGE_SIZE = 4;
     private static final int NUMBER_OF_ELEMENTS = 20;
+    private static final long BOARD_GAME_DEFAULT_OBJECT_TYPE_ID = 1L;
 
     private List<BoardGame> boardGameList;
     private List<BoardGameHeaderDto> boardGameHeaderList;
@@ -158,13 +162,15 @@ class BoardGameServiceTest {
     @DisplayName("Should create and return created board game")
     void shouldReturnCreatedBoardGame() {
         // given
-        BoardGameRequestDto boardGameRequestDto = BoardGameServiceTestHelper.createBoardGameRequestDto(NUMBER_OF_ELEMENTS);
+        BoardGameRequestDto boardGameRequestDto = BoardGameServiceTestHelper.createBoardGameRequestDto(
+                NUMBER_OF_ELEMENTS, BOARD_GAME_DEFAULT_OBJECT_TYPE_ID);
         BoardGame boardGame = BoardGameMapper.mapToBoardGame(boardGameRequestDto);
         boardGame.setId(boardGameList.size()+1);
         boardGame.getBoardGameDescription().setBoardGameId(boardGame.getId());
         BoardGameResponseDto expectedResponse = BoardGameMapper.mapToBoardGameResponseDto(boardGame);
         given(boardGameRepository.existsByName(anyString())).willReturn(
                 boardGameList.stream().anyMatch(bg -> bg.getName().equals(boardGameRequestDto.getName())));
+        given(systemObjectTypeRepository.existsById(anyLong())).willReturn(true);
         given(boardGameRepository.save(any(BoardGame.class))).willAnswer(
                 i -> {
                     BoardGame bg = i.getArgument(0, BoardGame.class);
@@ -184,12 +190,58 @@ class BoardGameServiceTest {
     }
 
     @Test
+    @DisplayName("Should create and return created board game with default system object type id")
+    void shouldReturnCreatedBoardGameWithDefaultSystemObjectTypeIdWhenObjectTypeNotSet() {
+        // given
+        BoardGameRequestDto boardGameRequestDto = BoardGameServiceTestHelper.createBoardGameRequestDto(
+                NUMBER_OF_ELEMENTS, 0);
+        BoardGame boardGame = BoardGameMapper.mapToBoardGame(boardGameRequestDto);
+        boardGame.setId(boardGameList.size()+1);
+        boardGame.getBoardGameDescription().setBoardGameId(boardGame.getId());
+        BoardGameResponseDto expectedResponse = BoardGameMapper.mapToBoardGameResponseDto(boardGame);
+        given(boardGameRepository.existsByName(anyString())).willReturn(
+                boardGameList.stream().anyMatch(bg -> bg.getName().equals(boardGameRequestDto.getName())));
+        given(systemObjectTypeRepository.existsById(anyLong())).willReturn(true);
+        given(boardGameRepository.save(any(BoardGame.class))).willAnswer(
+                i -> {
+                    BoardGame bg = i.getArgument(0, BoardGame.class);
+                    bg.setId(boardGame.getId());
+                    bg.getBoardGameDescription().setBoardGameId(boardGame.getId());
+                    return bg;
+                });
+
+        // when
+        BoardGameResponseDto boardGameResponseDto = boardGameService.addBoardGame(boardGameRequestDto);
+
+        // then
+        assertThat(boardGameResponseDto)
+                .isNotNull()
+                .usingRecursiveComparison()
+                .isEqualTo(expectedResponse);
+    }
+
+    @Test
+    @DisplayName("Should throw ResourceNotFoundException when SystemObjectType id not exists in database")
+    void shouldThrowExceptionWhenSystemObjectTypeIdNotExists() {
+        // given
+        long systemObjectTypeId = 100L;
+        BoardGameRequestDto boardGameRequestDto = new BoardGameRequestDto();
+        boardGameRequestDto.setObjectTypeId(systemObjectTypeId);
+        given(systemObjectTypeRepository.existsById(anyLong())).willReturn(false);
+
+        // when
+        assertThatThrownBy(() -> boardGameService.addBoardGame(boardGameRequestDto))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage(createResourceNotFoundExceptionMessage(SYSTEM_OBJECT_TYPE_RESOURCE_NAME, ID_FIELD, systemObjectTypeId));
+    }
+
+    @Test
     @DisplayName("Should throw ResourceExistsException when board game name already exists in database")
     void shouldThrowExceptionWhenBoardGameNameExists() {
         // given
         String boardGameName = "Name No. 1";
         BoardGameRequestDto boardGameRequestDto = new BoardGameRequestDto(
-                boardGameName, 1, 1, 5, 2, 150, "DESCRIPTION");
+                boardGameName,BOARD_GAME_DEFAULT_OBJECT_TYPE_ID, 1, 1, 5, 2, 150, "DESCRIPTION");
         given(boardGameRepository.existsByName(anyString()))
                 .willReturn(boardGameList.stream().anyMatch(bg -> bg.getName().equals(boardGameName)));
 
@@ -208,12 +260,14 @@ class BoardGameServiceTest {
         BoardGameRequestDto boardGameRequestDto = BoardGameRequestDto.builder()
                 .name(boardGame.getName())
                 .recommendedAge(boardGame.getRecommendedAge()*2)
+                .objectTypeId(BOARD_GAME_DEFAULT_OBJECT_TYPE_ID)
                 .build();
         given(boardGameRepository.existsById(anyLong())).willReturn(
                 boardGameList.stream().anyMatch(bg -> bg.getId() == id));
         given(boardGameRepository.existsByNameAndIdNot(anyString(), anyLong())).willReturn(
                 boardGameList.stream().anyMatch(bg -> bg.getId() != id &&
                         bg.getName().equals(boardGameRequestDto.getName())));
+        given(systemObjectTypeRepository.existsById(boardGameRequestDto.getObjectTypeId())).willReturn(true);
         given(boardGameRepository.save(any(BoardGame.class))).willAnswer(
                 i -> {
                     BoardGame bg = i.getArgument(0, BoardGame.class);
@@ -251,9 +305,9 @@ class BoardGameServiceTest {
         long id = 1L;
         BoardGame boardGame = boardGameList.stream().filter(bg -> bg.getId() == id).findFirst().orElseThrow();
         BoardGameRequestDto boardGameRequestDto = new BoardGameRequestDto(
-                boardGameList.get(1).getName(), boardGame.getRecommendedAge(), boardGame.getMinPlayersNumber(),
-                boardGame.getMaxPlayersNumber(), boardGame.getComplexity(), boardGame.getPlayingTime(),
-                boardGame.getBoardGameDescription().getDescription());
+                boardGameList.get(1).getName(), BOARD_GAME_DEFAULT_OBJECT_TYPE_ID, boardGame.getRecommendedAge(),
+                boardGame.getMinPlayersNumber(), boardGame.getMaxPlayersNumber(), boardGame.getComplexity(),
+                boardGame.getPlayingTime(), boardGame.getBoardGameDescription().getDescription());
         given(boardGameRepository.existsById(anyLong()))
                 .willReturn(boardGameList.stream().anyMatch(bg -> bg.getId() == id));
         given(boardGameRepository.existsByNameAndIdNot(anyString(), anyLong()))

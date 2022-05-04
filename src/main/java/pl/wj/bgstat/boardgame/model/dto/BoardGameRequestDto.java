@@ -1,20 +1,19 @@
 package pl.wj.bgstat.boardgame.model.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.*;
 
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class BoardGameRequestDto {
     @NotBlank @Length(max = 255)
     private String name;
+    private long objectTypeId;
     @NotNull @Min(1)
     private int recommendedAge;
     @NotNull @Min(1)

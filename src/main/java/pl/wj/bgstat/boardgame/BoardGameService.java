@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import pl.wj.bgstat.attribute.AttributeRepository;
 import pl.wj.bgstat.boardgame.model.BoardGame;
 import pl.wj.bgstat.boardgame.model.BoardGameMapper;
 import pl.wj.bgstat.boardgame.model.dto.BoardGameHeaderDto;
@@ -12,6 +11,7 @@ import pl.wj.bgstat.boardgame.model.dto.BoardGameRequestDto;
 import pl.wj.bgstat.boardgame.model.dto.BoardGameResponseDto;
 import pl.wj.bgstat.exception.ResourceExistsException;
 import pl.wj.bgstat.exception.ResourceNotFoundException;
+import pl.wj.bgstat.systemobjecttype.SystemObjectTypeRepository;
 
 import static pl.wj.bgstat.exception.ExceptionHelper.*;
 
@@ -19,7 +19,10 @@ import static pl.wj.bgstat.exception.ExceptionHelper.*;
 @RequiredArgsConstructor
 public class BoardGameService {
 
+    private static final long BOARD_GAME_DEFAULT_OBJECT_TYPE_ID = 1L;
+
     private final BoardGameRepository boardGameRepository;
+    private final SystemObjectTypeRepository systemObjectTypeRepository;
 
     public Page<BoardGameHeaderDto> getBoardGameHeaders(Pageable pageable) {
         return boardGameRepository.findAllBoardGameHeaders(pageable);
@@ -32,17 +35,26 @@ public class BoardGameService {
     }
 
     public BoardGameResponseDto addBoardGame(BoardGameRequestDto boardGameRequestDto) {
+        if (boardGameRequestDto.getObjectTypeId() == 0)
+            boardGameRequestDto.setObjectTypeId(BOARD_GAME_DEFAULT_OBJECT_TYPE_ID);
         if (boardGameRepository.existsByName(boardGameRequestDto.getName()))
             throw new ResourceExistsException(BOARD_GAME_RESOURCE_NAME, NAME_FIELD);
+        if (!systemObjectTypeRepository.existsById(boardGameRequestDto.getObjectTypeId()))
+            throw new ResourceNotFoundException(SYSTEM_OBJECT_TYPE_RESOURCE_NAME, ID_FIELD, boardGameRequestDto.getObjectTypeId());
         BoardGame boardGame = BoardGameMapper.mapToBoardGame(boardGameRequestDto);
         boardGameRepository.save(boardGame);
         return BoardGameMapper.mapToBoardGameResponseDto(boardGame);
     }
 
     public BoardGameResponseDto editBoardGame(long id, BoardGameRequestDto boardGameRequestDto) {
-        if (!boardGameRepository.existsById(id)) throw new ResourceNotFoundException(BOARD_GAME_RESOURCE_NAME, ID_FIELD, id);
+        if (boardGameRequestDto.getObjectTypeId() == 0)
+            boardGameRequestDto.setObjectTypeId(BOARD_GAME_DEFAULT_OBJECT_TYPE_ID);
+        if (!boardGameRepository.existsById(id))
+            throw new ResourceNotFoundException(BOARD_GAME_RESOURCE_NAME, ID_FIELD, id);
         if (boardGameRepository.existsByNameAndIdNot(boardGameRequestDto.getName(), id))
             throw new ResourceExistsException(BOARD_GAME_RESOURCE_NAME, NAME_FIELD);
+        if (!systemObjectTypeRepository.existsById(boardGameRequestDto.getObjectTypeId()))
+            throw new ResourceNotFoundException(SYSTEM_OBJECT_TYPE_RESOURCE_NAME, ID_FIELD, boardGameRequestDto.getObjectTypeId());
 
         BoardGame boardGame = BoardGameMapper.mapToBoardGame(id, boardGameRequestDto);
         boardGameRepository.save(boardGame);
