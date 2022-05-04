@@ -199,6 +199,7 @@ class BoardGameServiceTest {
         boardGame.setId(boardGameList.size()+1);
         boardGame.getBoardGameDescription().setBoardGameId(boardGame.getId());
         BoardGameResponseDto expectedResponse = BoardGameMapper.mapToBoardGameResponseDto(boardGame);
+        expectedResponse.setObjectTypeId(BOARD_GAME_DEFAULT_OBJECT_TYPE_ID);
         given(boardGameRepository.existsByName(anyString())).willReturn(
                 boardGameList.stream().anyMatch(bg -> bg.getName().equals(boardGameRequestDto.getName())));
         given(systemObjectTypeRepository.existsById(anyLong())).willReturn(true);
@@ -221,12 +222,11 @@ class BoardGameServiceTest {
     }
 
     @Test
-    @DisplayName("Should throw ResourceNotFoundException when SystemObjectType id not exists in database")
-    void shouldThrowExceptionWhenSystemObjectTypeIdNotExists() {
+    @DisplayName("Should throw ResourceNotFoundException when SystemObjectType id does not exist in database")
+    void shouldThrowExceptionWhenSystemObjectTypeIdDoesNotExist() {
         // given
-        long systemObjectTypeId = 100L;
+        long systemObjectTypeId = 1L;
         BoardGameRequestDto boardGameRequestDto = new BoardGameRequestDto();
-        boardGameRequestDto.setObjectTypeId(systemObjectTypeId);
         given(systemObjectTypeRepository.existsById(anyLong())).willReturn(false);
 
         // when
@@ -267,7 +267,7 @@ class BoardGameServiceTest {
         given(boardGameRepository.existsByNameAndIdNot(anyString(), anyLong())).willReturn(
                 boardGameList.stream().anyMatch(bg -> bg.getId() != id &&
                         bg.getName().equals(boardGameRequestDto.getName())));
-        given(systemObjectTypeRepository.existsById(boardGameRequestDto.getObjectTypeId())).willReturn(true);
+        given(systemObjectTypeRepository.existsById(anyLong())).willReturn(true);
         given(boardGameRepository.save(any(BoardGame.class))).willAnswer(
                 i -> {
                     BoardGame bg = i.getArgument(0, BoardGame.class);
@@ -285,6 +285,58 @@ class BoardGameServiceTest {
     }
 
     @Test
+    @DisplayName("Should set default system object type id when id is set to zero")
+    void shouldSetDefaultSystemObjectTypeIdWhenIdIsSetToZero() {
+        // given
+        long id = 1L;
+        BoardGame boardGame = boardGameList.stream().filter(bg -> bg.getId() == id).findFirst().orElseThrow();
+        BoardGameRequestDto boardGameRequestDto = BoardGameRequestDto.builder()
+                .name(boardGame.getName())
+                .objectTypeId(0)
+                .build();
+        given(boardGameRepository.existsById(anyLong())).willReturn(
+                boardGameList.stream().anyMatch(bg -> bg.getId() == id));
+        given(boardGameRepository.existsByNameAndIdNot(anyString(), anyLong())).willReturn(
+                boardGameList.stream().anyMatch(bg -> bg.getId() != id &&
+                        bg.getName().equals(boardGameRequestDto.getName())));
+        given(systemObjectTypeRepository.existsById(anyLong())).willReturn(true);
+        given(boardGameRepository.save(any(BoardGame.class))).willAnswer(
+                i -> {
+                    BoardGame bg = i.getArgument(0, BoardGame.class);
+                    bg.setId(id);
+                    return bg;
+                });
+
+        // when
+        BoardGameResponseDto boardGameResponseDto = boardGameService.editBoardGame(id, boardGameRequestDto);
+
+        // then
+        assertThat(boardGameResponseDto).isNotNull();
+        assertThat(boardGameResponseDto.getId()).isEqualTo(id);
+        assertThat(boardGameResponseDto.getObjectTypeId()).isEqualTo(BOARD_GAME_DEFAULT_OBJECT_TYPE_ID);
+    }
+
+    @Test
+    @DisplayName("Should throw ResourceNotFoundException when SystemObjectType id of BoardGame does not exist in database")
+    void shouldThrowExceptionWhenSystemObjectTypeIdOfBoardGameDoesNotExists() {
+        // given
+        long id = 1L;
+        long objectTypeId = 100L;
+        BoardGameRequestDto boardGameRequestDto = new BoardGameRequestDto();
+        boardGameRequestDto.setObjectTypeId(objectTypeId);
+        boardGameRequestDto.setName("TEST");
+        given(boardGameRepository.existsById(anyLong())).willReturn(true);
+        given(boardGameRepository.existsByNameAndIdNot(anyString(), anyLong())).willReturn(false);
+        given(systemObjectTypeRepository.existsById(anyLong())).willReturn(false);
+
+        // when
+        assertThatThrownBy(() -> boardGameService.editBoardGame(id, boardGameRequestDto))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage(createResourceNotFoundExceptionMessage(SYSTEM_OBJECT_TYPE_RESOURCE_NAME, ID_FIELD, objectTypeId));
+
+    }
+
+    @Test
     @DisplayName("Should throw ResourceNotFoundException when trying to edit non existing board game")
     void shouldThrowExceptionWhenTryingToEditNonExistingBoardGame() {
         // given
@@ -297,6 +349,7 @@ class BoardGameServiceTest {
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessage(createResourceNotFoundExceptionMessage(BOARD_GAME_RESOURCE_NAME, ID_FIELD, id));
     }
+
 
     @Test
     @DisplayName("Should throw ResourceExistsException when trying to set new name that already exists")

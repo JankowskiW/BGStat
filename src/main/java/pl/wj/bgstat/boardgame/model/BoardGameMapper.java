@@ -18,6 +18,7 @@ public class BoardGameMapper {
 
     public static BoardGame mapToBoardGame(BoardGameRequestDto boardGameRequestDto) {
         BoardGame boardGame = new BoardGame();
+        boardGame.setObjectTypeId(boardGameRequestDto.getObjectTypeId());
         boardGame.setName(boardGameRequestDto.getName());
         boardGame.setPlayingTime(boardGameRequestDto.getPlayingTime());
         boardGame.setRecommendedAge(boardGameRequestDto.getRecommendedAge());
