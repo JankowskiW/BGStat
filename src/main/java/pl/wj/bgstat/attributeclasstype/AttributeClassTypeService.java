@@ -34,27 +34,37 @@ public class AttributeClassTypeService {
     }
 
     public AttributeClassType addAttributeClassType(AttributeClassTypeRequestDto attributeClassTypeRequestDto) {
-        if (attributeClassTypeRepository.existsByName(attributeClassTypeRequestDto.getName()))
-            throw new ResourceExistsException(ATTRIBUTE_CLASS_TYPE_RESOURCE_NAME, NAME_FIELD);
+        throwExceptionWhenExistsByName(attributeClassTypeRequestDto.getName());
         AttributeClassType attributeClassType = AttributeClassTypeMapper.mapToAttributeClassType(attributeClassTypeRequestDto);
         attributeClassTypeRepository.save(attributeClassType);
         return attributeClassType;
     }
 
     public AttributeClassType editAttributeClassType(long id, AttributeClassTypeRequestDto attributeClassTypeRequestDto) {
-        if (!attributeClassTypeRepository.existsById(id))
-            throw new ResourceNotFoundException(ATTRIBUTE_CLASS_TYPE_RESOURCE_NAME, ID_FIELD, id);
-        if (attributeClassTypeRepository.existsByNameAndIdNot(attributeClassTypeRequestDto.getName(), id))
-            throw new ResourceExistsException(ATTRIBUTE_CLASS_TYPE_RESOURCE_NAME, NAME_FIELD);
-
+        throwExceptionWhenNotExistsById(id);
+        throwExceptionWhenExistsByNameAndNotId(id, attributeClassTypeRequestDto.getName());
         AttributeClassType attributeClassType = AttributeClassTypeMapper.mapToAttributeClassType(id, attributeClassTypeRequestDto);
         attributeClassTypeRepository.save(attributeClassType);
         return attributeClassType;
     }
 
     public void deleteAttributeClassType(long id) {
-        if(!attributeClassTypeRepository.existsById(id))
-            throw new ResourceNotFoundException(ATTRIBUTE_CLASS_TYPE_RESOURCE_NAME, ID_FIELD, id);
+        throwExceptionWhenNotExistsById(id);
         attributeClassTypeRepository.deleteById(id);
+    }
+
+    private void throwExceptionWhenNotExistsById(long id) {
+        if (!attributeClassTypeRepository.existsById(id))
+            throw new ResourceNotFoundException(ATTRIBUTE_CLASS_TYPE_RESOURCE_NAME, ID_FIELD, id);
+    }
+
+    private void throwExceptionWhenExistsByName(String name) {
+        if (attributeClassTypeRepository.existsByName(name))
+            throw new ResourceExistsException(ATTRIBUTE_CLASS_TYPE_RESOURCE_NAME, NAME_FIELD);
+    }
+
+    private void throwExceptionWhenExistsByNameAndNotId(long id, String name) {
+        if (attributeClassTypeRepository.existsByNameAndIdNot(name, id))
+            throw new ResourceExistsException(ATTRIBUTE_CLASS_TYPE_RESOURCE_NAME, NAME_FIELD);
     }
 }

@@ -45,14 +45,14 @@ class SystemObjectTypeServiceTest {
 
     private List<SystemObjectType> systemObjectTypeList;
     private List<SystemObjectTypeHeaderDto> systemObjectTypeHeaderList;
-    private List<SystemObjectAttributeClassResponseDto> assignedAtrributeClassList;
+    private List<SystemObjectAttributeClassResponseDto> assignedAttributeClassList;
 
 
     @BeforeEach
     void setUp() {
         systemObjectTypeList = SystemObjectTypeServiceTestHelper.populateSystemObjectTypeList(NUMBER_OF_ELEMENTS);
         systemObjectTypeHeaderList = SystemObjectTypeServiceTestHelper.populateSystemObjectTypeHeaderDtoList(systemObjectTypeList);
-        assignedAtrributeClassList =
+        assignedAttributeClassList =
                 SystemObjectTypeServiceTestHelper.populateSystemObjectAttributeClassResponseDtoList(NUMBER_OF_ELEMENTS - 1);
     }
 
@@ -315,7 +315,7 @@ class SystemObjectTypeServiceTest {
         given(systemObjectTypeRepository.existsById(anyLong()))
                 .willReturn(systemObjectTypeList.stream().anyMatch(sot -> sot.getId() == id));
         given(systemObjectAttributeClassRepository.existsBySystemObjectTypeId(anyLong()))
-                .willReturn(assignedAtrributeClassList.stream().anyMatch(aac -> aac.getSystemObjectTypeId() == id));
+                .willReturn(assignedAttributeClassList.stream().anyMatch(aac -> aac.getSystemObjectTypeId() == id));
 
         //when
         assertThatThrownBy(() -> systemObjectTypeService.deleteSystemObjectType(id))
@@ -329,7 +329,7 @@ class SystemObjectTypeServiceTest {
          // given
         long id = 1L;
         List<SystemObjectAttributeClassResponseDto> responseDtoList =
-                assignedAtrributeClassList.stream()
+                assignedAttributeClassList.stream()
                         .filter(aac -> aac.getSystemObjectTypeId() == id)
                         .collect(Collectors.toList());
         given(systemObjectTypeRepository.existsById(anyLong())).willReturn(
@@ -355,7 +355,7 @@ class SystemObjectTypeServiceTest {
         // given
         long id = NUMBER_OF_ELEMENTS;
         List<SystemObjectAttributeClassResponseDto> responseDtoList =
-                assignedAtrributeClassList.stream()
+                assignedAttributeClassList.stream()
                         .filter(aac -> aac.getSystemObjectTypeId() == id)
                         .collect(Collectors.toList());
         given(systemObjectTypeRepository.existsById(anyLong())).willReturn(
@@ -364,17 +364,17 @@ class SystemObjectTypeServiceTest {
                 .willReturn(responseDtoList);
 
         // when
-        List<SystemObjectAttributeClassResponseDto> assignedSystemobjectTypeList =
+        List<SystemObjectAttributeClassResponseDto> assignedSystemObjectTypeList =
                 systemObjectTypeService.getAllAttributeClassToSystemObjectTypeAssignments(id);
 
         // then
-        assertThat(assignedSystemobjectTypeList)
+        assertThat(assignedSystemObjectTypeList)
                 .isNotNull()
                 .isEmpty();
     }
 
     @Test
-    @DisplayName("Should throw EntityNotFoundExpception when trying to get attribute classes of non existing system object type")
+    @DisplayName("Should throw EntityNotFoundException when trying to get attribute classes of non existing system object type")
     void shouldThrowExceptionWhenTryingToGetAttributeClassesOfNonExistingSystemObjectType() {
         // given
         long id = 100L;

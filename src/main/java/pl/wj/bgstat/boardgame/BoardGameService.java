@@ -35,26 +35,19 @@ public class BoardGameService {
     }
 
     public BoardGameResponseDto addBoardGame(BoardGameRequestDto boardGameRequestDto) {
-        if (boardGameRequestDto.getObjectTypeId() == 0)
-            boardGameRequestDto.setObjectTypeId(BOARD_GAME_DEFAULT_OBJECT_TYPE_ID);
-        if (boardGameRepository.existsByName(boardGameRequestDto.getName()))
-            throw new ResourceExistsException(BOARD_GAME_RESOURCE_NAME, NAME_FIELD);
-        if (!systemObjectTypeRepository.existsById(boardGameRequestDto.getObjectTypeId()))
-            throw new ResourceNotFoundException(SYSTEM_OBJECT_TYPE_RESOURCE_NAME, ID_FIELD, boardGameRequestDto.getObjectTypeId());
+        boardGameRequestDto.setObjectTypeId(validateSystemObjectTypeId(boardGameRequestDto.getObjectTypeId()));
+        throwExceptionWhenExistsByName(boardGameRequestDto.getName());
+        throwExceptionWhenSystemObjectTypeNotExistsById(boardGameRequestDto.getObjectTypeId());
         BoardGame boardGame = BoardGameMapper.mapToBoardGame(boardGameRequestDto);
         boardGameRepository.save(boardGame);
         return BoardGameMapper.mapToBoardGameResponseDto(boardGame);
     }
 
     public BoardGameResponseDto editBoardGame(long id, BoardGameRequestDto boardGameRequestDto) {
-        if (boardGameRequestDto.getObjectTypeId() == 0)
-            boardGameRequestDto.setObjectTypeId(BOARD_GAME_DEFAULT_OBJECT_TYPE_ID);
-        if (!boardGameRepository.existsById(id))
-            throw new ResourceNotFoundException(BOARD_GAME_RESOURCE_NAME, ID_FIELD, id);
-        if (boardGameRepository.existsByNameAndIdNot(boardGameRequestDto.getName(), id))
-            throw new ResourceExistsException(BOARD_GAME_RESOURCE_NAME, NAME_FIELD);
-        if (!systemObjectTypeRepository.existsById(boardGameRequestDto.getObjectTypeId()))
-            throw new ResourceNotFoundException(SYSTEM_OBJECT_TYPE_RESOURCE_NAME, ID_FIELD, boardGameRequestDto.getObjectTypeId());
+        boardGameRequestDto.setObjectTypeId(validateSystemObjectTypeId(boardGameRequestDto.getObjectTypeId()));
+        throwExceptionWhenNotExistsById(id);
+        throwExceptionWhenExistsByNameAndNotId(id, boardGameRequestDto.getName());
+        throwExceptionWhenSystemObjectTypeNotExistsById(boardGameRequestDto.getObjectTypeId());
 
         BoardGame boardGame = BoardGameMapper.mapToBoardGame(id, boardGameRequestDto);
         boardGameRepository.save(boardGame);
@@ -62,7 +55,31 @@ public class BoardGameService {
     }
 
     public void deleteBoardGame(long id) {
-        if (!boardGameRepository.existsById(id)) throw new ResourceNotFoundException(BOARD_GAME_RESOURCE_NAME, ID_FIELD, id);
+        throwExceptionWhenNotExistsById(id);
         boardGameRepository.deleteById(id);
+    }
+
+    private void throwExceptionWhenNotExistsById(long id) {
+        if (!boardGameRepository.existsById(id))
+            throw new ResourceNotFoundException(BOARD_GAME_RESOURCE_NAME, ID_FIELD, id);
+    }
+
+    private void throwExceptionWhenSystemObjectTypeNotExistsById(long id) {
+        if (!systemObjectTypeRepository.existsById(id))
+            throw new ResourceNotFoundException(SYSTEM_OBJECT_TYPE_RESOURCE_NAME, ID_FIELD, id);
+    }
+
+    private void throwExceptionWhenExistsByName(String name) {
+        if (boardGameRepository.existsByName(name))
+            throw new ResourceExistsException(BOARD_GAME_RESOURCE_NAME, NAME_FIELD);
+    }
+
+    private void throwExceptionWhenExistsByNameAndNotId(long id, String name) {
+        if (boardGameRepository.existsByNameAndIdNot(name, id))
+            throw new ResourceExistsException(BOARD_GAME_RESOURCE_NAME, NAME_FIELD);
+    }
+
+    private long validateSystemObjectTypeId(long id) {
+        return id == 0 ? BOARD_GAME_DEFAULT_OBJECT_TYPE_ID : id;
     }
 }

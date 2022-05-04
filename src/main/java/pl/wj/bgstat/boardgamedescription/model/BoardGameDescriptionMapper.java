@@ -8,14 +8,6 @@ import pl.wj.bgstat.boardgamedescription.model.dto.BoardGameDescriptionResponseD
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class BoardGameDescriptionMapper {
 
-    public static BoardGameDescription mapToBoardGameDescription(long id,
-                                       BoardGameDescriptionRequestDto boardGameDescriptionRequestDto) {
-        BoardGameDescription boardGameDescription = new BoardGameDescription();
-        boardGameDescription.setBoardGameId(id);
-        boardGameDescription.setDescription(boardGameDescriptionRequestDto.getDescription());
-        return boardGameDescription;
-    }
-
     public static BoardGameDescriptionResponseDto mapToBoardGameDescriptionResponseDto(BoardGameDescription boardGameDescription) {
         return BoardGameDescriptionResponseDto.builder()
                 .boardGameId(boardGameDescription.getBoardGameId())

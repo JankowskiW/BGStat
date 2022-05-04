@@ -142,7 +142,7 @@ class AttributeClassTypeServiceTest {
         assertThat(attributeClassType)
                 .isNotNull()
                 .usingRecursiveComparison()
-                .isEqualTo(returnedAttributeClassType.get());
+                .isEqualTo(returnedAttributeClassType.orElse(null));
     }
 
     @Test

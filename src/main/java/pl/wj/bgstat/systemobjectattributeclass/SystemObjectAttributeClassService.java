@@ -22,19 +22,13 @@ public class SystemObjectAttributeClassService {
     private final SystemObjectTypeRepository systemObjectTypeRepository;
     private final AttributeClassRepository attributeClassRepository;
 
-
     public SystemObjectAttributeClassResponseDto addSystemObjectAttributeClass(
             SystemObjectAttributeClassRequestDto systemObjectAttributeClassRequestDto) {
-        if (!systemObjectTypeRepository.existsById(systemObjectAttributeClassRequestDto.getSystemObjectTypeId()))
-            throw new ResourceNotFoundException(SYSTEM_OBJECT_TYPE_RESOURCE_NAME, ID_FIELD,
-                    + systemObjectAttributeClassRequestDto.getSystemObjectTypeId());
-        if (!attributeClassRepository.existsById(systemObjectAttributeClassRequestDto.getAttributeClassId()))
-            throw new ResourceNotFoundException(ATTRIBUTE_CLASS_RESOURCE_NAME, ID_FIELD,
-                    + systemObjectAttributeClassRequestDto.getAttributeClassId());
+        throwExceptionWhenSystemObjectTypeNotExistsById(systemObjectAttributeClassRequestDto.getSystemObjectTypeId());
+        throwExceptionWhenAttributeClassNotExistsById(systemObjectAttributeClassRequestDto.getAttributeClassId());
         SystemObjectAttributeClassId id = new SystemObjectAttributeClassId(
                 systemObjectAttributeClassRequestDto.getAttributeClassId(), systemObjectAttributeClassRequestDto.getSystemObjectTypeId());
-        if (systemObjectAttributeClassRepository.existsById(id))
-                throw new ResourceExistsException(SYSTEM_OBJECT_ATTRIBUTE_CLASS_RESOURCE_NAME, ID_FIELD);
+        throwExceptionAfterCheckedIfExistsById(id, false);
         SystemObjectAttributeClass systemObjectAttributeClass = SystemObjectAttributeClassMapper
                 .mapToSystemObjectAttributeClass(id, systemObjectAttributeClassRequestDto);
         systemObjectAttributeClassRepository.save(systemObjectAttributeClass);
@@ -44,7 +38,7 @@ public class SystemObjectAttributeClassService {
     public SystemObjectAttributeClassResponseDto editSystemObjectAttributeClass(
             long attributeClassId, long systemObjectTypeId, SystemObjectAttributeClassRequestDto systemObjectAttributeClassRequestDto) {
         SystemObjectAttributeClassId id = new SystemObjectAttributeClassId(attributeClassId, systemObjectTypeId);
-        if (!systemObjectAttributeClassRepository.existsById(id)) throw new ResourceNotFoundException(SYSTEM_OBJECT_ATTRIBUTE_CLASS_RESOURCE_NAME, ID_FIELD, id);
+        throwExceptionAfterCheckedIfExistsById(id, true);
         SystemObjectAttributeClass systemObjectAttributeClass = SystemObjectAttributeClassMapper
                 .mapToSystemObjectAttributeClass(id, systemObjectAttributeClassRequestDto);
         systemObjectAttributeClassRepository.save(systemObjectAttributeClass);
@@ -53,8 +47,25 @@ public class SystemObjectAttributeClassService {
 
     public void deleteSystemObjectAttributeClass(long attributeClassId, long systemObjectTypeId) {
         SystemObjectAttributeClassId id = new SystemObjectAttributeClassId(attributeClassId, systemObjectTypeId);
-        if (!systemObjectAttributeClassRepository.existsById(id))
-            throw new ResourceNotFoundException(SYSTEM_OBJECT_ATTRIBUTE_CLASS_RESOURCE_NAME, ID_FIELD, id);
+        throwExceptionAfterCheckedIfExistsById(id, true);
         systemObjectAttributeClassRepository.deleteById(id);
     }
+
+    private void throwExceptionAfterCheckedIfExistsById(SystemObjectAttributeClassId id, boolean shouldExists) {
+        if (shouldExists && !systemObjectAttributeClassRepository.existsById(id))
+            throw new ResourceNotFoundException(SYSTEM_OBJECT_ATTRIBUTE_CLASS_RESOURCE_NAME, ID_FIELD, id);
+        else if (!shouldExists && systemObjectAttributeClassRepository.existsById(id))
+            throw new ResourceExistsException(SYSTEM_OBJECT_ATTRIBUTE_CLASS_RESOURCE_NAME, ID_FIELD);
+    }
+
+    private void throwExceptionWhenSystemObjectTypeNotExistsById(long id) {
+        if (!systemObjectTypeRepository.existsById(id))
+            throw new ResourceNotFoundException(SYSTEM_OBJECT_TYPE_RESOURCE_NAME, ID_FIELD, id);
+    }
+
+    private void throwExceptionWhenAttributeClassNotExistsById(long id) {
+        if (!attributeClassRepository.existsById(id))
+            throw new ResourceNotFoundException(ATTRIBUTE_CLASS_RESOURCE_NAME, ID_FIELD, id);
+    }
+
 }

@@ -29,7 +29,7 @@ public class AttributeClassTypeController {
     }
 
     @PostMapping("")
-    public AttributeClassType addAttributeClasssType(@RequestBody @Valid AttributeClassTypeRequestDto attributeClassTypeRequestDto) {
+    public AttributeClassType addAttributeClassType(@RequestBody @Valid AttributeClassTypeRequestDto attributeClassTypeRequestDto) {
         return attributeClassTypeService.addAttributeClassType(attributeClassTypeRequestDto);
     }
 

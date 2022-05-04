@@ -86,7 +86,7 @@ class AttributeClassServiceTest {
 
     @Test
     @DisplayName("Should return last page of attribute class headers")
-    void shouldReturnOnlylastPageOfAttrybuteClassHeaders() {
+    void shouldReturnOnlyLastPageOfAttributeClassHeaders() {
         // given
         int lastPageNumber = (int) ceil(NUMBER_OF_ELEMENTS / (double) PAGE_SIZE);
         int lastPageSize = (NUMBER_OF_ELEMENTS - (int) floor(NUMBER_OF_ELEMENTS / (double) PAGE_SIZE) * PAGE_SIZE);
@@ -109,8 +109,8 @@ class AttributeClassServiceTest {
     }
 
     @Test
-    @DisplayName("Should return empty list of attribute class headers when page number is too hight")
-    void shouldReturnEmptylistOfAttrybuteClassTypeHeaders() {
+    @DisplayName("Should return empty list of attribute class headers when page number is too high")
+    void shouldReturnEmptyListOfAttributeClassTypeHeaders() {
         // given
         int tooHighPageNumber = (int) ceil(attributeClassHeaderList.size() / (double) PAGE_SIZE) + 1;
         given(attributeClassRepository.findAllAttributeClassHeaders(any(Pageable.class)))
@@ -127,8 +127,8 @@ class AttributeClassServiceTest {
     }
 
     @Test
-    @DisplayName("Should return only one attrbute class details")
-    void shouldReturnSingleAttributeClassDeatailsById() {
+    @DisplayName("Should return only one attribute class details")
+    void shouldReturnSingleAttributeClassDetailsById() {
         // given
         long id = 1L;
         Optional<AttributeClass> returnedAttributeClass = attributeClassList.stream()
@@ -353,7 +353,7 @@ class AttributeClassServiceTest {
     }
 
     @Test
-    @DisplayName("Should throw EntityNotFoundExpception when trying to get system object types of non existing attribute class")
+    @DisplayName("Should throw EntityNotFoundException when trying to get system object types of non existing attribute class")
     void shouldThrowExceptionWhenTryingToGetSystemObjectTypesOfNonExistingAttributeClass() {
         // given
         long id = 100L;
