@@ -52,7 +52,6 @@ class  UserBoardGameServiceTest {
      *      - Get only one but not last page of User Board Game Headers by User id
      *      - Get only last page of User Board Game Headers by User id
      *      - Get empty list of User Board Game Headers by User id
-     *      - Try to get User Board Game Headers by not existing User id
      * 2) Get single User Board Game
      *      - Get single User Board Game
      *      - Try to get User Board Game by not existing User Board Game id
