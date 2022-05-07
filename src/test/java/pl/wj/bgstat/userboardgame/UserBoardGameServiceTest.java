@@ -17,7 +17,10 @@ import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameResponseDto;
 
 import java.util.List;
 
+import static java.lang.Math.ceil;
+import static java.lang.Math.floor;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.from;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static pl.wj.bgstat.userboardgame.UserBoardGameServiceTestHelper.populateUserBoardGameHeaderDtoList;
@@ -32,7 +35,7 @@ class  UserBoardGameServiceTest {
     private UserBoardGameService userBoardGameService;
 
     private static final int NUMBER_OF_ELEMENTS = 20;
-    private static final int PAGE_SIZE = 5;
+    private static final int PAGE_SIZE = 3;
 
     private List<UserBoardGameResponseDto> userBoardGameResponseDtoList;
     private List<UserBoardGameHeaderDto> userBoardGameHeaderDtoList;
@@ -86,6 +89,30 @@ class  UserBoardGameServiceTest {
                 .hasSize(PAGE_SIZE)
                 .usingRecursiveFieldByFieldElementComparator()
                 .isEqualTo(userBoardGameHeaderDtoList.subList(fromIndex, toIndex));
+    }
+
+    @Test
+    @DisplayName("Should return only last page of user board game headers")
+    void shouldReturnOnlyLastPageOfUserBoardGameHeaders() {
+        // given
+        int lastPageNumber = (int) ceil(NUMBER_OF_ELEMENTS / (double) PAGE_SIZE);
+        int lastPageSize = (NUMBER_OF_ELEMENTS - (int) floor(NUMBER_OF_ELEMENTS / (double) PAGE_SIZE) * PAGE_SIZE);
+        lastPageSize = lastPageSize == 0 ? PAGE_SIZE : lastPageSize;
+        int fromIndex = NUMBER_OF_ELEMENTS - lastPageSize;
+        int toIndex = NUMBER_OF_ELEMENTS;
+        given(userBoardGameRepository.findUserBoardGameHeaders(any(Pageable.class)))
+                .willReturn(new PageImpl<>(userBoardGameHeaderDtoList.subList(fromIndex, toIndex)));
+
+        // when
+        Page<UserBoardGameHeaderDto> userBoardGameHeaders =
+                userBoardGameService.getUserBoardGameHeaders(PageRequest.of(lastPageNumber, PAGE_SIZE));
+
+        // then
+        assertThat(userBoardGameHeaders)
+                .isNotNull()
+                .hasSize(lastPageSize)
+                .usingRecursiveFieldByFieldElementComparator()
+                .isEqualTo(userBoardGameHeaderDtoList.subList(fromIndex,toIndex));
     }
 
 }
