@@ -15,6 +15,7 @@ import pl.wj.bgstat.boardgame.model.dto.BoardGameHeaderDto;
 import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameHeaderDto;
 import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameResponseDto;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.Math.ceil;
@@ -113,6 +114,24 @@ class  UserBoardGameServiceTest {
                 .hasSize(lastPageSize)
                 .usingRecursiveFieldByFieldElementComparator()
                 .isEqualTo(userBoardGameHeaderDtoList.subList(fromIndex,toIndex));
+    }
+
+    @Test
+    @DisplayName("Should return empty list of user board game headers when page number is too high")
+    void shouldReturnEmptyListOfUserBoardGameHeaders() {
+        // given
+        int tooHighPageNumber = (int) ceil(userBoardGameHeaderDtoList.size() / (double) PAGE_SIZE) + 1;
+        given(userBoardGameRepository.findUserBoardGameHeaders(any(Pageable.class)))
+                .willReturn(new PageImpl<>(new ArrayList<>()));
+
+        // when
+        Page<UserBoardGameHeaderDto> userBoardGameHeaders =
+                userBoardGameService.getUserBoardGameHeaders(PageRequest.of(tooHighPageNumber, PAGE_SIZE));
+
+        // then
+        assertThat(userBoardGameHeaders)
+                .isNotNull()
+                .hasSize(0);
     }
 
 }
