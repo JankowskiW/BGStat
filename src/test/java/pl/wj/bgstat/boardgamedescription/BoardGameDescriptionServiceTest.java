@@ -68,8 +68,8 @@ class BoardGameDescriptionServiceTest {
     }
 
     @Test
-    @DisplayName("Should throw ResourceNotFoundException when trying to edit description of a non existing board game")
-    void shouldThrowExceptionWhenTryingToEditNonExistingBoardGameDescription() {
+    @DisplayName("Should throw ResourceNotFoundException when trying to edit description of a not existing board game")
+    void shouldThrowExceptionWhenTryingToEditNotExistingBoardGameDescription() {
         // given
         long id = 100L;
         given(boardGameDescriptionRepository.findById(anyLong())).willReturn(

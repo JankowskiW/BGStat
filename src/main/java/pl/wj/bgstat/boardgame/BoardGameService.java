@@ -25,7 +25,7 @@ public class BoardGameService {
     private final SystemObjectTypeRepository systemObjectTypeRepository;
 
     public Page<BoardGameHeaderDto> getBoardGameHeaders(Pageable pageable) {
-        return boardGameRepository.findAllBoardGameHeaders(pageable);
+        return boardGameRepository.findBoardGameHeaders(pageable);
     }
     
     public BoardGameResponseDto getSingleBoardGame(long id) {

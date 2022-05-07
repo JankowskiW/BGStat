@@ -239,8 +239,8 @@ class AttributeClassServiceTest {
     }
 
     @Test
-    @DisplayName("Should throw ResourceNotFoundException when trying to edit non existing attribute class")
-    void shouldThrowExceptionWhenTryingToEditNonExistingAttributeClass() {
+    @DisplayName("Should throw ResourceNotFoundException when trying to edit not existing attribute class")
+    void shouldThrowExceptionWhenTryingToEditNotExistingAttributeClass() {
         // given
         long id = 100L;
         given(attributeClassRepository.existsById(anyLong()))
@@ -288,8 +288,8 @@ class AttributeClassServiceTest {
     }
 
     @Test
-    @DisplayName("Should throw ResourceNotFoundException when trying to remove non existing attribute class")
-    void shouldThrowExceptionWhenTryingToRemoveNonExistingAttributeClass() {
+    @DisplayName("Should throw ResourceNotFoundException when trying to remove not existing attribute class")
+    void shouldThrowExceptionWhenTryingToRemoveNotExistingAttributeClass() {
         // given
         long id = 100L;
         given(attributeClassRepository.existsById(anyLong())).willReturn(
@@ -353,8 +353,8 @@ class AttributeClassServiceTest {
     }
 
     @Test
-    @DisplayName("Should throw EntityNotFoundException when trying to get system object types of non existing attribute class")
-    void shouldThrowExceptionWhenTryingToGetSystemObjectTypesOfNonExistingAttributeClass() {
+    @DisplayName("Should throw EntityNotFoundException when trying to get system object types of not existing attribute class")
+    void shouldThrowExceptionWhenTryingToGetSystemObjectTypesOfNotExistingAttributeClass() {
         // given
         long id = 100L;
         given(attributeClassRepository.existsById(anyLong())).willReturn(

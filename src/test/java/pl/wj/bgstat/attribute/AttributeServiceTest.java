@@ -79,7 +79,7 @@ class AttributeServiceTest {
     }
 
     @Test
-    @DisplayName("Should create and return created attribute of non multivalued attribute type")
+    @DisplayName("Should create and return created attribute of not multivalued attribute type")
     void shouldReturnCreatedAttribute() {
         // given
         long objectId = attributeList.size()+1;
@@ -220,8 +220,8 @@ class AttributeServiceTest {
     }
 
     @Test
-    @DisplayName("Should throw ResourceNotFoundException when trying to edit non existing attribute")
-    void shouldThrowExceptionWhenTryingToEditNonExistingAttribute() {
+    @DisplayName("Should throw ResourceNotFoundException when trying to edit not existing attribute")
+    void shouldThrowExceptionWhenTryingToEditNotExistingAttribute() {
         // given
         long id = 100L;
 
@@ -277,8 +277,8 @@ class AttributeServiceTest {
     }
 
     @Test
-    @DisplayName("Should throw ResourceNotFoundException when trying to remove non existing attribute")
-    void shouldThrowExceptionWhenTryingToRemoveNonExistingAttribute() {
+    @DisplayName("Should throw ResourceNotFoundException when trying to remove not existing attribute")
+    void shouldThrowExceptionWhenTryingToRemoveNotExistingAttribute() {
         // given
         long id = 100L;
         given(attributeRepository.existsById(id)).willReturn(

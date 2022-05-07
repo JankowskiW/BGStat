@@ -244,8 +244,8 @@ class SystemObjectTypeServiceTest {
     }
 
     @Test
-    @DisplayName("Should throw ResourceNotFoundException when trying to edit non existing system object type")
-    void shouldThrowExceptionWhenTryingToEditNonExistingSystemObjectType() {
+    @DisplayName("Should throw ResourceNotFoundException when trying to edit not existing system object type")
+    void shouldThrowExceptionWhenTryingToEditNotExistingSystemObjectType() {
         // given
         long id = 100L;
         given(systemObjectTypeRepository.existsById(anyLong())).willReturn(
@@ -294,8 +294,8 @@ class SystemObjectTypeServiceTest {
     }
 
     @Test
-    @DisplayName("Should throw ResourceNotFoundException when trying to remove non existing system object type")
-    void shouldThrowExceptionWhenTryingToRemoveNonExistingSystemObjectType() {
+    @DisplayName("Should throw ResourceNotFoundException when trying to remove not existing system object type")
+    void shouldThrowExceptionWhenTryingToRemoveNotExistingSystemObjectType() {
         // given
         long id = 100L;
         given(systemObjectTypeRepository.existsById(anyLong()))
@@ -374,8 +374,8 @@ class SystemObjectTypeServiceTest {
     }
 
     @Test
-    @DisplayName("Should throw EntityNotFoundException when trying to get attribute classes of non existing system object type")
-    void shouldThrowExceptionWhenTryingToGetAttributeClassesOfNonExistingSystemObjectType() {
+    @DisplayName("Should throw EntityNotFoundException when trying to get attribute classes of not existing system object type")
+    void shouldThrowExceptionWhenTryingToGetAttributeClassesOfNotExistingSystemObjectType() {
         // given
         long id = 100L;
         given(systemObjectTypeRepository.existsById(anyLong())).willReturn(

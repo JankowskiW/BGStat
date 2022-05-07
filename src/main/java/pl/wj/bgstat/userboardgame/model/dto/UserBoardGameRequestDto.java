@@ -10,6 +10,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Getter
@@ -30,7 +31,7 @@ public class UserBoardGameRequestDto {
     @NotBlank @Length(max = 500)
     private String comment;
     private Date purchaseDate;
-    private double purchasePrice;
+    private BigDecimal purchasePrice;
     private Date saleDate;
-    private double salePrice;
+    private BigDecimal salePrice;
 }

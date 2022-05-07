@@ -3,7 +3,9 @@ package pl.wj.bgstat.userboardgame.model.dto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Getter
@@ -16,9 +18,9 @@ public class UserBoardGameResponseDto {
     private boolean sleeved;
     private String comment;
     private Date purchaseDate;
-    private double purchasePrice;
+    private BigDecimal purchasePrice;
     private Date saleDate;
-    private double salePrice;
+    private BigDecimal salePrice;
     private String bgName;
     private int bgRecommendedAge;
     private int bgMinPlayersNumber;

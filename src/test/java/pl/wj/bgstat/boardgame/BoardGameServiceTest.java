@@ -64,7 +64,7 @@ class BoardGameServiceTest {
         int pageNumber = 2;
         int fromIndex = (pageNumber - 1) * PAGE_SIZE;
         int toIndex = fromIndex + PAGE_SIZE;
-        given(boardGameRepository.findAllBoardGameHeaders(any(Pageable.class)))
+        given(boardGameRepository.findBoardGameHeaders(any(Pageable.class)))
                 .willReturn(new PageImpl<>(boardGameHeaderList.subList(fromIndex, toIndex)));
 
         // when
@@ -88,7 +88,7 @@ class BoardGameServiceTest {
         lastPageSize = lastPageSize == 0 ? PAGE_SIZE : lastPageSize;
         int fromIndex = NUMBER_OF_ELEMENTS - lastPageSize;
         int toIndex = NUMBER_OF_ELEMENTS;
-        given(boardGameRepository.findAllBoardGameHeaders(any(Pageable.class)))
+        given(boardGameRepository.findBoardGameHeaders(any(Pageable.class)))
                 .willReturn(new PageImpl<>(boardGameHeaderList.subList(fromIndex, toIndex)));
 
         // when
@@ -108,7 +108,7 @@ class BoardGameServiceTest {
     void shouldReturnEmptyListOfBoardGameHeaders() {
         // given
         int tooHighPageNumber = (int) ceil(boardGameHeaderList.size() / (double) PAGE_SIZE) + 1;
-        given(boardGameRepository.findAllBoardGameHeaders(any(Pageable.class)))
+        given(boardGameRepository.findBoardGameHeaders(any(Pageable.class)))
                 .willReturn(new PageImpl<>(new ArrayList<>()));
 
         // when
@@ -337,8 +337,8 @@ class BoardGameServiceTest {
     }
 
     @Test
-    @DisplayName("Should throw ResourceNotFoundException when trying to edit non existing board game")
-    void shouldThrowExceptionWhenTryingToEditNonExistingBoardGame() {
+    @DisplayName("Should throw ResourceNotFoundException when trying to edit not existing board game")
+    void shouldThrowExceptionWhenTryingToEditNotExistingBoardGame() {
         // given
         long id = 100L;
         given(boardGameRepository.existsById(anyLong()))
@@ -390,8 +390,8 @@ class BoardGameServiceTest {
     }
 
     @Test
-    @DisplayName("Should throw ResourceNotFoundException when trying to remove non existing board game")
-    void shouldThrowExceptionWhenTryingToRemoveNonExistingBoardGame() {
+    @DisplayName("Should throw ResourceNotFoundException when trying to remove not existing board game")
+    void shouldThrowExceptionWhenTryingToRemoveNotExistingBoardGame() {
         // given
         long id = 100L;
         given(boardGameRepository.existsById(anyLong()))

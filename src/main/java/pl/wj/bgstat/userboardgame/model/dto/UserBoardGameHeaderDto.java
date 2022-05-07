@@ -9,5 +9,5 @@ import lombok.Getter;
 @AllArgsConstructor
 public class UserBoardGameHeaderDto {
     private long id;
-    private long bgName;
+    private String bgName;
 }
