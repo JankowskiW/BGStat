@@ -1,5 +1,6 @@
 package pl.wj.bgstat.userboardgame;
 
+import pl.wj.bgstat.userboardgame.model.UserBoardGame;
 import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameHeaderDto;
 import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameRequestDto;
 import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameDetailsDto;
@@ -47,5 +48,21 @@ public class UserBoardGameServiceTestHelper {
                 null,
                 null
         );
+    }
+
+    public static UserBoardGame createUserBoardGame(long id, long boardGameId, long userId, long shopId) {
+        UserBoardGame userBoardGame = new UserBoardGame();
+        userBoardGame.setId(id);
+        userBoardGame.setObjectTypeId(1L);
+        userBoardGame.setBoardGameId(boardGameId);
+        userBoardGame.setUserId(userId);
+        userBoardGame.setShopId(shopId);
+        userBoardGame.setSleeved(true);
+        userBoardGame.setComment("Comment");
+        userBoardGame.setPurchaseDate(new Date());
+        userBoardGame.setPurchasePrice(new BigDecimal(155.55));
+        userBoardGame.setSaleDate(null);
+        userBoardGame.setSalePrice(null);
+        return userBoardGame;
     }
 }
