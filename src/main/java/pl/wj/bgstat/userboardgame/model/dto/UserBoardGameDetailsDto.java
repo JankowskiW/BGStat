@@ -10,16 +10,21 @@ import java.util.Date;
 @Getter
 @Builder
 @AllArgsConstructor
-public class UserBoardGameResponseDto {
+public class UserBoardGameDetailsDto {
     private long id;
-    private long objectTypeId;
     private long boardGameId;
-    private long userId;
-    private long shopId;
+    private long objectTypeId;
     private boolean sleeved;
     private String comment;
     private Date purchaseDate;
     private BigDecimal purchasePrice;
     private Date saleDate;
     private BigDecimal salePrice;
+    private String bgName;
+    private int bgRecommendedAge;
+    private int bgMinPlayersNumber;
+    private int bgMaxPlayersNumber;
+    private int bgComplexity;
+    private int bgPlayingTime;
+    private String bgDescription;
 }

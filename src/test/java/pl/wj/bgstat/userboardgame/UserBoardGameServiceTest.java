@@ -11,19 +11,29 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import pl.wj.bgstat.boardgame.model.dto.BoardGameHeaderDto;
+import pl.wj.bgstat.boardgame.BoardGameRepository;
+import pl.wj.bgstat.exception.ResourceNotFoundException;
+import pl.wj.bgstat.shop.ShopRepository;
+import pl.wj.bgstat.user.UserRepository;
+import pl.wj.bgstat.userboardgame.model.UserBoardGame;
+import pl.wj.bgstat.userboardgame.model.UserBoardGameMapper;
+import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameDetailsDto;
 import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameHeaderDto;
+import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameRequestDto;
 import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameResponseDto;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static java.lang.Math.ceil;
 import static java.lang.Math.floor;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.from;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
+import static pl.wj.bgstat.exception.ExceptionHelper.*;
 import static pl.wj.bgstat.userboardgame.UserBoardGameServiceTestHelper.populateUserBoardGameHeaderDtoList;
 import static pl.wj.bgstat.userboardgame.UserBoardGameServiceTestHelper.populateUserBoardGameResponseDtoList;
 
@@ -32,19 +42,22 @@ class  UserBoardGameServiceTest {
 
     @Mock
     private UserBoardGameRepository userBoardGameRepository;
+    private BoardGameRepository boardGameRepository;
+    private UserRepository userRepository;
+    private ShopRepository shopRepository;
     @InjectMocks
     private UserBoardGameService userBoardGameService;
 
     private static final int NUMBER_OF_ELEMENTS = 20;
     private static final int PAGE_SIZE = 3;
 
-    private List<UserBoardGameResponseDto> userBoardGameResponseDtoList;
+    private List<UserBoardGameDetailsDto> userBoardGameDetailsDtoList;
     private List<UserBoardGameHeaderDto> userBoardGameHeaderDtoList;
 
     @BeforeEach
     void setUp() {
-        userBoardGameResponseDtoList = populateUserBoardGameResponseDtoList(NUMBER_OF_ELEMENTS);
-        userBoardGameHeaderDtoList = populateUserBoardGameHeaderDtoList(userBoardGameResponseDtoList);
+        userBoardGameDetailsDtoList = populateUserBoardGameResponseDtoList(NUMBER_OF_ELEMENTS);
+        userBoardGameHeaderDtoList = populateUserBoardGameHeaderDtoList(userBoardGameDetailsDtoList);
     }
 
     /**
@@ -70,67 +83,113 @@ class  UserBoardGameServiceTest {
      */
 
     @Test
-    @DisplayName("Should return only one but not last page of user board game headers")
-    void shouldReturnOnlyOneButNotLastPageOfUserBoardGameHeaders() {
+    @DisplayName("Should return single user board game")
+    void shouldReturnSingleUserBoardGameDetailsById() {
         // given
-        int pageNumber = 2;
-        int fromIndex = (pageNumber - 1) * PAGE_SIZE;
-        int toIndex = fromIndex + PAGE_SIZE;
-        given(userBoardGameRepository.findUserBoardGameHeaders(any(Pageable.class)))
-                .willReturn(new PageImpl<>(userBoardGameHeaderDtoList.subList(fromIndex, toIndex)));
+        long id = 1L;
+        Optional<UserBoardGameDetailsDto> returnedUserBoardGameDto =
+                userBoardGameDetailsDtoList.stream().filter(ubg -> ubg.getId() == id).findAny();
+        given(userBoardGameRepository.findWithDetailsById(anyLong())).willReturn(returnedUserBoardGameDto);
 
         // when
-        Page<UserBoardGameHeaderDto> userBoardGameHeaders =
-                userBoardGameService.getUserBoardGameHeaders(PageRequest.of(pageNumber, PAGE_SIZE));
+        UserBoardGameDetailsDto userBoardGameDetailsDto = userBoardGameService.getSingleUserBoardGame(id);
 
         // then
-        assertThat(userBoardGameHeaders)
+        assertThat(userBoardGameDetailsDto)
                 .isNotNull()
-                .hasSize(PAGE_SIZE)
-                .usingRecursiveFieldByFieldElementComparator()
-                .isEqualTo(userBoardGameHeaderDtoList.subList(fromIndex, toIndex));
+                .usingRecursiveComparison()
+                .isEqualTo(returnedUserBoardGameDto);
     }
 
     @Test
-    @DisplayName("Should return only last page of user board game headers")
-    void shouldReturnOnlyLastPageOfUserBoardGameHeaders() {
+    @DisplayName("Should throw ResourceNotFoundException when cannot find user board game by id")
+    void shouldThrowExceptionWhenCannotFindUserBoardGameById() {
         // given
-        int lastPageNumber = (int) ceil(NUMBER_OF_ELEMENTS / (double) PAGE_SIZE);
-        int lastPageSize = (NUMBER_OF_ELEMENTS - (int) floor(NUMBER_OF_ELEMENTS / (double) PAGE_SIZE) * PAGE_SIZE);
-        lastPageSize = lastPageSize == 0 ? PAGE_SIZE : lastPageSize;
-        int fromIndex = NUMBER_OF_ELEMENTS - lastPageSize;
-        int toIndex = NUMBER_OF_ELEMENTS;
-        given(userBoardGameRepository.findUserBoardGameHeaders(any(Pageable.class)))
-                .willReturn(new PageImpl<>(userBoardGameHeaderDtoList.subList(fromIndex, toIndex)));
+        long id = 100L;
+        given(userBoardGameRepository.findWithDetailsById(anyLong()))
+                .willReturn(userBoardGameDetailsDtoList.stream()
+                        .filter(ubg -> ubg.getId() == id)
+                                .findAny());
 
         // when
-        Page<UserBoardGameHeaderDto> userBoardGameHeaders =
-                userBoardGameService.getUserBoardGameHeaders(PageRequest.of(lastPageNumber, PAGE_SIZE));
-
-        // then
-        assertThat(userBoardGameHeaders)
-                .isNotNull()
-                .hasSize(lastPageSize)
-                .usingRecursiveFieldByFieldElementComparator()
-                .isEqualTo(userBoardGameHeaderDtoList.subList(fromIndex,toIndex));
+        assertThatThrownBy(() -> userBoardGameService.getSingleUserBoardGame(id))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage(createResourceNotFoundExceptionMessage(USER_BOARD_GAME_RESOURCE_NAME, ID_FIELD, id));
     }
 
     @Test
-    @DisplayName("Should return empty list of user board game headers when page number is too high")
-    void shouldReturnEmptyListOfUserBoardGameHeaders() {
+    @DisplayName("Should create and return created user board game")
+    void shouldReturnCreatedUserBoardGame() {
         // given
-        int tooHighPageNumber = (int) ceil(userBoardGameHeaderDtoList.size() / (double) PAGE_SIZE) + 1;
-        given(userBoardGameRepository.findUserBoardGameHeaders(any(Pageable.class)))
-                .willReturn(new PageImpl<>(new ArrayList<>()));
+        UserBoardGameRequestDto userBoardGameRequestDto = UserBoardGameServiceTestHelper.createUserBoardGameRequestDto();
+        UserBoardGame userBoardGame = UserBoardGameMapper.mapToUserBoardGame(userBoardGameRequestDto);
+        userBoardGame.setId(userBoardGameHeaderDtoList.size()+1);
+        UserBoardGameResponseDto expectedResponse = UserBoardGameMapper.mapToUserBoardGameResponseDto(userBoardGame);
+        given(boardGameRepository.existsById(anyLong())).willReturn(true);
+        given(userRepository.existsById(anyLong())).willReturn(true);
+        given(shopRepository.existsById(anyLong())).willReturn(true);
+        given(userBoardGameRepository.save(any(UserBoardGame.class))).willAnswer(
+                i -> {
+                    UserBoardGame ubg = i.getArgument(0, UserBoardGame.class);
+                    ubg.setId(userBoardGame.getId());
+                    return ubg;
+                });
 
         // when
-        Page<UserBoardGameHeaderDto> userBoardGameHeaders =
-                userBoardGameService.getUserBoardGameHeaders(PageRequest.of(tooHighPageNumber, PAGE_SIZE));
+        UserBoardGameResponseDto userBoardGameResponseDto =
+                userBoardGameService.addUserBoardGame(userBoardGameRequestDto);
 
         // then
-        assertThat(userBoardGameHeaders)
+        assertThat(userBoardGameResponseDto)
                 .isNotNull()
-                .hasSize(0);
+                .usingRecursiveComparison()
+                .isEqualTo(expectedResponse);
+    }
+
+    @Test
+    @DisplayName("Should throw ResourceNotFoundException when BoardGame not exists")
+    void shouldThrowExceptionWhenBoardGameNotExists() {
+        // given
+        long boardGameId = 100L;
+        UserBoardGameRequestDto userBoardGameRequestDto = new UserBoardGameRequestDto();
+        userBoardGameRequestDto.setBoardGameId(boardGameId);
+        given(boardGameRepository.existsById(anyLong())).willReturn(false);
+
+        // when
+        assertThatThrownBy(() -> userBoardGameService.addUserBoardGame(userBoardGameRequestDto))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage(createResourceNotFoundExceptionMessage(BOARD_GAME_RESOURCE_NAME, ID_FIELD, boardGameId));
+
+    }
+
+    @Test
+    @DisplayName("Should throw ResourceNotFoundException when User not exists")
+    void shouldThrowExceptionWhenUserNotExists() {
+        // given
+        long userId = 100L;
+        UserBoardGameRequestDto userBoardGameRequestDto = new UserBoardGameRequestDto();
+        userBoardGameRequestDto.setUserId(userId);
+        given(userRepository.existsById(anyLong())).willReturn(false);
+
+        // when
+        assertThatThrownBy(() -> userBoardGameService.addUserBoardGame(userBoardGameRequestDto))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage(createResourceNotFoundExceptionMessage(USER_RESOURCE_NAME, ID_FIELD, userId));
+    }
+
+    @Test
+    @DisplayName("Should throw ResourceNotFoundException when Shop not exists")
+    void shouldThrowExceptionWhenShopNotExists() {
+        // given
+        long shopId = 100L;
+        UserBoardGameRequestDto userBoardGameRequestDto = new UserBoardGameRequestDto();
+        userBoardGameRequestDto.setShopId(shopId);
+        given(userRepository.existsById(anyLong())).willReturn(false);
+
+        // when
+        assertThatThrownBy(() -> userBoardGameService.addUserBoardGame(userBoardGameRequestDto))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage(createResourceNotFoundExceptionMessage(USER_RESOURCE_NAME, ID_FIELD, shopId));
     }
 
 }
