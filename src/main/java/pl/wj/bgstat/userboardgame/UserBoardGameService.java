@@ -27,4 +27,8 @@ public class UserBoardGameService {
     public UserBoardGameResponseDto editUserBoardGame(long id, UserBoardGameRequestDto userBoardGameRequestDto) {
         throw new NotYetImplementedException();
     }
+
+    public void deleteUserBoardGame(long id) {
+        throw new NotYetImplementedException();
+    }
 }
