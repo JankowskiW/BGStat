@@ -22,7 +22,7 @@ public class UserBoardGameRequestDto {
     @NotNull @Min(1)
     private long userId;
     @NotNull @Min(1)
-    private long shopId;
+    private long storeId;
     @NotNull
     private boolean sleeved;
     @NotBlank @Length(max = 500)

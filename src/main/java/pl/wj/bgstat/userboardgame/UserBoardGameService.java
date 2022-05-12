@@ -2,33 +2,70 @@ package pl.wj.bgstat.userboardgame;
 
 import lombok.RequiredArgsConstructor;
 import org.hibernate.cfg.NotYetImplementedException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
-import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameHeaderDto;
+import pl.wj.bgstat.boardgame.BoardGameRepository;
+import pl.wj.bgstat.exception.ResourceNotFoundException;
+import pl.wj.bgstat.store.StoreRepository;
+import pl.wj.bgstat.user.UserRepository;
+import pl.wj.bgstat.userboardgame.model.UserBoardGame;
+import pl.wj.bgstat.userboardgame.model.UserBoardGameMapper;
 import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameDetailsDto;
 import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameRequestDto;
 import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameResponseDto;
+
+import static pl.wj.bgstat.exception.ExceptionHelper.*;
 
 @Service
 @RequiredArgsConstructor
 public class UserBoardGameService {
 
     private final UserBoardGameRepository userBoardGameRepository;
+    private final BoardGameRepository boardGameRepository;
+    private final UserRepository userRepository;
+    private final StoreRepository storeRepository;
 
     public UserBoardGameDetailsDto getSingleUserBoardGame(long id) {
-        throw new NotYetImplementedException();
+        return userBoardGameRepository.getWithDetailsById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(USER_BOARD_GAME_RESOURCE_NAME, ID_FIELD, id));
     }
 
     public UserBoardGameResponseDto addUserBoardGame(UserBoardGameRequestDto userBoardGameRequestDto) {
-        throw new NotYetImplementedException();
+        throwExceptionWhenNotExistsById(userBoardGameRequestDto.getBoardGameId(), boardGameRepository);
+        throwExceptionWhenNotExistsById(userBoardGameRequestDto.getUserId(), userRepository);
+        throwExceptionWhenNotExistsById(userBoardGameRequestDto.getStoreId(), storeRepository);
+        UserBoardGame userBoardGame = UserBoardGameMapper.mapToUserBoardGame(userBoardGameRequestDto);
+        userBoardGameRepository.save(userBoardGame);
+        return UserBoardGameMapper.mapToUserBoardGameResponseDto(userBoardGame);
     }
 
     public UserBoardGameResponseDto editUserBoardGame(long id, UserBoardGameRequestDto userBoardGameRequestDto) {
-        throw new NotYetImplementedException();
+        throwExceptionWhenNotExistsById(id, userBoardGameRepository);
+        throwExceptionWhenNotExistsById(userBoardGameRequestDto.getStoreId(), storeRepository);
+        UserBoardGame userBoardGame = UserBoardGameMapper.mapToUserBoardGame(userBoardGameRequestDto);
+        userBoardGameRepository.save(userBoardGame);
+        return UserBoardGameMapper.mapToUserBoardGameResponseDto(userBoardGame);
     }
 
     public void deleteUserBoardGame(long id) {
-        throw new NotYetImplementedException();
+        throwExceptionWhenNotExistsById(id, userBoardGameRepository);
+        userBoardGameRepository.deleteById(id);
     }
+
+    private void throwExceptionWhenNotExistsById(long id, JpaRepository repository) {
+        if (!repository.existsById(id)) {
+            String resourceName = "";
+            if (repository instanceof UserBoardGameRepository) {
+                resourceName = USER_BOARD_GAME_RESOURCE_NAME;
+            } else if (repository instanceof BoardGameRepository) {
+                resourceName = BOARD_GAME_RESOURCE_NAME;
+            } else if (repository instanceof UserRepository) {
+                resourceName = USER_RESOURCE_NAME;
+            } else if (repository instanceof StoreRepository) {
+                resourceName = STORE_RESOURCE_NAME;
+            }
+            throw new ResourceNotFoundException(resourceName, ID_FIELD, id);
+        }
+    }
+
 }

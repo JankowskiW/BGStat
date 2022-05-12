@@ -33,6 +33,6 @@ public interface UserBoardGameRepository extends JpaRepository<UserBoardGame, Lo
                     "WHERE ubg.id = :id",
             nativeQuery = true
     )
-    Optional<UserBoardGameDetailsDto> findWithDetailsById(long id);
+    Optional<UserBoardGameDetailsDto> getWithDetailsById(long id);
 }
 

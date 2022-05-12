@@ -11,7 +11,7 @@ public class ExceptionHelper {
     public static final String BOARD_GAME_DESCRIPTION_RESOURCE_NAME = "Board game description";
     public static final String USER_BOARD_GAME_RESOURCE_NAME = "User board game";
     public static final String USER_RESOURCE_NAME = "User";
-    public static final String SHOP_RESOURCE_NAME = "Shop";
+    public static final String STORE_RESOURCE_NAME = "Store";
 
     public static final String ID_FIELD = "id";
     public static final String NAME_FIELD = "name";

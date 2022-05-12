@@ -50,13 +50,13 @@ public class UserBoardGameServiceTestHelper {
         );
     }
 
-    public static UserBoardGame createUserBoardGame(long id, long boardGameId, long userId, long shopId) {
+    public static UserBoardGame createUserBoardGame(long id, long boardGameId, long userId, long storeId) {
         UserBoardGame userBoardGame = new UserBoardGame();
         userBoardGame.setId(id);
         userBoardGame.setObjectTypeId(1L);
         userBoardGame.setBoardGameId(boardGameId);
         userBoardGame.setUserId(userId);
-        userBoardGame.setShopId(shopId);
+        userBoardGame.setStoreId(storeId);
         userBoardGame.setSleeved(true);
         userBoardGame.setComment("Comment");
         userBoardGame.setPurchaseDate(new Date());

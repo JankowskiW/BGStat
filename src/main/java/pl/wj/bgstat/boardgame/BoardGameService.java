@@ -3,6 +3,7 @@ package pl.wj.bgstat.boardgame;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import pl.wj.bgstat.boardgame.model.BoardGame;
 import pl.wj.bgstat.boardgame.model.BoardGameMapper;
@@ -37,7 +38,7 @@ public class BoardGameService {
     public BoardGameResponseDto addBoardGame(BoardGameRequestDto boardGameRequestDto) {
         boardGameRequestDto.setObjectTypeId(validateSystemObjectTypeId(boardGameRequestDto.getObjectTypeId()));
         throwExceptionWhenExistsByName(boardGameRequestDto.getName());
-        throwExceptionWhenSystemObjectTypeNotExistsById(boardGameRequestDto.getObjectTypeId());
+        throwExceptionWhenNotExistsById(boardGameRequestDto.getObjectTypeId(), systemObjectTypeRepository);
         BoardGame boardGame = BoardGameMapper.mapToBoardGame(boardGameRequestDto);
         boardGameRepository.save(boardGame);
         return BoardGameMapper.mapToBoardGameResponseDto(boardGame);
@@ -45,9 +46,9 @@ public class BoardGameService {
 
     public BoardGameResponseDto editBoardGame(long id, BoardGameRequestDto boardGameRequestDto) {
         boardGameRequestDto.setObjectTypeId(validateSystemObjectTypeId(boardGameRequestDto.getObjectTypeId()));
-        throwExceptionWhenNotExistsById(id);
+        throwExceptionWhenNotExistsById(id, boardGameRepository);
         throwExceptionWhenExistsByNameAndNotId(id, boardGameRequestDto.getName());
-        throwExceptionWhenSystemObjectTypeNotExistsById(boardGameRequestDto.getObjectTypeId());
+        throwExceptionWhenNotExistsById(boardGameRequestDto.getObjectTypeId(), systemObjectTypeRepository);
 
         BoardGame boardGame = BoardGameMapper.mapToBoardGame(id, boardGameRequestDto);
         boardGameRepository.save(boardGame);
@@ -55,18 +56,20 @@ public class BoardGameService {
     }
 
     public void deleteBoardGame(long id) {
-        throwExceptionWhenNotExistsById(id);
+        throwExceptionWhenNotExistsById(id, boardGameRepository);
         boardGameRepository.deleteById(id);
     }
 
-    private void throwExceptionWhenNotExistsById(long id) {
-        if (!boardGameRepository.existsById(id))
-            throw new ResourceNotFoundException(BOARD_GAME_RESOURCE_NAME, ID_FIELD, id);
-    }
-
-    private void throwExceptionWhenSystemObjectTypeNotExistsById(long id) {
-        if (!systemObjectTypeRepository.existsById(id))
-            throw new ResourceNotFoundException(SYSTEM_OBJECT_TYPE_RESOURCE_NAME, ID_FIELD, id);
+    private void throwExceptionWhenNotExistsById(long id, JpaRepository repository) {
+        if (!repository.existsById(id)) {
+            String resourceName = "";
+            if (repository instanceof BoardGameRepository) {
+                resourceName = BOARD_GAME_RESOURCE_NAME;
+            } else if (repository instanceof SystemObjectTypeRepository) {
+                resourceName = SYSTEM_OBJECT_TYPE_RESOURCE_NAME;
+            }
+            throw new ResourceNotFoundException(resourceName, ID_FIELD, id);
+        }
     }
 
     private void throwExceptionWhenExistsByName(String name) {

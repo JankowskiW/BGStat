@@ -1,6 +1,5 @@
 package pl.wj.bgstat.userboardgame;
 
-import jdk.jfr.Description;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,7 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pl.wj.bgstat.boardgame.BoardGameRepository;
 import pl.wj.bgstat.exception.ResourceNotFoundException;
-import pl.wj.bgstat.shop.ShopRepository;
+import pl.wj.bgstat.store.StoreRepository;
 import pl.wj.bgstat.user.UserRepository;
 import pl.wj.bgstat.userboardgame.model.UserBoardGame;
 import pl.wj.bgstat.userboardgame.model.UserBoardGameMapper;
@@ -40,7 +39,7 @@ class  UserBoardGameServiceTest {
     private UserBoardGameRepository userBoardGameRepository;
     private BoardGameRepository boardGameRepository;
     private UserRepository userRepository;
-    private ShopRepository shopRepository;
+    private StoreRepository storeRepository;
     @InjectMocks
     private UserBoardGameService userBoardGameService;
 
@@ -63,7 +62,7 @@ class  UserBoardGameServiceTest {
         long id = 1L;
         Optional<UserBoardGameDetailsDto> returnedUserBoardGameDto =
                 userBoardGameDetailsDtoList.stream().filter(ubg -> ubg.getId() == id).findAny();
-        given(userBoardGameRepository.findWithDetailsById(anyLong())).willReturn(returnedUserBoardGameDto);
+        given(userBoardGameRepository.getWithDetailsById(anyLong())).willReturn(returnedUserBoardGameDto);
 
         // when
         UserBoardGameDetailsDto userBoardGameDetailsDto = userBoardGameService.getSingleUserBoardGame(id);
@@ -80,7 +79,7 @@ class  UserBoardGameServiceTest {
     void shouldThrowExceptionWhenCannotFindUserBoardGameById() {
         // given
         long id = 100L;
-        given(userBoardGameRepository.findWithDetailsById(anyLong()))
+        given(userBoardGameRepository.getWithDetailsById(anyLong()))
                 .willReturn(userBoardGameDetailsDtoList.stream()
                         .filter(ubg -> ubg.getId() == id)
                                 .findAny());
@@ -101,7 +100,7 @@ class  UserBoardGameServiceTest {
         UserBoardGameResponseDto expectedResponse = UserBoardGameMapper.mapToUserBoardGameResponseDto(userBoardGame);
         given(boardGameRepository.existsById(anyLong())).willReturn(true);
         given(userRepository.existsById(anyLong())).willReturn(true);
-        given(shopRepository.existsById(anyLong())).willReturn(true);
+        given(storeRepository.existsById(anyLong())).willReturn(true);
         given(userBoardGameRepository.save(any(UserBoardGame.class))).willAnswer(
                 i -> {
                     UserBoardGame ubg = i.getArgument(0, UserBoardGame.class);
@@ -152,18 +151,18 @@ class  UserBoardGameServiceTest {
     }
 
     @Test
-    @DisplayName("Should throw ResourceNotFoundException when Shop of new UserBoardGame not exists")
-    void shouldThrowExceptionWhenShopOfNewUserBoardGameNotExists() {
+    @DisplayName("Should throw ResourceNotFoundException when Store of new UserBoardGame not exists")
+    void shouldThrowExceptionWhenStoreOfNewUserBoardGameNotExists() {
         // given
-        long shopId = 100L;
+        long storeId = 100L;
         UserBoardGameRequestDto userBoardGameRequestDto = new UserBoardGameRequestDto();
-        userBoardGameRequestDto.setShopId(shopId);
+        userBoardGameRequestDto.setStoreId(storeId);
         given(userRepository.existsById(anyLong())).willReturn(false);
 
         // when
         assertThatThrownBy(() -> userBoardGameService.addUserBoardGame(userBoardGameRequestDto))
                 .isInstanceOf(ResourceNotFoundException.class)
-                .hasMessage(createResourceNotFoundExceptionMessage(SHOP_RESOURCE_NAME, ID_FIELD, shopId));
+                .hasMessage(createResourceNotFoundExceptionMessage(STORE_RESOURCE_NAME, ID_FIELD, storeId));
     }
 
     @Test
@@ -173,9 +172,9 @@ class  UserBoardGameServiceTest {
         long id = 1L;
         UserBoardGame userBoardGame = UserBoardGameServiceTestHelper.createUserBoardGame(id, 1,1,1);
         UserBoardGameRequestDto userBoardGameRequestDto =
-                UserBoardGameRequestDto.builder().shopId(userBoardGame.getShopId()+1).build();
+                UserBoardGameRequestDto.builder().storeId(userBoardGame.getStoreId()+1).build();
         given(userBoardGameRepository.existsById(anyLong())).willReturn(true);
-        given(shopRepository.existsById(anyLong())).willReturn(true);
+        given(storeRepository.existsById(anyLong())).willReturn(true);
         given(userBoardGameRepository.save(any(UserBoardGame.class))).willAnswer(
                 i -> {
                     UserBoardGame ubg = i.getArgument(0, UserBoardGame.class);
@@ -189,7 +188,7 @@ class  UserBoardGameServiceTest {
         // then
         assertThat(userBoardGameResponseDto).isNotNull();
         assertThat(userBoardGameResponseDto.getId()).isEqualTo(id);
-        assertThat(userBoardGameResponseDto.getShopId()).isEqualTo(userBoardGameRequestDto.getShopId());
+        assertThat(userBoardGameResponseDto.getStoreId()).isEqualTo(userBoardGameRequestDto.getStoreId());
     }
 
     @Test
@@ -207,18 +206,18 @@ class  UserBoardGameServiceTest {
     }
 
     @Test
-    @DisplayName("Should throw ResourceNotFoundException when Shop of edited UserBoardGame not exists")
-    void shouldThrowExceptionWhenShopOfEditedUserBoardGameNotExists() {
+    @DisplayName("Should throw ResourceNotFoundException when Store of edited UserBoardGame not exists")
+    void shouldThrowExceptionWhenStoreOfEditedUserBoardGameNotExists() {
         // given
         long id = 1L;
-        long shopId = 100L;
+        long storeId = 100L;
         UserBoardGameRequestDto userBoardGameRequestDto = new UserBoardGameRequestDto();
-        given(shopRepository.existsById(anyLong())).willReturn(false);
+        given(storeRepository.existsById(anyLong())).willReturn(false);
 
         // when
         assertThatThrownBy(() -> userBoardGameService.editUserBoardGame(id, userBoardGameRequestDto))
                 .isInstanceOf(ResourceNotFoundException.class)
-                .hasMessage(createResourceNotFoundExceptionMessage(SHOP_RESOURCE_NAME, ID_FIELD, shopId));
+                .hasMessage(createResourceNotFoundExceptionMessage(STORE_RESOURCE_NAME, ID_FIELD, storeId));
     }
 
     @Test

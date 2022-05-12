@@ -9,7 +9,7 @@ public class UserBoardGameMapper {
         userBoardGame.setObjectTypeId(userBoardGameRequestDto.getObjectTypeId());
         userBoardGame.setBoardGameId(userBoardGameRequestDto.getBoardGameId());
         userBoardGame.setUserId(userBoardGameRequestDto.getUserId());
-        userBoardGame.setShopId(userBoardGameRequestDto.getShopId());
+        userBoardGame.setStoreId(userBoardGameRequestDto.getStoreId());
         userBoardGame.setSleeved(userBoardGameRequestDto.isSleeved());
         userBoardGame.setComment(userBoardGameRequestDto.getComment());
         userBoardGame.setPurchaseDate(userBoardGameRequestDto.getPurchaseDate());
@@ -25,7 +25,7 @@ public class UserBoardGameMapper {
                 .objectTypeId(userBoardGame.getObjectTypeId())
                 .boardGameId(userBoardGame.getBoardGameId())
                 .userId(userBoardGame.getUserId())
-                .shopId(userBoardGame.getShopId())
+                .storeId(userBoardGame.getStoreId())
                 .sleeved(userBoardGame.isSleeved())
                 .comment(userBoardGame.getComment())
                 .purchaseDate(userBoardGame.getPurchaseDate())
