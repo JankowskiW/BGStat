@@ -1,7 +1,6 @@
 package pl.wj.bgstat.userboardgame;
 
 import lombok.RequiredArgsConstructor;
-import org.hibernate.cfg.NotYetImplementedException;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import pl.wj.bgstat.boardgame.BoardGameRepository;

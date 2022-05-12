@@ -37,14 +37,16 @@ class  UserBoardGameServiceTest {
 
     @Mock
     private UserBoardGameRepository userBoardGameRepository;
+    @Mock
     private BoardGameRepository boardGameRepository;
+    @Mock
     private UserRepository userRepository;
+    @Mock
     private StoreRepository storeRepository;
     @InjectMocks
     private UserBoardGameService userBoardGameService;
 
     private static final int NUMBER_OF_ELEMENTS = 20;
-    private static final int PAGE_SIZE = 3;
 
     private List<UserBoardGameDetailsDto> userBoardGameDetailsDtoList;
     private List<UserBoardGameHeaderDto> userBoardGameHeaderDtoList;
@@ -71,7 +73,7 @@ class  UserBoardGameServiceTest {
         assertThat(userBoardGameDetailsDto)
                 .isNotNull()
                 .usingRecursiveComparison()
-                .isEqualTo(returnedUserBoardGameDto);
+                .isEqualTo(returnedUserBoardGameDto.get());
     }
 
     @Test
@@ -142,6 +144,7 @@ class  UserBoardGameServiceTest {
         long userId = 100L;
         UserBoardGameRequestDto userBoardGameRequestDto = new UserBoardGameRequestDto();
         userBoardGameRequestDto.setUserId(userId);
+        given(boardGameRepository.existsById(anyLong())).willReturn(true);
         given(userRepository.existsById(anyLong())).willReturn(false);
 
         // when
@@ -157,7 +160,9 @@ class  UserBoardGameServiceTest {
         long storeId = 100L;
         UserBoardGameRequestDto userBoardGameRequestDto = new UserBoardGameRequestDto();
         userBoardGameRequestDto.setStoreId(storeId);
-        given(userRepository.existsById(anyLong())).willReturn(false);
+        given(boardGameRepository.existsById(anyLong())).willReturn(true);
+        given(userRepository.existsById(anyLong())).willReturn(true);
+        given(storeRepository.existsById(anyLong())).willReturn(false);
 
         // when
         assertThatThrownBy(() -> userBoardGameService.addUserBoardGame(userBoardGameRequestDto))
@@ -212,6 +217,8 @@ class  UserBoardGameServiceTest {
         long id = 1L;
         long storeId = 100L;
         UserBoardGameRequestDto userBoardGameRequestDto = new UserBoardGameRequestDto();
+        userBoardGameRequestDto.setStoreId(storeId);
+        given(userBoardGameRepository.existsById(anyLong())).willReturn(true);
         given(storeRepository.existsById(anyLong())).willReturn(false);
 
         // when
