@@ -14,6 +14,7 @@ public interface SystemObjectTypeRepository extends JpaRepository<SystemObjectTy
     @Query("SELECT new pl.wj.bgstat.systemobjecttype.model.dto.SystemObjectTypeHeaderDto(sot.id, sot.name, sot.archived) " +
            "FROM SystemObjectType sot")
     List<SystemObjectTypeHeaderDto> findSystemObjectTypeHeaders();
+
     @Query("SELECT new pl.wj.bgstat.systemobjecttype.model.dto.SystemObjectTypeHeaderDto(sot.id, sot.name, sot.archived) " +
             "FROM SystemObjectType sot WHERE sot.archived = :archived")
     List<SystemObjectTypeHeaderDto> findSystemObjectTypeHeaders(boolean archived);
