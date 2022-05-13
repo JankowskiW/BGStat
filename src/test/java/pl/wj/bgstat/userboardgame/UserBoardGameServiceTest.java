@@ -13,12 +13,11 @@ import pl.wj.bgstat.store.StoreRepository;
 import pl.wj.bgstat.user.UserRepository;
 import pl.wj.bgstat.userboardgame.model.UserBoardGame;
 import pl.wj.bgstat.userboardgame.model.UserBoardGameMapper;
+import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameDetails;
 import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameDetailsDto;
-import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameHeaderDto;
 import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameRequestDto;
 import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameResponseDto;
 
-import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -29,8 +28,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.verify;
 import static pl.wj.bgstat.exception.ExceptionHelper.*;
-import static pl.wj.bgstat.userboardgame.UserBoardGameServiceTestHelper.populateUserBoardGameHeaderDtoList;
-import static pl.wj.bgstat.userboardgame.UserBoardGameServiceTestHelper.populateUserBoardGameResponseDtoList;
+import static pl.wj.bgstat.userboardgame.UserBoardGameServiceTestHelper.createUserBoardGameDetailsImpl;
 
 @ExtendWith(MockitoExtension.class)
 class  UserBoardGameServiceTest {
@@ -46,15 +44,11 @@ class  UserBoardGameServiceTest {
     @InjectMocks
     private UserBoardGameService userBoardGameService;
 
-    private static final int NUMBER_OF_ELEMENTS = 20;
-
-    private List<UserBoardGameDetailsDto> userBoardGameDetailsDtoList;
-    private List<UserBoardGameHeaderDto> userBoardGameHeaderDtoList;
+    private Optional<UserBoardGameDetails> userBoardGameDetails;
 
     @BeforeEach
     void setUp() {
-        userBoardGameDetailsDtoList = populateUserBoardGameResponseDtoList(NUMBER_OF_ELEMENTS);
-        userBoardGameHeaderDtoList = populateUserBoardGameHeaderDtoList(userBoardGameDetailsDtoList);
+        userBoardGameDetails = Optional.of(createUserBoardGameDetailsImpl());
     }
 
     @Test
@@ -62,9 +56,9 @@ class  UserBoardGameServiceTest {
     void shouldReturnSingleUserBoardGameDetailsById() {
         // given
         long id = 1L;
-        Optional<UserBoardGameDetailsDto> returnedUserBoardGameDto =
-                userBoardGameDetailsDtoList.stream().filter(ubg -> ubg.getId() == id).findAny();
-        given(userBoardGameRepository.getWithDetailsById(anyLong())).willReturn(returnedUserBoardGameDto);
+        UserBoardGameDetailsDto expectedResponse = UserBoardGameMapper.mapToUserBoardGameDetailsDto(userBoardGameDetails.get());
+        expectedResponse.setBoardGameId(id);
+        given(userBoardGameRepository.getWithDetailsById(anyLong())).willReturn(userBoardGameDetails);
 
         // when
         UserBoardGameDetailsDto userBoardGameDetailsDto = userBoardGameService.getSingleUserBoardGame(id);
@@ -73,7 +67,7 @@ class  UserBoardGameServiceTest {
         assertThat(userBoardGameDetailsDto)
                 .isNotNull()
                 .usingRecursiveComparison()
-                .isEqualTo(returnedUserBoardGameDto.get());
+                .isEqualTo(expectedResponse);
     }
 
     @Test
@@ -81,10 +75,7 @@ class  UserBoardGameServiceTest {
     void shouldThrowExceptionWhenCannotFindUserBoardGameById() {
         // given
         long id = 100L;
-        given(userBoardGameRepository.getWithDetailsById(anyLong()))
-                .willReturn(userBoardGameDetailsDtoList.stream()
-                        .filter(ubg -> ubg.getId() == id)
-                                .findAny());
+        given(userBoardGameRepository.getWithDetailsById(anyLong())).willReturn(Optional.empty());
 
         // when
         assertThatThrownBy(() -> userBoardGameService.getSingleUserBoardGame(id))
@@ -96,9 +87,10 @@ class  UserBoardGameServiceTest {
     @DisplayName("Should create and return created user board game")
     void shouldReturnCreatedUserBoardGame() {
         // given
+        long id = 2L;
         UserBoardGameRequestDto userBoardGameRequestDto = UserBoardGameServiceTestHelper.createUserBoardGameRequestDto();
         UserBoardGame userBoardGame = UserBoardGameMapper.mapToUserBoardGame(userBoardGameRequestDto);
-        userBoardGame.setId(userBoardGameHeaderDtoList.size()+1);
+        userBoardGame.setId(id);
         UserBoardGameResponseDto expectedResponse = UserBoardGameMapper.mapToUserBoardGameResponseDto(userBoardGame);
         given(boardGameRepository.existsById(anyLong())).willReturn(true);
         given(userRepository.existsById(anyLong())).willReturn(true);

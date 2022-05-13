@@ -1,6 +1,7 @@
 package pl.wj.bgstat.userboardgame;
 
 import pl.wj.bgstat.userboardgame.model.UserBoardGame;
+import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameDetails;
 import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameHeaderDto;
 import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameRequestDto;
 import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameDetailsDto;
@@ -12,27 +13,88 @@ import java.util.List;
 
 public class UserBoardGameServiceTestHelper {
 
-    public static List<UserBoardGameDetailsDto> populateUserBoardGameResponseDtoList(int numberOfElements) {
-        List<UserBoardGameDetailsDto> userBoardGameDetailsDtoList = new ArrayList<>();
-        UserBoardGameDetailsDto userBoardGameDetailsDto;
-        for (int i = 1; i <= numberOfElements; i++) {
-            userBoardGameDetailsDto = new UserBoardGameDetailsDto(
-                  i, i, 1, true, "Comment", new Date(), new BigDecimal(150.0),
-                    null, null, "Board Game Name " + i, 10,
-                    1, 5, 3, 120, "DESCRIPTION " + i
-            );
-            userBoardGameDetailsDtoList.add(userBoardGameDetailsDto);
-        }
-        return userBoardGameDetailsDtoList;
-    }
+    public static UserBoardGameDetails createUserBoardGameDetailsImpl() {
+        return new UserBoardGameDetails() {
+            @Override
+            public long getId() {
+                return 1;
+            }
 
-    public static List<UserBoardGameHeaderDto> populateUserBoardGameHeaderDtoList(
-            List<UserBoardGameDetailsDto> userBoardGameDetailsDtoList) {
-        List<UserBoardGameHeaderDto> userBoardGameHeaderDtoList = new ArrayList<>();
-        userBoardGameDetailsDtoList.stream().forEach(
-                ubg -> userBoardGameHeaderDtoList.add(new UserBoardGameHeaderDto(ubg.getId(), ubg.getBgName()))
-        );
-        return userBoardGameHeaderDtoList;
+            @Override
+            public long getBoardGameId() {
+                return 1;
+            }
+
+            @Override
+            public long getObjectTypeId() {
+                return 1;
+            }
+
+            @Override
+            public boolean isSleeved() {
+                return true;
+            }
+
+            @Override
+            public String getComment() {
+                return "Comment";
+            }
+
+            @Override
+            public Date getPurchaseDate() {
+                return new Date(1000000000000L);
+            }
+
+            @Override
+            public BigDecimal getPurchasePrice() {
+                return new BigDecimal(150.55);
+            }
+
+            @Override
+            public Date getSaleDate() {
+                return null;
+            }
+
+            @Override
+            public BigDecimal getSalePrice() {
+                return null;
+            }
+
+            @Override
+            public String getBgName() {
+                return "Board Game Name";
+            }
+
+            @Override
+            public int getBgRecommendedAge() {
+                return 10;
+            }
+
+            @Override
+            public int getBgMinPlayersNumber() {
+                return 1;
+            }
+
+            @Override
+            public int getBgMaxPlayersNumber() {
+                return 6;
+            }
+
+            @Override
+            public int getBgComplexity() {
+                return 4;
+            }
+
+            @Override
+            public int getBgPlayingTime() {
+                return 120;
+            }
+
+            @Override
+            public String getBgDescription() {
+                return "Description";
+            }
+        };
     }
 
     public static UserBoardGameRequestDto createUserBoardGameRequestDto() {
