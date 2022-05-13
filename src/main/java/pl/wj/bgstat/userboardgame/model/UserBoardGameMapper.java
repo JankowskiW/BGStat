@@ -1,5 +1,7 @@
 package pl.wj.bgstat.userboardgame.model;
 
+import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameDetails;
+import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameDetailsDto;
 import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameRequestDto;
 import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameResponseDto;
 
@@ -32,6 +34,27 @@ public class UserBoardGameMapper {
                 .purchasePrice(userBoardGame.getPurchasePrice())
                 .saleDate(userBoardGame.getSaleDate())
                 .salePrice(userBoardGame.getSalePrice())
+                .build();
+    }
+
+    public static UserBoardGameDetailsDto mapToUserBoardGameDetailsDto(UserBoardGameDetails userBoardGameDetails) {
+        return UserBoardGameDetailsDto.builder()
+                .id(userBoardGameDetails.getId())
+                .boardGameId(userBoardGameDetails.getBoardGameId())
+                .objectTypeId(userBoardGameDetails.getObjectTypeId())
+                .sleeved(userBoardGameDetails.isSleeved())
+                .comment(userBoardGameDetails.getComment())
+                .purchaseDate(userBoardGameDetails.getPurchaseDate())
+                .purchasePrice(userBoardGameDetails.getPurchasePrice())
+                .saleDate(userBoardGameDetails.getSaleDate())
+                .salePrice(userBoardGameDetails.getSalePrice())
+                .bgName(userBoardGameDetails.getBgName())
+                .bgRecommendedAge(userBoardGameDetails.getBgRecommendedAge())
+                .bgMinPlayersNumber(userBoardGameDetails.getBgMinPlayersNumber())
+                .bgMaxPlayersNumber(userBoardGameDetails.getBgMaxPlayersNumber())
+                .bgComplexity(userBoardGameDetails.getBgComplexity())
+                .bgPlayingTime(userBoardGameDetails.getBgPlayingTime())
+                .bgDescription(userBoardGameDetails.getBgDescription())
                 .build();
     }
 }
