@@ -2,14 +2,10 @@ package pl.wj.bgstat.userboardgame;
 
 import pl.wj.bgstat.userboardgame.model.UserBoardGame;
 import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameDetails;
-import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameHeaderDto;
 import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameRequestDto;
-import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameDetailsDto;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 public class UserBoardGameServiceTestHelper {
 

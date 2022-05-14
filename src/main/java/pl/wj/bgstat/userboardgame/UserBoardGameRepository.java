@@ -7,18 +7,18 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import pl.wj.bgstat.userboardgame.model.UserBoardGame;
 import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameDetails;
-import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameHeaderDto;
+import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameHeader;
 
 import java.util.Optional;
 
 @Repository
 public interface UserBoardGameRepository extends JpaRepository<UserBoardGame, Long> {
     @Query(
-        value = "SELECT ubg.id, bg.name FROM user_board_games ubg" +
-                "LEFT JOIN board_games bg ON ubg.board_game_id = bg.id" +
+        value = "SELECT ubg.id, bg.name FROM user_board_games ubg " +
+                "LEFT JOIN board_games bg ON ubg.board_game_id = bg.id " +
                 "/*:pageable*/",
         nativeQuery = true)
-    Page<UserBoardGameHeaderDto> findUserBoardGameHeaders(Pageable pageable);
+    Page<UserBoardGameHeader> findUserBoardGameHeaders(Pageable pageable);
 
     @Query(
             value =  "SELECT " +

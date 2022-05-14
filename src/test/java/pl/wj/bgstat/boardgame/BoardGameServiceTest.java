@@ -61,7 +61,7 @@ class BoardGameServiceTest {
     @DisplayName("Should return only one but not last page of board game headers")
     void shouldReturnOnlyOneButNotLastPageOfBoardGameHeaders() {
         // given
-        int pageNumber = 2;
+        int pageNumber = 1;
         int fromIndex = (pageNumber - 1) * PAGE_SIZE;
         int toIndex = fromIndex + PAGE_SIZE;
         given(boardGameRepository.findBoardGameHeaders(any(Pageable.class)))
@@ -104,7 +104,7 @@ class BoardGameServiceTest {
     }
 
     @Test
-    @DisplayName("Should return empty list of board game headers when page number is too high ")
+    @DisplayName("Should return empty list of board game headers when page number is too high")
     void shouldReturnEmptyListOfBoardGameHeaders() {
         // given
         int tooHighPageNumber = (int) ceil(boardGameHeaderList.size() / (double) PAGE_SIZE) + 1;

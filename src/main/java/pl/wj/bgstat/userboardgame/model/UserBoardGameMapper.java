@@ -1,9 +1,12 @@
 package pl.wj.bgstat.userboardgame.model;
 
-import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameDetails;
-import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameDetailsDto;
-import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameRequestDto;
-import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameResponseDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import pl.wj.bgstat.userboardgame.model.dto.*;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class UserBoardGameMapper {
     public static UserBoardGame mapToUserBoardGame(UserBoardGameRequestDto userBoardGameRequestDto) {
@@ -37,6 +40,22 @@ public class UserBoardGameMapper {
                 .build();
     }
 
+    public static Page<UserBoardGameHeaderDto> mapToUserBoardGameHeaderDtoPage(Page<UserBoardGameHeader> userBoardGameHeaderPage) {
+        List<UserBoardGameHeaderDto> userBoardGameDetailsDtoList =
+                userBoardGameHeaderPage.stream()
+                    .map(userBoardGameHeader -> mapToUserBoardGameHeaderDto(userBoardGameHeader))
+                    .collect(Collectors.toList());
+        return new PageImpl<>(userBoardGameDetailsDtoList, userBoardGameHeaderPage.getPageable(),
+                userBoardGameHeaderPage.getTotalElements());
+    }
+
+    public static UserBoardGameHeaderDto mapToUserBoardGameHeaderDto(UserBoardGameHeader userBoardGameHeader) {
+        return UserBoardGameHeaderDto.builder()
+                .id(userBoardGameHeader.getId())
+                .bgName(userBoardGameHeader.getBgName())
+                .build();
+    }
+
     public static UserBoardGameDetailsDto mapToUserBoardGameDetailsDto(UserBoardGameDetails userBoardGameDetails) {
         return UserBoardGameDetailsDto.builder()
                 .id(userBoardGameDetails.getId())
@@ -57,4 +76,5 @@ public class UserBoardGameMapper {
                 .bgDescription(userBoardGameDetails.getBgDescription())
                 .build();
     }
+
 }
