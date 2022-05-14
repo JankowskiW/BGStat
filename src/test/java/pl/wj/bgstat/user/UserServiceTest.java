@@ -62,7 +62,7 @@ class UserServiceTest {
         Page<UserBoardGameHeader> userBoardGameHeaderPage = new PageImpl<>(userBoardGameHeaderList.subList(fromIndex,toIndex));
         Page<UserBoardGameHeaderDto> expectedResponse = mapToUserBoardGameHeaderDtoPage(userBoardGameHeaderPage);
         given(userRepository.existsById(anyLong())).willReturn(true);
-        given(userBoardGameRepository.findUserBoardGameHeaders(any(Pageable.class)))
+        given(userBoardGameRepository.findUserBoardGameHeaders(anyLong(), any(Pageable.class)))
                 .willReturn(userBoardGameHeaderPage);
 
         // when
@@ -90,7 +90,7 @@ class UserServiceTest {
         Page<UserBoardGameHeader> userBoardGameHeaderPage = new PageImpl<>(userBoardGameHeaderList.subList(fromIndex,toIndex));
         Page<UserBoardGameHeaderDto> expectedResponse = mapToUserBoardGameHeaderDtoPage(userBoardGameHeaderPage);
         given(userRepository.existsById(anyLong())).willReturn(true);
-        given(userBoardGameRepository.findUserBoardGameHeaders(any(Pageable.class)))
+        given(userBoardGameRepository.findUserBoardGameHeaders(anyLong(), any(Pageable.class)))
                 .willReturn(userBoardGameHeaderPage);
 
         // when
@@ -107,14 +107,13 @@ class UserServiceTest {
 
     @Test
     @DisplayName("Should return empty list of user board game headers when page number is too high")
-    void shouldReturnEmptyListofBoardGameHeaders() {
+    void shouldReturnEmptyListOfBoardGameHeaders() {
         // given
         long userId = 1L;
         int tooHighPageNumber = (int) ceil(userBoardGameHeaderList.size() / (double) PAGE_SIZE) + 1;
         Page<UserBoardGameHeader> userBoardGameHeaderPage = new PageImpl<>(new ArrayList<>());
-        Page<UserBoardGameHeaderDto> expectedResponse = mapToUserBoardGameHeaderDtoPage(userBoardGameHeaderPage);
         given(userRepository.existsById(anyLong())).willReturn(true);
-        given(userBoardGameRepository.findUserBoardGameHeaders(any(Pageable.class))).willReturn(userBoardGameHeaderPage);
+        given(userBoardGameRepository.findUserBoardGameHeaders(anyLong(), any(Pageable.class))).willReturn(userBoardGameHeaderPage);
 
         // when
         Page<UserBoardGameHeaderDto> userBoardGameHeaders =

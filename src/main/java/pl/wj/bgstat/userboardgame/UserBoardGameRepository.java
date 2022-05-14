@@ -14,11 +14,13 @@ import java.util.Optional;
 @Repository
 public interface UserBoardGameRepository extends JpaRepository<UserBoardGame, Long> {
     @Query(
-        value = "SELECT ubg.id, bg.name FROM user_board_games ubg " +
+        value = "SELECT ubg.id AS id, bg.name AS bgName FROM user_board_games ubg " +
                 "LEFT JOIN board_games bg ON ubg.board_game_id = bg.id " +
-                "/*:pageable*/",
+                "WHERE ubg.user_id = :userId " +
+                "ORDER BY ubg.id",
+        countQuery = "SELECT count(*) FROM user_board_games ubg WHERE ubg.user_id = :userId",
         nativeQuery = true)
-    Page<UserBoardGameHeader> findUserBoardGameHeaders(Pageable pageable);
+    Page<UserBoardGameHeader> findUserBoardGameHeaders(long userId,Pageable pageable);
 
     @Query(
             value =  "SELECT " +
