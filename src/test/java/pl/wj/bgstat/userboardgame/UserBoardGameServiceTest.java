@@ -1,6 +1,5 @@
 package pl.wj.bgstat.userboardgame;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,7 +12,6 @@ import pl.wj.bgstat.store.StoreRepository;
 import pl.wj.bgstat.user.UserRepository;
 import pl.wj.bgstat.userboardgame.model.UserBoardGame;
 import pl.wj.bgstat.userboardgame.model.UserBoardGameMapper;
-import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameDetails;
 import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameDetailsDto;
 import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameRequestDto;
 import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameResponseDto;
@@ -44,20 +42,13 @@ class  UserBoardGameServiceTest {
     @InjectMocks
     private UserBoardGameService userBoardGameService;
 
-    private Optional<UserBoardGameDetails> userBoardGameDetails;
-
-    @BeforeEach
-    void setUp() {
-        userBoardGameDetails = Optional.of(createUserBoardGameDetailsImpl());
-    }
-
     @Test
     @DisplayName("Should return single user board game")
     void shouldReturnSingleUserBoardGameDetailsById() {
         // given
         long id = 1L;
-        UserBoardGameDetailsDto expectedResponse = UserBoardGameMapper.mapToUserBoardGameDetailsDto(userBoardGameDetails.get());
-        expectedResponse.setBoardGameId(id);
+        UserBoardGameDetailsDto expectedResponse = createUserBoardGameDetailsImpl(id);
+        Optional<UserBoardGameDetailsDto> userBoardGameDetails = Optional.of(expectedResponse);
         given(userBoardGameRepository.getWithDetailsById(anyLong())).willReturn(userBoardGameDetails);
 
         // when

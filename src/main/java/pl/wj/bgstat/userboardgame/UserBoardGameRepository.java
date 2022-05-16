@@ -6,8 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import pl.wj.bgstat.userboardgame.model.UserBoardGame;
-import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameDetails;
-import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameHeader;
+import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameDetailsDto;
+import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameHeaderDto;
 
 import java.util.Optional;
 
@@ -20,7 +20,7 @@ public interface UserBoardGameRepository extends JpaRepository<UserBoardGame, Lo
                 "ORDER BY ubg.id",
         countQuery = "SELECT count(*) FROM user_board_games ubg WHERE ubg.user_id = :userId",
         nativeQuery = true)
-    Page<UserBoardGameHeader> findUserBoardGameHeaders(long userId,Pageable pageable);
+    Page<UserBoardGameHeaderDto> findUserBoardGameHeaders(long userId, Pageable pageable);
 
     @Query(
             value =  "SELECT " +
@@ -35,7 +35,7 @@ public interface UserBoardGameRepository extends JpaRepository<UserBoardGame, Lo
                     "LEFT JOIN board_game_descriptions bgd ON bgd.board_game_id = bg.id " +
                     "WHERE ubg.id = :id",
             nativeQuery = true)
-    Optional<UserBoardGameDetails> getWithDetailsById(long id);
+    Optional<UserBoardGameDetailsDto> getWithDetailsById(long id);
 
 }
 

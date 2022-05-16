@@ -1,7 +1,7 @@
 package pl.wj.bgstat.userboardgame;
 
 import pl.wj.bgstat.userboardgame.model.UserBoardGame;
-import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameDetails;
+import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameDetailsDto;
 import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameRequestDto;
 
 import java.math.BigDecimal;
@@ -9,11 +9,14 @@ import java.util.Date;
 
 public class UserBoardGameServiceTestHelper {
 
-    public static UserBoardGameDetails createUserBoardGameDetailsImpl() {
-        return new UserBoardGameDetails() {
+    public static long userBoardGameId;
+
+    public static UserBoardGameDetailsDto createUserBoardGameDetailsImpl(long userBoardGameId) {
+        UserBoardGameServiceTestHelper.userBoardGameId = userBoardGameId;
+        return new UserBoardGameDetailsDto() {
             @Override
             public long getId() {
-                return 1;
+                return UserBoardGameServiceTestHelper.userBoardGameId;
             }
 
             @Override

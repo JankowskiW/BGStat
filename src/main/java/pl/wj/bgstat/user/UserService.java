@@ -1,21 +1,16 @@
 package pl.wj.bgstat.user;
 
 import lombok.RequiredArgsConstructor;
-import org.hibernate.cfg.NotYetImplementedException;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import pl.wj.bgstat.exception.ResourceNotFoundException;
 import pl.wj.bgstat.userboardgame.UserBoardGameRepository;
-import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameHeader;
 import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameHeaderDto;
 
-import java.util.ArrayList;
-
-import static pl.wj.bgstat.exception.ExceptionHelper.*;
-import static pl.wj.bgstat.userboardgame.model.UserBoardGameMapper.mapToUserBoardGameHeaderDtoPage;
+import static pl.wj.bgstat.exception.ExceptionHelper.ID_FIELD;
+import static pl.wj.bgstat.exception.ExceptionHelper.USER_RESOURCE_NAME;
 
 @Service
 @RequiredArgsConstructor
@@ -26,7 +21,7 @@ public class UserService {
 
     public Page<UserBoardGameHeaderDto> getUserBoardGameHeaders(long id, Pageable pageable) {
         throwExceptionWhenNotExistsById(id, userRepository);
-        return mapToUserBoardGameHeaderDtoPage(userBoardGameRepository.findUserBoardGameHeaders(id, pageable));
+        return userBoardGameRepository.findUserBoardGameHeaders(id, pageable);
     }
 
 
