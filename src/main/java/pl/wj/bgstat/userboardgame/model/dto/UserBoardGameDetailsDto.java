@@ -24,6 +24,6 @@ public class UserBoardGameDetailsDto {
     private int bgMinPlayersNumber;
     private int bgMaxPlayersNumber;
     private int bgComplexity;
-    private int bgPlayingTime;
+    private int bgEstimatedPlaytime;
     private String bgDescription;
 }

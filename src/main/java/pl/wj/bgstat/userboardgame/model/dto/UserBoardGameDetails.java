@@ -18,6 +18,6 @@ public interface UserBoardGameDetails {
     int getBgMinPlayersNumber();
     int getBgMaxPlayersNumber();
     int getBgComplexity();
-    int getBgPlayingTime();
+    int getBgEstimatedPlaytime();
     String getBgDescription();
 }

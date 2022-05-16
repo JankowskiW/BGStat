@@ -29,7 +29,7 @@ public interface UserBoardGameRepository extends JpaRepository<UserBoardGame, Lo
                     "        ubg.purchase_price AS purchasePrice, ubg.sale_date AS saleDate, ubg.sale_price AS salePrice," +
                     "        bg.name AS bgName, bg.recommended_age AS bgRecommendedAge, " +
                     "        bg.min_players_number AS bgMinPlayersNumber, bg.max_players_number AS bgMaxPlayersNumber," +
-                    "        bg.complexity as bgComplexity, bg.playing_time AS bgPlayingTime, bgd.description AS bgDescription " +
+                    "        bg.complexity as bgComplexity, bg.estimated_playtime AS bgEstimatedPlaytime, bgd.description AS bgDescription " +
                     "FROM user_board_games ubg " +
                     "LEFT JOIN board_games bg ON ubg.board_game_id = bg.id " +
                     "LEFT JOIN board_game_descriptions bgd ON bgd.board_game_id = bg.id " +

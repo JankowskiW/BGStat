@@ -17,6 +17,6 @@ public class BoardGameResponseDto {
     private int minPlayersNumber;
     private int maxPlayersNumber;
     private int complexity;
-    private int playingTime;
+    private int estimatedPlaytime;
     private String description;
 }

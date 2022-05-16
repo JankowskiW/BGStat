@@ -29,8 +29,8 @@ To run this project, ....
 ## Features
 * Add new board games and basic info about them
 * Add board games to your private library
-* Get basic info about board games such as description, recommended age, playing time, minimum and maximum player numbers, etc.
-* Keep statistics about your games such as playing time, winners, date of play, etc.
+* Get basic info about board games such as description, recommended age, estimated playtime, minimum and maximum player numbers, etc.
+* Keep statistics about your games such as playtime, winners, date of play, etc.
 * Make your wish list
 * and a lot more features...
 

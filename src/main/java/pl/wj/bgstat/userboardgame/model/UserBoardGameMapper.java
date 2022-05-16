@@ -72,7 +72,7 @@ public class UserBoardGameMapper {
                 .bgMinPlayersNumber(userBoardGameDetails.getBgMinPlayersNumber())
                 .bgMaxPlayersNumber(userBoardGameDetails.getBgMaxPlayersNumber())
                 .bgComplexity(userBoardGameDetails.getBgComplexity())
-                .bgPlayingTime(userBoardGameDetails.getBgPlayingTime())
+                .bgEstimatedPlaytime(userBoardGameDetails.getBgEstimatedPlaytime())
                 .bgDescription(userBoardGameDetails.getBgDescription())
                 .build();
     }

@@ -360,7 +360,7 @@ class BoardGameServiceTest {
         BoardGameRequestDto boardGameRequestDto = new BoardGameRequestDto(
                 boardGameList.get(1).getName(), BOARD_GAME_DEFAULT_OBJECT_TYPE_ID, boardGame.getRecommendedAge(),
                 boardGame.getMinPlayersNumber(), boardGame.getMaxPlayersNumber(), boardGame.getComplexity(),
-                boardGame.getPlayingTime(), boardGame.getBoardGameDescription().getDescription());
+                boardGame.getEstimatedPlaytime(), boardGame.getBoardGameDescription().getDescription());
         given(boardGameRepository.existsById(anyLong()))
                 .willReturn(boardGameList.stream().anyMatch(bg -> bg.getId() == id));
         given(boardGameRepository.existsByNameAndIdNot(anyString(), anyLong()))

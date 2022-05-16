@@ -23,7 +23,7 @@ public class BoardGameRequestDto {
     @NotNull @Min(1) @Max(10)
     private int complexity;
     @NotNull @Min(1)
-    private int playingTime;
+    private int estimatedPlaytime;
     @NotBlank
     private String description;
 }

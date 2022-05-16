@@ -20,7 +20,7 @@ public class BoardGameMapper {
         BoardGame boardGame = new BoardGame();
         boardGame.setObjectTypeId(boardGameRequestDto.getObjectTypeId());
         boardGame.setName(boardGameRequestDto.getName());
-        boardGame.setPlayingTime(boardGameRequestDto.getPlayingTime());
+        boardGame.setEstimatedPlaytime(boardGameRequestDto.getEstimatedPlaytime());
         boardGame.setRecommendedAge(boardGameRequestDto.getRecommendedAge());
         boardGame.setMinPlayersNumber(boardGameRequestDto.getMinPlayersNumber());
         boardGame.setMaxPlayersNumber(boardGameRequestDto.getMaxPlayersNumber());
@@ -36,7 +36,7 @@ public class BoardGameMapper {
                 .id(boardGame.getId())
                 .objectTypeId(boardGame.getObjectTypeId())
                 .name(boardGame.getName())
-                .playingTime(boardGame.getPlayingTime())
+                .estimatedPlaytime(boardGame.getEstimatedPlaytime())
                 .recommendedAge(boardGame.getRecommendedAge())
                 .minPlayersNumber(boardGame.getMinPlayersNumber())
                 .maxPlayersNumber(boardGame.getMaxPlayersNumber())

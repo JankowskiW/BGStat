@@ -82,7 +82,7 @@ public class UserBoardGameServiceTestHelper {
             }
 
             @Override
-            public int getBgPlayingTime() {
+            public int getBgEstimatedPlaytime() {
                 return 120;
             }
 

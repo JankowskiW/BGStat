@@ -14,7 +14,7 @@ public class BoardGameServiceTestHelper {
     private static final int MIN_PLAYERS_NUMBER = 1;
     private static final int MAX_PLAYERS_NUMBER = 4;
     private static final int COMPLEXITY = 2;
-    private static final int PLAYING_TIME = 120;
+    private static final int ESTIMATED_PLAYTIME = 120;
 
     public static List<BoardGame> populateBoardGameList(int numberOfElements) {
         List<BoardGame> boardGameList = new ArrayList<>();
@@ -28,7 +28,7 @@ public class BoardGameServiceTestHelper {
             boardGame.setMinPlayersNumber(MIN_PLAYERS_NUMBER);
             boardGame.setMaxPlayersNumber(MAX_PLAYERS_NUMBER);
             boardGame.setComplexity(COMPLEXITY);
-            boardGame.setPlayingTime(PLAYING_TIME);
+            boardGame.setEstimatedPlaytime(ESTIMATED_PLAYTIME);
             boardGameDescription = new BoardGameDescription();
             boardGameDescription.setBoardGameId(i);
             boardGameDescription.setBoardGame(boardGame);
