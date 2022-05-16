@@ -18,7 +18,6 @@ public class UserController {
 
     @GetMapping("/{id}/user-board_games")
     public Page<UserBoardGameHeaderDto> getUserBoardGameHeaders(@PathVariable long id, Pageable pageable) {
-        // TODO: 14.05.2022 Find out how to change page number indexing from one in response
         return userService.getUserBoardGameHeaders(id, pageable);
     }
 

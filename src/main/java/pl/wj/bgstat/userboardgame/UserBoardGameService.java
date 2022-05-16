@@ -9,7 +9,6 @@ import pl.wj.bgstat.store.StoreRepository;
 import pl.wj.bgstat.user.UserRepository;
 import pl.wj.bgstat.userboardgame.model.UserBoardGame;
 import pl.wj.bgstat.userboardgame.model.UserBoardGameMapper;
-import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameDetails;
 import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameDetailsDto;
 import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameRequestDto;
 import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameResponseDto;
@@ -26,9 +25,9 @@ public class UserBoardGameService {
     private final StoreRepository storeRepository;
 
     public UserBoardGameDetailsDto getSingleUserBoardGame(long id) {
-        UserBoardGameDetails userBoardGameDetails = userBoardGameRepository.getWithDetailsById(id)
+        UserBoardGameDetailsDto userBoardGameDetailsDto = userBoardGameRepository.getWithDetailsById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(USER_BOARD_GAME_RESOURCE_NAME, ID_FIELD, id));
-        return UserBoardGameMapper.mapToUserBoardGameDetailsDto(userBoardGameDetails);
+        return userBoardGameDetailsDto;
     }
 
     public UserBoardGameResponseDto addUserBoardGame(UserBoardGameRequestDto userBoardGameRequestDto) {
