@@ -10,7 +10,7 @@ import java.util.Date;
 @Entity
 @Getter
 @Setter
-@Table(name="user_board_games", schema="dbo")
+@Table(name="user_board_games")
 public class UserBoardGame {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

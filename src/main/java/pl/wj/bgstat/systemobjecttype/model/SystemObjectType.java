@@ -11,7 +11,7 @@ import java.util.Set;
 @Entity
 @Getter
 @Setter
-@Table(name="system_object_types", schema="dbo")
+@Table(name="system_object_types")
 public class SystemObjectType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

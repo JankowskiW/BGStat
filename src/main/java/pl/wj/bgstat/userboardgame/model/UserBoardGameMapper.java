@@ -1,11 +1,7 @@
 package pl.wj.bgstat.userboardgame.model;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import pl.wj.bgstat.userboardgame.model.dto.*;
-
-import java.util.List;
-import java.util.stream.Collectors;
+import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameRequestDto;
+import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameResponseDto;
 
 public class UserBoardGameMapper {
     public static UserBoardGame mapToUserBoardGame(UserBoardGameRequestDto userBoardGameRequestDto) {

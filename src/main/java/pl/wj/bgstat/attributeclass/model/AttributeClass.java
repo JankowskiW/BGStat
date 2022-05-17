@@ -12,7 +12,7 @@ import java.util.Set;
 @Entity
 @Getter
 @Setter
-@Table(name="attribute_classes", schema="dbo")
+@Table(name="attribute_classes")
 public class AttributeClass {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

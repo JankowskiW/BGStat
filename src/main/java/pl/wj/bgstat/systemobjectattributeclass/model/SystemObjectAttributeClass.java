@@ -10,7 +10,7 @@ import javax.persistence.*;
 @Entity
 @Getter
 @Setter
-@Table(name="system_object_attribute_classes", schema="dbo")
+@Table(name="system_object_attribute_classes")
 public class SystemObjectAttributeClass {
     @EmbeddedId
     private SystemObjectAttributeClassId id;

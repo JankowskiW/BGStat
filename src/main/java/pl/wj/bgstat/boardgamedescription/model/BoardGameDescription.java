@@ -10,7 +10,7 @@ import javax.persistence.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name="board_game_descriptions", schema="dbo")
+@Table(name="board_game_descriptions")
 public class BoardGameDescription {
     @Id
     private long boardGameId;
