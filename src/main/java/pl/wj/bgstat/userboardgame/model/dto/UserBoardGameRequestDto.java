@@ -9,6 +9,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Date;
 
 @Setter
@@ -31,11 +32,11 @@ public class UserBoardGameRequestDto {
     private String comment;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @NotNull(message = "Please provide a purchase date")
-    private Date purchaseDate;
+    private LocalDate purchaseDate;
     @NotNull @Min(1)
     private BigDecimal purchasePrice;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private Date saleDate;
+    private LocalDate saleDate;
     @Min(1)
     private BigDecimal salePrice;
 }

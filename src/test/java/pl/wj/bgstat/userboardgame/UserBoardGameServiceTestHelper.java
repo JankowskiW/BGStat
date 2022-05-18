@@ -5,6 +5,8 @@ import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameDetailsDto;
 import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameRequestDto;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.Month;
 import java.util.Date;
 
 public class UserBoardGameServiceTestHelper {
@@ -40,8 +42,8 @@ public class UserBoardGameServiceTestHelper {
             }
 
             @Override
-            public Date getPurchaseDate() {
-                return new Date(1000000000000L);
+            public LocalDate getPurchaseDate() {
+                return LocalDate.of(2021, Month.APRIL,01);
             }
 
             @Override
@@ -50,7 +52,7 @@ public class UserBoardGameServiceTestHelper {
             }
 
             @Override
-            public Date getSaleDate() {
+            public LocalDate getSaleDate() {
                 return null;
             }
 
@@ -104,7 +106,7 @@ public class UserBoardGameServiceTestHelper {
                 1,
                 true,
                 "Comment",
-                new Date(),
+                LocalDate.of(1998,Month.MARCH,2),
                 new BigDecimal(150.50),
                 null,
                 null
@@ -120,7 +122,7 @@ public class UserBoardGameServiceTestHelper {
         userBoardGame.setStoreId(storeId);
         userBoardGame.setSleeved(true);
         userBoardGame.setComment("Comment");
-        userBoardGame.setPurchaseDate(new Date());
+        userBoardGame.setPurchaseDate(LocalDate.of(2022, Month.DECEMBER, 31));
         userBoardGame.setPurchasePrice(new BigDecimal(155.55));
         userBoardGame.setSaleDate(null);
         userBoardGame.setSalePrice(null);

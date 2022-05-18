@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Date;
 
 @Getter
@@ -18,8 +19,8 @@ public class UserBoardGameResponseDto {
     private long storeId;
     private boolean sleeved;
     private String comment;
-    private Date purchaseDate;
+    private LocalDate purchaseDate;
     private BigDecimal purchasePrice;
-    private Date saleDate;
+    private LocalDate saleDate;
     private BigDecimal salePrice;
 }

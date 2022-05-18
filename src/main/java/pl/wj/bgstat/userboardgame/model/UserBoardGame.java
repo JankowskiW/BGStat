@@ -5,6 +5,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -21,8 +22,8 @@ public class UserBoardGame {
     private long storeId;
     private boolean sleeved;
     private String comment;
-    private Date purchaseDate;
+    private LocalDate purchaseDate;
     private BigDecimal purchasePrice;
-    private Date saleDate;
+    private LocalDate saleDate;
     private BigDecimal salePrice;
 }

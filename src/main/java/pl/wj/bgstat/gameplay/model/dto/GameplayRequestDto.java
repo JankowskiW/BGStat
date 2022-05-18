@@ -6,6 +6,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Getter
@@ -24,10 +26,10 @@ public class GameplayRequestDto {
     private String comment;
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @NotNull(message = "Please provide a start time.")
-    private Date startTime;
+    private LocalDateTime startTime;
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @NotNull(message = "Please provide a end time.")
-    private Date endTime;
+    private LocalDateTime endTime;
     @NotNull @Min(1)
     private int playtime;
 }

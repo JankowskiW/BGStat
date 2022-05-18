@@ -1,6 +1,7 @@
 package pl.wj.bgstat.userboardgame.model.dto;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Date;
 
 public interface UserBoardGameDetailsDto {
@@ -9,9 +10,9 @@ public interface UserBoardGameDetailsDto {
     long getObjectTypeId();
     boolean isSleeved();
     String getComment();
-    Date getPurchaseDate();
+    LocalDate getPurchaseDate();
     BigDecimal getPurchasePrice();
-    Date getSaleDate();
+    LocalDate getSaleDate();
     BigDecimal getSalePrice();
     String getBgName();
     int getBgRecommendedAge();
