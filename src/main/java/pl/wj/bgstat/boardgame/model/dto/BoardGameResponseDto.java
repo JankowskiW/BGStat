@@ -5,10 +5,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-@AllArgsConstructor
 @Setter
 @Getter
 @Builder
+@AllArgsConstructor
 public class BoardGameResponseDto {
     private long id;
     private long objectTypeId;

@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import pl.wj.bgstat.gameplay.model.dto.GameplaysStatsDto;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -13,6 +14,7 @@ import java.time.Month;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static pl.wj.bgstat.gameplay.GameplayServiceTestHelper.createGameplaysStatsDto;
 
 @ExtendWith(MockitoExtension.class)
 public class GameplayServiceTest {
@@ -23,20 +25,24 @@ public class GameplayServiceTest {
     private GameplayService gameplayService;
 
     @Test
-    @DisplayName("Should return number of gameplays in given period")
-    void shouldReturnNumberOfGameplaysInGivenPeriod() {
+    @DisplayName("Should return statistics about gameplays in given period")
+    void shouldReturnStatsAboutGameplaysInGivenPeriod() {
         // given
-        long expectedNumberOfGameplays = 10L;
         LocalDate fromDate = LocalDate.of(2021, Month.JANUARY, 1);
         LocalDate toDate = LocalDate.of(2021, Month.DECEMBER,31);
-        given(gameplayRepository.countInGivenPeriod(
-                any(LocalDate.class), any(LocalDate.class))).willReturn(expectedNumberOfGameplays);
+        GameplaysStatsDto expectedResponse = createGameplaysStatsDto(fromDate, toDate);
+
+        given(gameplayRepository.getStatsByGivenPeriod(any(LocalDate.class), any(LocalDate.class)))
+                .willReturn(expectedResponse.getSingleBoardGameGameplaysStatsList());
 
         // when
-        long numberOfGameplays =  gameplayService.getGameplayActivity(fromDate, toDate);
+        GameplaysStatsDto gameplaysStatsDto = gameplayService.getGameplayActivity(fromDate, toDate);
 
         // then
-        assertThat(numberOfGameplays).isEqualTo(expectedNumberOfGameplays);
+        assertThat(gameplaysStatsDto)
+                .isNotNull()
+                .usingRecursiveComparison()
+                .isEqualTo(expectedResponse);
     }
 
 }

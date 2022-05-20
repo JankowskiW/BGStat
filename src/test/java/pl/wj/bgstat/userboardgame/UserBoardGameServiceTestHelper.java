@@ -7,18 +7,14 @@ import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameRequestDto;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Month;
-import java.util.Date;
 
 public class UserBoardGameServiceTestHelper {
 
-    public static long userBoardGameId;
-
     public static UserBoardGameDetailsDto createUserBoardGameDetailsImpl(long userBoardGameId) {
-        UserBoardGameServiceTestHelper.userBoardGameId = userBoardGameId;
         return new UserBoardGameDetailsDto() {
             @Override
             public long getId() {
-                return UserBoardGameServiceTestHelper.userBoardGameId;
+                return userBoardGameId;
             }
 
             @Override
