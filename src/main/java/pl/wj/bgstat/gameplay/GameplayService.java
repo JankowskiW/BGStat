@@ -49,7 +49,6 @@ public class GameplayService {
         Map<Long, Double> percentageAmountOfGameplayserPerBoardGame = new HashMap<>();
         double pAmount;
         int pSum = 0;
-        int pDiff = 0;
 
         for (BoardGameGameplayStatsDto bggs : singleBoardGameGameplaysStatsList) {
             pAmount = (100.0*bggs.getNumOfGameplays()/numOfGp);
@@ -57,7 +56,7 @@ public class GameplayService {
             percentageAmountOfGameplayserPerBoardGame.put(bggs.getBoardGameId(), pAmount);
         }
 
-        pDiff = Math.abs(100 - pSum);
+        int pDiff = Math.abs(100 - pSum);
 
         List<Long> sortedMapKeys = percentageAmountOfGameplayserPerBoardGame.entrySet()
                 .stream()
