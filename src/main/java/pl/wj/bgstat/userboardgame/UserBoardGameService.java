@@ -51,21 +51,4 @@ public class UserBoardGameService {
         throwExceptionWhenNotExistsById(id, userBoardGameRepository);
         userBoardGameRepository.deleteById(id);
     }
-
-    private void throwExceptionWhenNotExistsById(long id, JpaRepository repository) {
-        if (!repository.existsById(id)) {
-            String resourceName = "";
-            if (repository instanceof UserBoardGameRepository) {
-                resourceName = USER_BOARD_GAME_RESOURCE_NAME;
-            } else if (repository instanceof BoardGameRepository) {
-                resourceName = BOARD_GAME_RESOURCE_NAME;
-            } else if (repository instanceof UserRepository) {
-                resourceName = USER_RESOURCE_NAME;
-            } else if (repository instanceof StoreRepository) {
-                resourceName = STORE_RESOURCE_NAME;
-            }
-            throw new ResourceNotFoundException(resourceName, ID_FIELD, id);
-        }
-    }
-
 }

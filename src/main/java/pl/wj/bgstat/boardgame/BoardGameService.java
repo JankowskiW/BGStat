@@ -60,17 +60,6 @@ public class BoardGameService {
         boardGameRepository.deleteById(id);
     }
 
-    private void throwExceptionWhenNotExistsById(long id, JpaRepository repository) {
-        if (!repository.existsById(id)) {
-            String resourceName = "";
-            if (repository instanceof BoardGameRepository) {
-                resourceName = BOARD_GAME_RESOURCE_NAME;
-            } else if (repository instanceof SystemObjectTypeRepository) {
-                resourceName = SYSTEM_OBJECT_TYPE_RESOURCE_NAME;
-            }
-            throw new ResourceNotFoundException(resourceName, ID_FIELD, id);
-        }
-    }
 
     private void throwExceptionWhenExistsByName(String name) {
         if (boardGameRepository.existsByName(name))

@@ -1,20 +1,33 @@
 package pl.wj.bgstat.gameplay;
 
-import com.fasterxml.jackson.core.util.InternCache;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import pl.wj.bgstat.boardgame.BoardGameRepository;
 import pl.wj.bgstat.boardgame.model.dto.BoardGameGameplayStatsDto;
+import pl.wj.bgstat.exception.ExceptionHelper;
+import pl.wj.bgstat.gameplay.model.dto.GameplayRequestDto;
+import pl.wj.bgstat.gameplay.model.dto.GameplayResponseDto;
 import pl.wj.bgstat.gameplay.model.dto.GameplaysStatsDto;
+import pl.wj.bgstat.systemobjecttype.SystemObjectTypeRepository;
+import pl.wj.bgstat.user.UserRepository;
+import pl.wj.bgstat.userboardgame.UserBoardGameRepository;
+
 
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static pl.wj.bgstat.exception.ExceptionHelper.throwExceptionWhenNotExistsById;
 
 @Service
 @RequiredArgsConstructor
 public class GameplayService {
 
     private final GameplayRepository gameplayRepository;
+    private final BoardGameRepository boardGameRepository;
+    private final UserBoardGameRepository userBoardGameRepository;
+    private final UserRepository userRepository;
+    private final SystemObjectTypeRepository systemObjectTypeRepository;
 
     public GameplaysStatsDto getGameplayActivity(LocalDate fromDate, LocalDate toDate) {
         List<BoardGameGameplayStatsDto> singleBoardGameGameplaysStatsList =
@@ -78,5 +91,15 @@ public class GameplayService {
 
         return  gameplaysStatsDto;
     }
+
+    public GameplayResponseDto addGameplay(GameplayRequestDto gameplayRequestDto) {
+        throwExceptionWhenNotExistsById(gameplayRequestDto.getObjectTypeId(), systemObjectTypeRepository);
+        throwExceptionWhenNotExistsById(gameplayRequestDto.getUserId(), userRepository);
+        throwExceptionWhenNotExistsById(gameplayRequestDto.getUserBoardGameId(), userBoardGameRepository);
+        throwExceptionWhenNotExistsById(gameplayRequestDto.getBoardGameId(), boardGameRepository);
+
+        return null;
+    }
+
 
 }

@@ -43,7 +43,7 @@ public class AttributeClassService {
     }
 
     public AttributeClassResponseDto editAttributeClass(long id, AttributeClassRequestDto attributeClassRequestDto) {
-        throwExceptionWhenNotExistsById(id);
+        throwExceptionWhenNotExistsById(id, attributeClassRepository);
         throwExceptionWhenExistsByNameAndNotId(id, attributeClassRequestDto.getName());
         AttributeClass attributeClass = AttributeClassMapper.mapToAttributeClass(id, attributeClassRequestDto);
         attributeClassRepository.save(attributeClass);
@@ -51,18 +51,14 @@ public class AttributeClassService {
     }
 
     public void deleteAttributeClass(long id) {
-        throwExceptionWhenNotExistsById(id);
+        throwExceptionWhenNotExistsById(id, attributeClassRepository);
         throwExceptionWhenExistsByAttributeClassId(id);
         attributeClassRepository.deleteById(id);
     }
 
     public List<SystemObjectAttributeClassResponseDto> getAllSystemObjectTypeToAttributeClassAssignments(long id) {
-        throwExceptionWhenNotExistsById(id);
+        throwExceptionWhenNotExistsById(id, attributeClassRepository);
         return systemObjectAttributeClassRepository.findAllAssignmentsByAttributeClassId(id);
-    }
-
-    private void throwExceptionWhenNotExistsById(long id) {
-        if (!attributeClassRepository.existsById(id)) throw new ResourceNotFoundException(ATTRIBUTE_CLASS_RESOURCE_NAME, ID_FIELD, id);
     }
 
     private void throwExceptionWhenExistsByName(String name) {

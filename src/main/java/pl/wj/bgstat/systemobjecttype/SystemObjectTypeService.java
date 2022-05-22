@@ -46,7 +46,7 @@ public class SystemObjectTypeService {
     }
 
     public SystemObjectTypeResponseDto editSystemObjectType(long id, SystemObjectTypeRequestDto systemObjectTypeRequestDto) {
-        throwExceptionWhenNotExistsById(id);
+        throwExceptionWhenNotExistsById(id, systemObjectTypeRepository);
         throwExceptionWhenExistsByNameAndNotId(id, systemObjectTypeRequestDto.getName());
         SystemObjectType systemObjectType = SystemObjectTypeMapper.mapToSystemObjectType(id, systemObjectTypeRequestDto);
         systemObjectTypeRepository.save(systemObjectType);
@@ -54,19 +54,14 @@ public class SystemObjectTypeService {
     }
 
     public void deleteSystemObjectType(long id) {
-        throwExceptionWhenNotExistsById(id);
+        throwExceptionWhenNotExistsById(id, systemObjectTypeRepository);
         throwExceptionWhenSystemObjectTypeHasAssignedAttributeClass(id);
         systemObjectTypeRepository.deleteById(id);
     }
 
     public List<SystemObjectAttributeClassResponseDto> getAllAttributeClassToSystemObjectTypeAssignments(long id) {
-        throwExceptionWhenNotExistsById(id);
+        throwExceptionWhenNotExistsById(id, systemObjectTypeRepository);
         return systemObjectAttributeClassRepository.findAllAssignmentsBySystemObjectTypeId(id);
-    }
-
-    private void throwExceptionWhenNotExistsById(long id) {
-        if (!systemObjectTypeRepository.existsById(id))
-            throw new ResourceNotFoundException(SYSTEM_OBJECT_TYPE_RESOURCE_NAME, ID_FIELD, id);
     }
 
     private void throwExceptionWhenExistsByName(String name) {

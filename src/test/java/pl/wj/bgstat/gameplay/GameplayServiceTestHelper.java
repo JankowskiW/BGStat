@@ -1,9 +1,11 @@
 package pl.wj.bgstat.gameplay;
 
 import pl.wj.bgstat.boardgame.model.dto.BoardGameGameplayStatsDto;
+import pl.wj.bgstat.gameplay.model.dto.GameplayRequestDto;
 import pl.wj.bgstat.gameplay.model.dto.GameplaysStatsDto;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -55,6 +57,19 @@ public class GameplayServiceTestHelper {
                 .numOfDifferentBoardGames(0)
                 .singleBoardGameGameplaysStatsList(new ArrayList<>())
                 .percentageAmountOfGameplaysPerBoardGame(new HashMap<>())
+                .build();
+    }
+
+    public static GameplayRequestDto createGameplayRequestDto() {
+        return GameplayRequestDto.builder()
+                .objectTypeId(4L)
+                .userId(1L)
+                .boardGameId(1L)
+                .userBoardGameId(1L)
+                .comment("Comment")
+                .startTime(LocalDateTime.of(2022,1,14,18,25))
+                .endTime(LocalDateTime.of(2022,1,14,19,55))
+                .playtime(65)  // playtime cannot be higher than difference between endTime and startTime but could be lower
                 .build();
     }
 
