@@ -319,7 +319,7 @@ class BoardGameServiceTest {
 
     @Test
     @DisplayName("Should throw ResourceNotFoundException when SystemObjectType id of BoardGame does not exist in database")
-    void shouldThrowExceptionWhenSystemObjectTypeIdOfBoardGameDoesNotExists() {
+    void shouldThrowExceptionWhenSystemObjectTypeIdOfBoardGameDoesNotExist() {
         // given
         long id = 1L;
         long objectTypeId = 100L;

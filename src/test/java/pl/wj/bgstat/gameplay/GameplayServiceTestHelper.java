@@ -13,7 +13,7 @@ import java.util.Map;
 
 public class GameplayServiceTestHelper {
 
-
+    public static final long GAMEPLAY_DEFAULT_OBJECT_TYPE_ID = 4L;
 
     public static GameplaysStatsDto createGameplaysStatsDto(LocalDate fromDate, LocalDate toDate) {
         int numOfGameplays = 55;
@@ -62,7 +62,7 @@ public class GameplayServiceTestHelper {
 
     public static GameplayRequestDto createGameplayRequestDto() {
         return GameplayRequestDto.builder()
-                .objectTypeId(4L)
+                .objectTypeId(GAMEPLAY_DEFAULT_OBJECT_TYPE_ID)
                 .userId(1L)
                 .boardGameId(1L)
                 .userBoardGameId(1L)
