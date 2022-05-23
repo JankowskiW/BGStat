@@ -8,8 +8,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pl.wj.bgstat.boardgame.BoardGameRepository;
-import pl.wj.bgstat.boardgame.model.dto.BoardGameRequestDto;
-import pl.wj.bgstat.boardgame.model.dto.BoardGameResponseDto;
 import pl.wj.bgstat.exception.ResourceNotFoundException;
 import pl.wj.bgstat.gameplay.model.Gameplay;
 import pl.wj.bgstat.gameplay.model.GameplayMapper;
@@ -21,7 +19,6 @@ import pl.wj.bgstat.user.UserRepository;
 import pl.wj.bgstat.userboardgame.UserBoardGameRepository;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.ArrayList;
 
