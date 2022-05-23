@@ -109,4 +109,16 @@ public class GameplayService {
         return id == 0 ? GAMEPLAY_DEFAULT_OBJECT_TYPE_ID : id;
     }
 
+    public GameplayResponseDto editGameplay(long id, GameplayRequestDto gameplayRequestDto) {
+        gameplayRequestDto.setObjectTypeId(validateSystemObjectTypeId(gameplayRequestDto.getObjectTypeId()));
+        throwExceptionWhenNotExistsById(id, gameplayRepository);
+        throwExceptionWhenNotExistsById(gameplayRequestDto.getObjectTypeId(), systemObjectTypeRepository);
+        throwExceptionWhenNotExistsById(gameplayRequestDto.getUserId(), userRepository);
+        throwExceptionWhenNotExistsById(gameplayRequestDto.getUserBoardGameId(), userBoardGameRepository);
+        throwExceptionWhenNotExistsById(gameplayRequestDto.getBoardGameId(), boardGameRepository);
+
+        Gameplay gameplay = GameplayMapper.mapToGameplay(id, gameplayRequestDto);
+        gameplayRepository.save(gameplay);
+        return GameplayMapper.mapToGameplayResponseDto(gameplay);
+    }
 }

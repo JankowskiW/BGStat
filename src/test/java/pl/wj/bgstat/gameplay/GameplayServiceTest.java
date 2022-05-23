@@ -21,6 +21,7 @@ import pl.wj.bgstat.user.UserRepository;
 import pl.wj.bgstat.userboardgame.UserBoardGameRepository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.ArrayList;
 
@@ -171,7 +172,7 @@ public class GameplayServiceTest {
     }
 
     @Test
-    @DisplayName("should throw ResourceNotFoundException when User id does not exist in database")
+    @DisplayName("Should throw ResourceNotFoundException when User id does not exist in database")
     void shouldThrowExceptionWhenUserIdDoesNotExist() {
         // given
         long userId = 99L;
@@ -187,7 +188,7 @@ public class GameplayServiceTest {
     }
 
     @Test
-    @DisplayName("should throw ResourceNotFoundException when UserBoardGame id does not exist in database")
+    @DisplayName("Should throw ResourceNotFoundException when UserBoardGame id does not exist in database")
     void shouldThrowExceptionWhenUserBoardGameIdDoesNotExist() {
         // given
         long userBoardGameId = 99L;
@@ -204,7 +205,7 @@ public class GameplayServiceTest {
     }
 
     @Test
-    @DisplayName("should throw ResourceNotFoundException when BoardGame id does not exist in database")
+    @DisplayName("Should throw ResourceNotFoundException when BoardGame id does not exist in database")
     void shouldThrowExceptionWhenBoardGameIdDoesNotExist() {
         // given
         long boardGameId = 99L;
@@ -219,5 +220,42 @@ public class GameplayServiceTest {
         assertThatThrownBy(() -> gameplayService.addGameplay(gameplayRequestDto))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessage(createResourceNotFoundExceptionMessage(BOARD_GAME_RESOURCE_NAME, ID_FIELD, boardGameId));
+    }
+
+    @Test
+    @DisplayName("Should edit gameplay when exists")
+    void shouldEditGameplayWhenExists() {
+        // given
+        long id = 1L;
+        long userBoardGameId = 2L;
+        GameplayRequestDto gameplayRequestDto = GameplayRequestDto.builder()
+                .objectTypeId(GAMEPLAY_DEFAULT_OBJECT_TYPE_ID)
+                .userId(1L)
+                .boardGameId(1L)
+                .userBoardGameId(userBoardGameId)
+                .comment("Comment")
+                .startTime(LocalDateTime.of(2022,12,3,14,55,0))
+                .endTime(LocalDateTime.of(2022,12,3,15,14,11))
+                .playtime(16)
+                .build();
+        given(gameplayRepository.existsById(anyLong())).willReturn(true);
+        given(systemObjectTypeRepository.existsById(anyLong())).willReturn(true);
+        given(userRepository.existsById(anyLong())).willReturn(true);
+        given(userBoardGameRepository.existsById(anyLong())).willReturn(true);
+        given(boardGameRepository.existsById(anyLong())).willReturn(true);
+        given(gameplayRepository.save(any(Gameplay.class))).willAnswer(
+                i -> {
+                   Gameplay gp = i.getArgument(0, Gameplay.class);
+                   gp.setId(id);
+                   return gp;
+                });
+
+        // when
+        GameplayResponseDto gameplayResponseDto = gameplayService.editGameplay(id, gameplayRequestDto);
+
+        // then
+        assertThat(gameplayResponseDto).isNotNull();
+        assertThat(gameplayResponseDto.getId()).isEqualTo(id);
+        assertThat(gameplayResponseDto.getUserBoardGameId()).isEqualTo(gameplayRequestDto.getUserBoardGameId());
     }
 }
