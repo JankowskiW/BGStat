@@ -155,7 +155,6 @@ public class GameplayServiceTest {
                 .isEqualTo(expectedResponse);
     }
 
-
     @Test
     @DisplayName("Should throw ResourceNotFoundException when SystemObjectType id does not exist in database")
     void shouldThrowExceptionWhenSystemObjectTypeIdDoesNotExist() {
@@ -171,4 +170,54 @@ public class GameplayServiceTest {
                 .hasMessage(createResourceNotFoundExceptionMessage(SYSTEM_OBJECT_TYPE_RESOURCE_NAME, ID_FIELD, systemObjectTypeId));
     }
 
+    @Test
+    @DisplayName("should throw ResourceNotFoundException when User id does not exist in database")
+    void shouldThrowExceptionWhenUserIdDoesNotExist() {
+        // given
+        long userId = 99L;
+        GameplayRequestDto gameplayRequestDto = new GameplayRequestDto();
+        gameplayRequestDto.setUserId(userId);
+        given(systemObjectTypeRepository.existsById(anyLong())).willReturn(true);
+        given(userRepository.existsById(anyLong())).willReturn(false);
+
+        // when
+        assertThatThrownBy(() -> gameplayService.addGameplay(gameplayRequestDto))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage(createResourceNotFoundExceptionMessage(USER_RESOURCE_NAME, ID_FIELD, userId));
+    }
+
+    @Test
+    @DisplayName("should throw ResourceNotFoundException when UserBoardGame id does not exist in database")
+    void shouldThrowExceptionWhenUserBoardGameIdDoesNotExist() {
+        // given
+        long userBoardGameId = 99L;
+        GameplayRequestDto gameplayRequestDto = new GameplayRequestDto();
+        gameplayRequestDto.setUserBoardGameId(userBoardGameId);
+        given(systemObjectTypeRepository.existsById(anyLong())).willReturn(true);
+        given(userRepository.existsById(anyLong())).willReturn(true);
+        given(userBoardGameRepository.existsById(anyLong())).willReturn(false);
+
+        // when
+        assertThatThrownBy(() -> gameplayService.addGameplay(gameplayRequestDto))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage(createResourceNotFoundExceptionMessage(USER_BOARD_GAME_RESOURCE_NAME, ID_FIELD, userBoardGameId));
+    }
+
+    @Test
+    @DisplayName("should throw ResourceNotFoundException when BoardGame id does not exist in database")
+    void shouldThrowExceptionWhenBoardGameIdDoesNotExist() {
+        // given
+        long boardGameId = 99L;
+        GameplayRequestDto gameplayRequestDto = new GameplayRequestDto();
+        gameplayRequestDto.setBoardGameId(boardGameId);
+        given(systemObjectTypeRepository.existsById(anyLong())).willReturn(true);
+        given(userRepository.existsById(anyLong())).willReturn(true);
+        given(userBoardGameRepository.existsById(anyLong())).willReturn(true);
+        given(boardGameRepository.existsById(anyLong())).willReturn(false);
+
+        // when
+        assertThatThrownBy(() -> gameplayService.addGameplay(gameplayRequestDto))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage(createResourceNotFoundExceptionMessage(BOARD_GAME_RESOURCE_NAME, ID_FIELD, boardGameId));
+    }
 }
