@@ -1,8 +1,6 @@
 package pl.wj.bgstat.gameplay.model.dto;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.Min;
@@ -13,8 +11,9 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class GameplayRequestDto {
-    @NotNull @Min(1)
     private long objectTypeId;
     @NotNull @Min(1)
     private long userId;

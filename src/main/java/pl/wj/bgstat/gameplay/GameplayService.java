@@ -95,7 +95,7 @@ public class GameplayService {
     }
 
     public GameplayResponseDto addGameplay(GameplayRequestDto gameplayRequestDto) {
-        validateSystemObjectTypeId(gameplayRequestDto.getObjectTypeId());
+        gameplayRequestDto.setObjectTypeId(validateSystemObjectTypeId(gameplayRequestDto.getObjectTypeId()));
         throwExceptionWhenNotExistsById(gameplayRequestDto.getObjectTypeId(), systemObjectTypeRepository);
         throwExceptionWhenNotExistsById(gameplayRequestDto.getUserId(), userRepository);
         throwExceptionWhenNotExistsById(gameplayRequestDto.getUserBoardGameId(), userBoardGameRepository);

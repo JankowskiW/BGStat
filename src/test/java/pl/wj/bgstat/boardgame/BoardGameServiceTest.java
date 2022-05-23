@@ -190,7 +190,7 @@ class BoardGameServiceTest {
     }
 
     @Test
-    @DisplayName("Should create and return created board game with default system object type id")
+    @DisplayName("Should return created board game with default system object type id")
     void shouldReturnCreatedBoardGameWithDefaultSystemObjectTypeIdWhenObjectTypeNotSet() {
         // given
         BoardGameRequestDto boardGameRequestDto = BoardGameServiceTestHelper.createBoardGameRequestDto(
@@ -225,8 +225,9 @@ class BoardGameServiceTest {
     @DisplayName("Should throw ResourceNotFoundException when SystemObjectType id does not exist in database")
     void shouldThrowExceptionWhenSystemObjectTypeIdDoesNotExist() {
         // given
-        long systemObjectTypeId = 1L;
+        long systemObjectTypeId = 99L;
         BoardGameRequestDto boardGameRequestDto = new BoardGameRequestDto();
+        boardGameRequestDto.setObjectTypeId(systemObjectTypeId);
         given(systemObjectTypeRepository.existsById(anyLong())).willReturn(false);
 
         // when

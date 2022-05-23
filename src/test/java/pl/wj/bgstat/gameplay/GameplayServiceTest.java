@@ -8,6 +8,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pl.wj.bgstat.boardgame.BoardGameRepository;
+import pl.wj.bgstat.boardgame.model.dto.BoardGameRequestDto;
+import pl.wj.bgstat.boardgame.model.dto.BoardGameResponseDto;
+import pl.wj.bgstat.exception.ResourceNotFoundException;
 import pl.wj.bgstat.gameplay.model.Gameplay;
 import pl.wj.bgstat.gameplay.model.GameplayMapper;
 import pl.wj.bgstat.gameplay.model.dto.GameplayRequestDto;
@@ -22,9 +25,11 @@ import java.time.Month;
 import java.util.ArrayList;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
+import static pl.wj.bgstat.exception.ExceptionHelper.*;
 import static pl.wj.bgstat.gameplay.GameplayServiceTestHelper.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -42,6 +47,8 @@ public class GameplayServiceTest {
     private SystemObjectTypeRepository systemObjectTypeRepository;
     @InjectMocks
     private GameplayService gameplayService;
+
+    private static final long GAMEPLAY_DEFAULT_OBJECT_TYPE_ID = 4L;
 
     private LocalDate fromDate;
     private LocalDate toDate;
@@ -115,6 +122,53 @@ public class GameplayServiceTest {
                 .isNotNull()
                 .usingRecursiveComparison()
                 .isEqualTo(expectedResponse);
+    }
+
+    @Test
+    @DisplayName("Should return created gameplay with default system object type id")
+    void shouldReturnCreatedGameplayWithDefaultSystemObjectTypeIdWhenObjectTypeNotSet() {
+        // given
+        GameplayRequestDto gameplayRequestDto = createGameplayRequestDto();
+        gameplayRequestDto.setObjectTypeId(0L);
+        Gameplay gameplay = GameplayMapper.mapToGameplay(gameplayRequestDto);
+        gameplay.setId(1L);
+        GameplayResponseDto expectedResponse = GameplayMapper.mapToGameplayResponseDto(gameplay);
+        expectedResponse.setObjectTypeId(GAMEPLAY_DEFAULT_OBJECT_TYPE_ID);
+        given(systemObjectTypeRepository.existsById(anyLong())).willReturn(true);
+        given(userRepository.existsById(anyLong())).willReturn(true);
+        given(boardGameRepository.existsById(anyLong())).willReturn(true);
+        given(userBoardGameRepository.existsById(anyLong())).willReturn(true);
+        given(gameplayRepository.save(any(Gameplay.class))).willAnswer(
+                i -> {
+                    Gameplay gp = i.getArgument(0, Gameplay.class);
+                    gp.setId(gameplay.getId());
+                    return gp;
+                });
+
+        // when
+        GameplayResponseDto gameplayResponseDto = gameplayService.addGameplay(gameplayRequestDto);
+
+        // then
+        assertThat(gameplayResponseDto)
+                .isNotNull()
+                .usingRecursiveComparison()
+                .isEqualTo(expectedResponse);
+    }
+
+
+    @Test
+    @DisplayName("Should throw ResourceNotFoundException when SystemObjectType id does not exist in database")
+    void shouldThrowExceptionWhenSystemObjectTypeIdDoesNotExist() {
+        // given
+        long systemObjectTypeId = 99L;
+        GameplayRequestDto gameplayRequestDto = new GameplayRequestDto();
+        gameplayRequestDto.setObjectTypeId(systemObjectTypeId);
+        given(systemObjectTypeRepository.existsById(anyLong())).willReturn(false);
+
+        // when
+        assertThatThrownBy(() -> gameplayService.addGameplay(gameplayRequestDto))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage(createResourceNotFoundExceptionMessage(SYSTEM_OBJECT_TYPE_RESOURCE_NAME, ID_FIELD, systemObjectTypeId));
     }
 
 }
