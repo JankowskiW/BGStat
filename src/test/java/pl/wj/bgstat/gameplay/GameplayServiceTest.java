@@ -375,4 +375,17 @@ public class GameplayServiceTest {
         // then
         verify(gameplayRepository).deleteById(id);
     }
+
+    @Test
+    @DisplayName("Should throw ResourceNotFoundException when trying to remove not existing gameplay")
+    void shouldThrowExceptionWhenTryingToRemoveNotExistingGameplay() {
+        // given
+        long id = 100L;
+        given(gameplayRepository.existsById(anyLong())).willReturn(false);
+
+        // when
+        assertThatThrownBy(() -> gameplayService.deleteGameplay(id))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage(createResourceNotFoundExceptionMessage(GAMEPLAY_RESOURCE_NAME, ID_FIELD, id));
+    }
 }
