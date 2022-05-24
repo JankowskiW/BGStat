@@ -452,4 +452,17 @@ class BoardGameServiceTest {
                 .usingRecursiveComparison()
                 .isEqualTo(expectedResponse);
     }
+
+    @Test
+    @DisplayName("Should throw ResourceNotFoundException when board game does not exist")
+    void shouldThrowExceptionWhenBoardGameDoesNotExist() {
+        // given
+        long id = 100L;
+        given(boardGameRepository.existsById(anyLong())).willReturn(false);
+
+        // when
+        assertThatThrownBy(() -> boardGameService.getBoardGameStats(id, null, null))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage(createResourceNotFoundExceptionMessage(BOARD_GAME_RESOURCE_NAME, ID_FIELD, id));
+    }
 }
