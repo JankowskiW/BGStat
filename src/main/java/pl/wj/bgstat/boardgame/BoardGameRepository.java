@@ -23,7 +23,13 @@ public interface BoardGameRepository extends JpaRepository<BoardGame, Long> {
 
     boolean existsByNameAndIdNot(String name, long id);
     boolean existsByName(String name);
-
-    @Query("SELECT bg FROM BoardGame bg")
+    @Query(
+            value = "SELECT gp.board_game_id AS boardGameId, bg.name AS boardGameName, " +
+                    "COUNT(gp.board_game_id) AS numOfGameplays, " +
+                    "AVG(gp.playtime) AS avgTimeOfGameplay " +
+                    "FROM gameplays gp LEFT JOIN board_games bg ON gp.board_game_id = bg.id " +
+                    "WHERE gp.board_game_id = :id AND gp.start_time >= :fromDate AND gp.end_time <= :toDate " +
+                    "GROUP BY gp.board_game_id, bg.name",
+            nativeQuery = true)
     BoardGameGameplaysStatsDto getStatsByGivenPeriod(long id, LocalDate fromDate, LocalDate toDate);
 }

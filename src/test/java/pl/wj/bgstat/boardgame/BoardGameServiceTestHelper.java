@@ -62,7 +62,7 @@ public class BoardGameServiceTestHelper {
                 "DESCRIPTION OF Name No. " + (currentSize + 1));
     }
 
-    public static BoardGameGameplaysStatsDto createBoardGameGameplaysStatsDto(LocalDate fromDate, LocalDate toDate) {
+    public static BoardGameGameplaysStatsDto createBoardGameGameplaysStatsDto() {
         return new BoardGameGameplaysStatsDto() {
             @Override
             public long getBoardGameId() {
