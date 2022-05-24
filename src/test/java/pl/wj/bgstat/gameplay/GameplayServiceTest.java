@@ -67,7 +67,7 @@ public class GameplayServiceTest {
                 .willReturn(expectedResponse.getSingleBoardGameGameplaysStatsList());
 
         // when
-        GameplaysStatsDto gameplaysStatsDto = gameplayService.getGameplayActivity(fromDate, toDate);
+        GameplaysStatsDto gameplaysStatsDto = gameplayService.getGameplayStats(fromDate, toDate);
 
         // then
         assertThat(gameplaysStatsDto)
@@ -85,7 +85,7 @@ public class GameplayServiceTest {
                 .willReturn(new ArrayList<>());
 
         // when
-        GameplaysStatsDto gameplaysStatsDto = gameplayService.getGameplayActivity(fromDate, toDate);
+        GameplaysStatsDto gameplaysStatsDto = gameplayService.getGameplayStats(fromDate, toDate);
 
         // then
         assertThat(gameplaysStatsDto)

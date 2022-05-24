@@ -31,7 +31,7 @@ public class GameplayService {
     private final UserRepository userRepository;
     private final SystemObjectTypeRepository systemObjectTypeRepository;
 
-    public GameplaysStatsDto getGameplayActivity(LocalDate fromDate, LocalDate toDate) {
+    public GameplaysStatsDto getGameplayStats(LocalDate fromDate, LocalDate toDate) {
         List<BoardGameGameplayStatsDto> singleBoardGameGameplaysStatsList =
             gameplayRepository.getStatsByGivenPeriod(fromDate, toDate);
 
@@ -56,7 +56,7 @@ public class GameplayService {
         gameplaysStatsDto.setNumOfGameplays(numOfGp);
         gameplaysStatsDto.setAvgTimeOfGameplay(
                 singleBoardGameGameplaysStatsList.stream()
-                        .mapToInt(BoardGameGameplayStatsDto::getAvgTimeOfGameplay)
+                        .mapToDouble(BoardGameGameplayStatsDto::getAvgTimeOfGameplay)
                         .sum());
         gameplaysStatsDto.setNumOfDifferentBoardGames(numOfBg);
         gameplaysStatsDto.setSingleBoardGameGameplaysStatsList(singleBoardGameGameplaysStatsList);

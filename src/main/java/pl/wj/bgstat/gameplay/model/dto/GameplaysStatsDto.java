@@ -26,7 +26,7 @@ public class GameplaysStatsDto {
     /**
      * Represents the average time in minutes of gameplay in given period
      */
-    private int avgTimeOfGameplay;
+    private double avgTimeOfGameplay;
     /**
      * Represents the number of different board games played in given period
      */

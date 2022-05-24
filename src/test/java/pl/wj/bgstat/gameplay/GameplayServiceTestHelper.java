@@ -40,7 +40,7 @@ public class GameplayServiceTestHelper {
                 .avgTimeOfGameplay(
                         singleBoardGameGameplayStatsList
                                 .stream()
-                                .mapToInt(bg -> bg.getAvgTimeOfGameplay())
+                                .mapToDouble(bg -> bg.getAvgTimeOfGameplay())
                                 .sum())
                 .numOfDifferentBoardGames(numOfDifferentBoardGames)
                 .singleBoardGameGameplaysStatsList(singleBoardGameGameplayStatsList)
@@ -74,7 +74,7 @@ public class GameplayServiceTestHelper {
     }
 
     private static BoardGameGameplayStatsDto createBoardGameGameplayStatsDtoImpl(
-            long bgId, String name, int numOfGp, int avgTimeOfGp) {
+            long bgId, String name, int numOfGp, double avgTimeOfGp) {
         return new BoardGameGameplayStatsDto() {
             @Override
             public long getBoardGameId() {
@@ -92,7 +92,7 @@ public class GameplayServiceTestHelper {
             }
 
             @Override
-            public int getAvgTimeOfGameplay() {
+            public double getAvgTimeOfGameplay() {
                 return avgTimeOfGp;
             }
         };

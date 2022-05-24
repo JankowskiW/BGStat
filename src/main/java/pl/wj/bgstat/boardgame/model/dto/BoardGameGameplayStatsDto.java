@@ -11,5 +11,5 @@ public interface BoardGameGameplayStatsDto {
     /**
      * Represents the gameplay average time in minutes of board game in given period
      */
-    int getAvgTimeOfGameplay();
+    double getAvgTimeOfGameplay();
 }
