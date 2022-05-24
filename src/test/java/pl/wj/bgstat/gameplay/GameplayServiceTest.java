@@ -28,7 +28,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static pl.wj.bgstat.exception.ExceptionHelper.*;
 import static pl.wj.bgstat.gameplay.GameplayServiceTestHelper.*;

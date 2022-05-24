@@ -13,6 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import pl.wj.bgstat.boardgame.model.BoardGame;
 import pl.wj.bgstat.boardgame.model.BoardGameMapper;
+import pl.wj.bgstat.boardgame.model.dto.BoardGameGameplaysStatsDto;
 import pl.wj.bgstat.boardgame.model.dto.BoardGameHeaderDto;
 import pl.wj.bgstat.boardgame.model.dto.BoardGameRequestDto;
 import pl.wj.bgstat.boardgame.model.dto.BoardGameResponseDto;
@@ -20,6 +21,8 @@ import pl.wj.bgstat.exception.ResourceExistsException;
 import pl.wj.bgstat.exception.ResourceNotFoundException;
 import pl.wj.bgstat.systemobjecttype.SystemObjectTypeRepository;
 
+import java.time.LocalDate;
+import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -50,11 +53,15 @@ class BoardGameServiceTest {
 
     private List<BoardGame> boardGameList;
     private List<BoardGameHeaderDto> boardGameHeaderList;
+    private LocalDate fromDate;
+    private LocalDate toDate;
 
     @BeforeEach
     void setUp() {
         boardGameList = populateBoardGameList(NUMBER_OF_ELEMENTS);
         boardGameHeaderList = populateBoardGameHeaderDtoList(boardGameList);
+        fromDate = LocalDate.of(2021, Month.JANUARY, 1);
+        toDate = LocalDate.of(2021, Month.DECEMBER,31);
     }
 
     @Test
@@ -402,5 +409,25 @@ class BoardGameServiceTest {
         assertThatThrownBy(() -> boardGameService.deleteBoardGame(id))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessage(createResourceNotFoundExceptionMessage(BOARD_GAME_RESOURCE_NAME, ID_FIELD, id));
+    }
+
+    @Test
+    @DisplayName("Should return statistics about board game in given period")
+    void shouldReturStatsAboutBoardGameInGivenPeriod() {
+        // given
+        long id = 1L;;
+        BoardGameGameplaysStatsDto expectedResponse = createBoardGameGameplaysStatsDto(fromDate, toDate);
+        given(boardGameRepository.existsById(anyLong())).willReturn(true);
+        given(boardGameRepository.getStatsByGivenPeriod(anyLong(), any(LocalDate.class), any(LocalDate.class)))
+                .willReturn(expectedResponse);
+
+        // when
+        BoardGameGameplaysStatsDto boardGameGameplaysStatsDto = boardGameService.getBoardGameStats(id, fromDate, toDate);
+
+        // then
+        assertThat(boardGameGameplaysStatsDto)
+                .isNotNull()
+                .usingRecursiveComparison()
+                .isEqualTo(expectedResponse);
     }
 }

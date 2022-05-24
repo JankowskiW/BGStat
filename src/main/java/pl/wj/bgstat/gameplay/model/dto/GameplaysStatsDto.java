@@ -1,7 +1,7 @@
 package pl.wj.bgstat.gameplay.model.dto;
 
 import lombok.*;
-import pl.wj.bgstat.boardgame.model.dto.BoardGameGameplayStatsDto;
+import pl.wj.bgstat.boardgame.model.dto.BoardGameGameplaysStatsDto;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -34,7 +34,7 @@ public class GameplaysStatsDto {
     /**
      * Represents the amount of gameplays and avg gameplay time per board game in given period
      */
-    private List<BoardGameGameplayStatsDto> singleBoardGameGameplaysStatsList;
+    private List<BoardGameGameplaysStatsDto> singleBoardGameGameplaysStatsList;
     /**
      * Represents a percentage amount of gameplays per board game in given period
      */

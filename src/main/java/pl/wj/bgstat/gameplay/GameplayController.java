@@ -36,4 +36,5 @@ public class GameplayController {
 
     @DeleteMapping("/{id}")
     public void deleteGameplay(@PathVariable long id) {gameplayService.deleteGameplay(id);}
+
 }

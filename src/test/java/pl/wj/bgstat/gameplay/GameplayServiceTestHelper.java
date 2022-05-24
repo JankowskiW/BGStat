@@ -1,6 +1,6 @@
 package pl.wj.bgstat.gameplay;
 
-import pl.wj.bgstat.boardgame.model.dto.BoardGameGameplayStatsDto;
+import pl.wj.bgstat.boardgame.model.dto.BoardGameGameplaysStatsDto;
 import pl.wj.bgstat.gameplay.model.dto.GameplayRequestDto;
 import pl.wj.bgstat.gameplay.model.dto.GameplaysStatsDto;
 
@@ -18,7 +18,7 @@ public class GameplayServiceTestHelper {
     public static GameplaysStatsDto createGameplaysStatsDto(LocalDate fromDate, LocalDate toDate) {
         int numOfGameplays = 55;
         int numOfDifferentBoardGames = 5;
-        List<BoardGameGameplayStatsDto> singleBoardGameGameplayStatsList = new ArrayList<>();
+        List<BoardGameGameplaysStatsDto> singleBoardGameGameplayStatsList = new ArrayList<>();
         Map<Long, Integer> percentageAmountOfGameplaysPerBoardGame = new HashMap<>();
 
         singleBoardGameGameplayStatsList.add(createBoardGameGameplayStatsDtoImpl(1, "Name 1", 1, 200));
@@ -73,9 +73,9 @@ public class GameplayServiceTestHelper {
                 .build();
     }
 
-    private static BoardGameGameplayStatsDto createBoardGameGameplayStatsDtoImpl(
+    private static BoardGameGameplaysStatsDto createBoardGameGameplayStatsDtoImpl(
             long bgId, String name, int numOfGp, double avgTimeOfGp) {
-        return new BoardGameGameplayStatsDto() {
+        return new BoardGameGameplaysStatsDto() {
             @Override
             public long getBoardGameId() {
                 return bgId;

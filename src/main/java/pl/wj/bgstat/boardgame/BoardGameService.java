@@ -7,12 +7,15 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import pl.wj.bgstat.boardgame.model.BoardGame;
 import pl.wj.bgstat.boardgame.model.BoardGameMapper;
+import pl.wj.bgstat.boardgame.model.dto.BoardGameGameplaysStatsDto;
 import pl.wj.bgstat.boardgame.model.dto.BoardGameHeaderDto;
 import pl.wj.bgstat.boardgame.model.dto.BoardGameRequestDto;
 import pl.wj.bgstat.boardgame.model.dto.BoardGameResponseDto;
 import pl.wj.bgstat.exception.ResourceExistsException;
 import pl.wj.bgstat.exception.ResourceNotFoundException;
 import pl.wj.bgstat.systemobjecttype.SystemObjectTypeRepository;
+
+import java.time.LocalDate;
 
 import static pl.wj.bgstat.exception.ExceptionHelper.*;
 
@@ -58,6 +61,14 @@ public class BoardGameService {
     public void deleteBoardGame(long id) {
         throwExceptionWhenNotExistsById(id, boardGameRepository);
         boardGameRepository.deleteById(id);
+    }
+
+    public BoardGameGameplaysStatsDto getBoardGameStats(long id, LocalDate fromDate, LocalDate toDate) {
+        if (!boardGameRepository.existsById(id))
+            throwExceptionWhenNotExistsById(id, boardGameRepository);
+        fromDate = fromDate == null ? LocalDate.MIN : fromDate;
+        toDate = toDate == null ? LocalDate.MAX : toDate;
+        return boardGameRepository.getStatsByGivenPeriod(id, fromDate, toDate);
     }
 
     private void throwExceptionWhenExistsByName(String name) {

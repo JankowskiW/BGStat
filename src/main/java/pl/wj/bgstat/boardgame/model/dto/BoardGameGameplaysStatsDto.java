@@ -1,6 +1,6 @@
 package pl.wj.bgstat.boardgame.model.dto;
 
-public interface BoardGameGameplayStatsDto {
+public interface BoardGameGameplaysStatsDto {
     long getBoardGameId();
     String getBoardGameName();
 

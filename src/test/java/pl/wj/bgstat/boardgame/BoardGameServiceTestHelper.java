@@ -1,10 +1,12 @@
 package pl.wj.bgstat.boardgame;
 
 import pl.wj.bgstat.boardgame.model.BoardGame;
+import pl.wj.bgstat.boardgame.model.dto.BoardGameGameplaysStatsDto;
 import pl.wj.bgstat.boardgame.model.dto.BoardGameHeaderDto;
 import pl.wj.bgstat.boardgame.model.dto.BoardGameRequestDto;
 import pl.wj.bgstat.boardgamedescription.model.BoardGameDescription;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,5 +62,27 @@ public class BoardGameServiceTestHelper {
                 "DESCRIPTION OF Name No. " + (currentSize + 1));
     }
 
+    public static BoardGameGameplaysStatsDto createBoardGameGameplaysStatsDto(LocalDate fromDate, LocalDate toDate) {
+        return new BoardGameGameplaysStatsDto() {
+            @Override
+            public long getBoardGameId() {
+                return 1;
+            }
 
+            @Override
+            public String getBoardGameName() {
+                return "Name";
+            }
+
+            @Override
+            public int getNumOfGameplays() {
+                return 37;
+            }
+
+            @Override
+            public double getAvgTimeOfGameplay() {
+                return 99;
+            }
+        };
+    }
 }

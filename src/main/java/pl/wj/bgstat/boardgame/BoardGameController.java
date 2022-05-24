@@ -3,12 +3,16 @@ package pl.wj.bgstat.boardgame;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
+import pl.wj.bgstat.boardgame.model.dto.BoardGameGameplaysStatsDto;
 import pl.wj.bgstat.boardgame.model.dto.BoardGameHeaderDto;
 import pl.wj.bgstat.boardgame.model.dto.BoardGameRequestDto;
 import pl.wj.bgstat.boardgame.model.dto.BoardGameResponseDto;
+import pl.wj.bgstat.gameplay.model.dto.GameplaysStatsDto;
 
 import javax.validation.Valid;
+import java.time.LocalDate;
 
 @RestController
 @RequiredArgsConstructor
@@ -42,7 +46,11 @@ public class BoardGameController {
         boardGameService.deleteBoardGame(id);
     }
 
-
-
+    @GetMapping("/{id}/stats")
+    public BoardGameGameplaysStatsDto getBoardGameStats(@PathVariable long id,
+                                                        @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fromDate,
+                                                        @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate toDate) {
+        return boardGameService.getBoardGameStats(id, fromDate, toDate);
+    }
 }
 

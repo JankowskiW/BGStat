@@ -6,8 +6,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import pl.wj.bgstat.boardgame.model.BoardGame;
+import pl.wj.bgstat.boardgame.model.dto.BoardGameGameplaysStatsDto;
 import pl.wj.bgstat.boardgame.model.dto.BoardGameHeaderDto;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 @Repository
@@ -21,4 +23,7 @@ public interface BoardGameRepository extends JpaRepository<BoardGame, Long> {
 
     boolean existsByNameAndIdNot(String name, long id);
     boolean existsByName(String name);
+
+    @Query("SELECT bg FROM BoardGame bg")
+    BoardGameGameplaysStatsDto getStatsByGivenPeriod(long id, LocalDate fromDate, LocalDate toDate);
 }

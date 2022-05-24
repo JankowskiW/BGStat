@@ -3,7 +3,7 @@ package pl.wj.bgstat.gameplay;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pl.wj.bgstat.boardgame.BoardGameRepository;
-import pl.wj.bgstat.boardgame.model.dto.BoardGameGameplayStatsDto;
+import pl.wj.bgstat.boardgame.model.dto.BoardGameGameplaysStatsDto;
 import pl.wj.bgstat.gameplay.model.Gameplay;
 import pl.wj.bgstat.gameplay.model.GameplayMapper;
 import pl.wj.bgstat.gameplay.model.dto.GameplayRequestDto;
@@ -32,7 +32,7 @@ public class GameplayService {
     private final SystemObjectTypeRepository systemObjectTypeRepository;
 
     public GameplaysStatsDto getGameplayStats(LocalDate fromDate, LocalDate toDate) {
-        List<BoardGameGameplayStatsDto> singleBoardGameGameplaysStatsList =
+        List<BoardGameGameplaysStatsDto> singleBoardGameGameplaysStatsList =
             gameplayRepository.getStatsByGivenPeriod(fromDate, toDate);
 
         GameplaysStatsDto gameplaysStatsDto = new GameplaysStatsDto();
@@ -50,13 +50,13 @@ public class GameplayService {
 
         int numOfBg = singleBoardGameGameplaysStatsList.size();
         int numOfGp =  singleBoardGameGameplaysStatsList.stream()
-                .mapToInt(BoardGameGameplayStatsDto::getNumOfGameplays)
+                .mapToInt(BoardGameGameplaysStatsDto::getNumOfGameplays)
                 .sum();
 
         gameplaysStatsDto.setNumOfGameplays(numOfGp);
         gameplaysStatsDto.setAvgTimeOfGameplay(
                 singleBoardGameGameplaysStatsList.stream()
-                        .mapToDouble(BoardGameGameplayStatsDto::getAvgTimeOfGameplay)
+                        .mapToDouble(BoardGameGameplaysStatsDto::getAvgTimeOfGameplay)
                         .sum());
         gameplaysStatsDto.setNumOfDifferentBoardGames(numOfBg);
         gameplaysStatsDto.setSingleBoardGameGameplaysStatsList(singleBoardGameGameplaysStatsList);
@@ -65,7 +65,7 @@ public class GameplayService {
         double pAmount;
         int pSum = 0;
 
-        for (BoardGameGameplayStatsDto bggs : singleBoardGameGameplaysStatsList) {
+        for (BoardGameGameplaysStatsDto bggs : singleBoardGameGameplaysStatsList) {
             pAmount = (100.0*bggs.getNumOfGameplays()/numOfGp);
             pSum += (int)pAmount;
             percentageAmountOfGameplayserPerBoardGame.put(bggs.getBoardGameId(), pAmount);
