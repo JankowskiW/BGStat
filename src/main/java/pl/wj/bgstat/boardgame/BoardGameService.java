@@ -60,7 +60,6 @@ public class BoardGameService {
         boardGameRepository.deleteById(id);
     }
 
-
     private void throwExceptionWhenExistsByName(String name) {
         if (boardGameRepository.existsByName(name))
             throw new ResourceExistsException(BOARD_GAME_RESOURCE_NAME, NAME_FIELD);

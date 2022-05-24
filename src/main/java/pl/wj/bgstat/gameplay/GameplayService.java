@@ -105,10 +105,6 @@ public class GameplayService {
         return GameplayMapper.mapToGameplayResponseDto(gameplay);
     }
 
-    private long validateSystemObjectTypeId(long id) {
-        return id == 0 ? GAMEPLAY_DEFAULT_OBJECT_TYPE_ID : id;
-    }
-
     public GameplayResponseDto editGameplay(long id, GameplayRequestDto gameplayRequestDto) {
         gameplayRequestDto.setObjectTypeId(validateSystemObjectTypeId(gameplayRequestDto.getObjectTypeId()));
         throwExceptionWhenNotExistsById(id, gameplayRepository);
@@ -120,5 +116,14 @@ public class GameplayService {
         Gameplay gameplay = GameplayMapper.mapToGameplay(id, gameplayRequestDto);
         gameplayRepository.save(gameplay);
         return GameplayMapper.mapToGameplayResponseDto(gameplay);
+    }
+
+    public void deleteGameplay(long id) {
+        throwExceptionWhenNotExistsById(id, gameplayRepository);
+        gameplayRepository.deleteById(id);
+    }
+
+    private long validateSystemObjectTypeId(long id) {
+        return id == 0 ? GAMEPLAY_DEFAULT_OBJECT_TYPE_ID : id;
     }
 }

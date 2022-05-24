@@ -27,6 +27,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willDoNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static pl.wj.bgstat.exception.ExceptionHelper.*;
 import static pl.wj.bgstat.gameplay.GameplayServiceTestHelper.*;
 
@@ -356,5 +359,20 @@ public class GameplayServiceTest {
         assertThatThrownBy(() -> gameplayService.editGameplay(1L, gameplayRequestDto))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessage(createResourceNotFoundExceptionMessage(BOARD_GAME_RESOURCE_NAME, ID_FIELD, boardGameId));
+    }
+
+    @Test
+    @DisplayName("Should remove gameplay when exists in database")
+    void shouldRemoveGameplayByIdWhenExists() {
+        // given
+        long id = 1L;
+        given(gameplayRepository.existsById(anyLong())).willReturn(true);
+        willDoNothing().given(gameplayRepository).deleteById(anyLong());
+
+        // when
+        gameplayService.deleteGameplay(id);
+
+        // then
+        verify(gameplayRepository).deleteById(id);
     }
 }
