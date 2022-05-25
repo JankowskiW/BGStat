@@ -219,4 +219,16 @@ class UserServiceTest {
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessage(createResourceNotFoundExceptionMessage(USER_RESOURCE_NAME, ID_FIELD, id));
     }
+
+    @Test
+    @DisplayName("Should return statistics for all gameplays of given user")
+    void shouldReturnStatsForAllGameplaysOfGivenUser() {
+        // given
+        long id = 1L;
+
+
+        // when
+
+        // then
+    }
 }

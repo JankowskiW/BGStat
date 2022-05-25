@@ -25,7 +25,7 @@ public interface GameplayRepository extends JpaRepository<Gameplay, Long> {
             nativeQuery = true)
     List<BoardGameGameplaysStatsDto> getStatsByGivenPeriod(LocalDate fromDate, LocalDate toDate);
 
-    @Query("SELECT new pl.wj.bgstat.gameplay.model.GameplayHeaderDto() " +
+    @Query("SELECT new pl.wj.bgstat.gameplay.model.dto.GameplayHeaderDto(gp.id, bg.name, gp.playtime) " +
             "FROM Gameplay gp LEFT JOIN BoardGame bg ON gp.boardGameId = bg.id " +
             "WHERE gp.userId = :id")
     Page<GameplayHeaderDto> findUserGameplayHeaders(long id, Pageable pageable);

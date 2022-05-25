@@ -27,10 +27,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static java.lang.Math.ceil;
-import static java.lang.Math.floor;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static java.lang.Math.*;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.verify;
@@ -50,8 +48,6 @@ class BoardGameServiceTest {
     private static final int PAGE_SIZE = 4;
     private static final int NUMBER_OF_ELEMENTS = 20;
     private static final long BOARD_GAME_DEFAULT_OBJECT_TYPE_ID = 1L;
-    private static final LocalDate MIN_DATE = LocalDate.of(1900,1,1);
-    private static final LocalDate MAX_DATE = LocalDate.of(2999,12,31);
 
     private List<BoardGame> boardGameList;
     private List<BoardGameHeaderDto> boardGameHeaderList;
@@ -418,7 +414,7 @@ class BoardGameServiceTest {
     void shouldReturnStatsAboutBoardGameInGivenPeriod() {
         // given
         long id = 1L;
-        BoardGameGameplaysStatsDto expectedResponse = createBoardGameGameplaysStatsDto();
+        BoardGameGameplaysStatsDto expectedResponse = createBoardGameGameplaysStatsDto(false);
         given(boardGameRepository.existsById(anyLong())).willReturn(true);
         given(boardGameRepository.getStatsByGivenPeriod(anyLong(), any(LocalDate.class), any(LocalDate.class)))
                 .willReturn(expectedResponse);
@@ -434,17 +430,17 @@ class BoardGameServiceTest {
     }
 
     @Test
-    @DisplayName("Should return statistics about board game")
-    void shouldReturnStatsAboutBoardGame() {
+    @DisplayName("Should return empty stats when there is no statistics for board game in given period")
+    void shouldReturnEmptyStatsWhenThereIsNoStatsForBoardGameInGivenPeriod() {
         // given
         long id = 1L;
-        BoardGameGameplaysStatsDto expectedResponse = createBoardGameGameplaysStatsDto();
+        BoardGameGameplaysStatsDto expectedResponse =  createBoardGameGameplaysStatsDto(true);
         given(boardGameRepository.existsById(anyLong())).willReturn(true);
         given(boardGameRepository.getStatsByGivenPeriod(anyLong(), any(LocalDate.class), any(LocalDate.class)))
                 .willReturn(expectedResponse);
 
         // when
-        BoardGameGameplaysStatsDto boardGameGameplaysStatsDto = boardGameService.getBoardGameStats(id, null, null);
+        BoardGameGameplaysStatsDto boardGameGameplaysStatsDto = boardGameService.getBoardGameStats(id, fromDate, toDate);
 
         // then
         assertThat(boardGameGameplaysStatsDto)

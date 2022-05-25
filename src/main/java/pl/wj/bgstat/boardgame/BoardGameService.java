@@ -24,8 +24,6 @@ import static pl.wj.bgstat.exception.ExceptionHelper.*;
 public class BoardGameService {
 
     private static final long BOARD_GAME_DEFAULT_OBJECT_TYPE_ID = 1L;
-    private static final LocalDate MIN_DATE = LocalDate.of(1900,1,1);
-    private static final LocalDate MAX_DATE = LocalDate.of(2999,12,31);
 
     private final BoardGameRepository boardGameRepository;
     private final SystemObjectTypeRepository systemObjectTypeRepository;
@@ -68,8 +66,6 @@ public class BoardGameService {
     public BoardGameGameplaysStatsDto getBoardGameStats(long id, LocalDate fromDate, LocalDate toDate) {
         if (!boardGameRepository.existsById(id))
             throwExceptionWhenNotExistsById(id, boardGameRepository);
-        fromDate = fromDate == null ? MIN_DATE : fromDate;
-        toDate = toDate == null ? MAX_DATE : toDate;
         return boardGameRepository.getStatsByGivenPeriod(id, fromDate, toDate);
     }
 

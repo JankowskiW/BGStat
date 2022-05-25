@@ -19,6 +19,9 @@ import java.time.LocalDate;
 @RequestMapping("/board-games")
 public class BoardGameController {
 
+    private static final String MIN_DATE = "1990-01-01";
+    private static final String MAX_DATE = "2999-12-31";
+
     private final BoardGameService boardGameService;
 
     @GetMapping("")
@@ -47,9 +50,10 @@ public class BoardGameController {
     }
 
     @GetMapping("/{id}/stats")
-    public BoardGameGameplaysStatsDto getBoardGameStats(@PathVariable long id,
-                                                        @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fromDate,
-                                                        @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate toDate) {
+    public BoardGameGameplaysStatsDto getBoardGameStats(
+            @PathVariable long id,
+            @RequestParam(required = false, defaultValue = MIN_DATE) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fromDate,
+            @RequestParam(required = false, defaultValue = MAX_DATE) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate toDate) {
         return boardGameService.getBoardGameStats(id, fromDate, toDate);
     }
 }
