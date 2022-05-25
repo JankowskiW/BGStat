@@ -168,7 +168,7 @@ class UserServiceTest {
     void shouldReturnOnlyLastPageOfUserGameplayHeaders() {
         // given
         long id = 1L;
-        int pageNumber = 100;
+        int pageNumber = 5;
         int fromIndex = userGameplayHeaderList.size() - 3;
         int toIndex = fromIndex + PAGE_SIZE;
         given(userRepository.existsById(anyLong())).willReturn(true);
@@ -185,5 +185,25 @@ class UserServiceTest {
                 .hasSize(PAGE_SIZE)
                 .usingRecursiveFieldByFieldElementComparator()
                 .isEqualTo(userGameplayHeaderList.subList(fromIndex, toIndex));
+    }
+
+    @Test
+    @DisplayName("Should return empty list of gameplay headers when page number is too high")
+    void shouldReturnEmptyListOfGameplayHeaders() {
+        // given
+        long id = 1L;
+        int tooHighPageNumber = 100;
+        given(userRepository.existsById(anyLong())).willReturn(true);
+        given(gameplayRepository.findUserGameplayHeaders(anyLong(),any(Pageable.class)))
+                .willReturn(new PageImpl<>(new ArrayList<>()));
+
+        // when
+        Page<GameplayHeaderDto> gameplayHeaders =
+                userService.getUserGameplayHeaders(id, PageRequest.of(tooHighPageNumber, PAGE_SIZE));
+
+        // then
+        assertThat(gameplayHeaders)
+                .isNotNull()
+                .hasSize(0);
     }
 }
