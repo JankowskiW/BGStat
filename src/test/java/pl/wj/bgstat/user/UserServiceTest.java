@@ -22,8 +22,7 @@ import java.util.List;
 
 import static java.lang.Math.ceil;
 import static java.lang.Math.floor;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
@@ -162,5 +161,29 @@ class UserServiceTest {
                 .hasSize(PAGE_SIZE)
                 .usingRecursiveFieldByFieldElementComparator()
                 .isEqualTo(userGameplayHeaderList.subList(fromIndex,toIndex));
+    }
+
+    @Test
+    @DisplayName("Should return only last page of user gameplay headers")
+    void shouldReturnOnlyLastPageOfUserGameplayHeaders() {
+        // given
+        long id = 1L;
+        int pageNumber = 100;
+        int fromIndex = userGameplayHeaderList.size() - 3;
+        int toIndex = fromIndex + PAGE_SIZE;
+        given(userRepository.existsById(anyLong())).willReturn(true);
+        given(gameplayRepository.findUserGameplayHeaders(anyLong(), any(Pageable.class)))
+                .willReturn(new PageImpl<>(userGameplayHeaderList.subList(fromIndex, toIndex)));
+
+        // when
+        Page<GameplayHeaderDto> gameplayHeaders =
+                userService.getUserGameplayHeaders(id, PageRequest.of(pageNumber, PAGE_SIZE));
+
+        // then
+        assertThat(gameplayHeaders)
+                .isNotNull()
+                .hasSize(PAGE_SIZE)
+                .usingRecursiveFieldByFieldElementComparator()
+                .isEqualTo(userGameplayHeaderList.subList(fromIndex, toIndex));
     }
 }
