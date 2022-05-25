@@ -206,4 +206,17 @@ class UserServiceTest {
                 .isNotNull()
                 .hasSize(0);
     }
+
+    @Test
+    @DisplayName("Should throw ResourceNotFoundException when user does not exist")
+    void shouldThrowExceptionWhenUserDoesNotExist() {
+        // given
+        long id = 100L;
+        given(userRepository.existsById(anyLong())).willReturn(false);
+
+        // when
+        assertThatThrownBy(() -> userService.getUserBoardGameHeaders(id, PageRequest.of(1, PAGE_SIZE)))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage(createResourceNotFoundExceptionMessage(USER_RESOURCE_NAME, ID_FIELD, id));
+    }
 }
