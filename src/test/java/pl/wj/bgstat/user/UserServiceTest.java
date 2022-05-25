@@ -12,6 +12,8 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import pl.wj.bgstat.exception.ResourceNotFoundException;
+import pl.wj.bgstat.gameplay.GameplayRepository;
+import pl.wj.bgstat.gameplay.model.dto.GameplayHeaderDto;
 import pl.wj.bgstat.userboardgame.UserBoardGameRepository;
 import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameHeaderDto;
 
@@ -27,6 +29,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static pl.wj.bgstat.exception.ExceptionHelper.*;
 import static pl.wj.bgstat.user.UserServiceTestHelper.populateUserBoardGameHeaderList;
+import static pl.wj.bgstat.user.UserServiceTestHelper.populateUserGameplayHeaderList;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
@@ -34,17 +37,21 @@ class UserServiceTest {
     private UserRepository userRepository;
     @Mock
     private UserBoardGameRepository userBoardGameRepository;
+    @Mock
+    private GameplayRepository gameplayRepository;
     @InjectMocks
     private UserService userService;
 
-    private static final int PAGE_SIZE = 4;
+    private static final int PAGE_SIZE = 3;
     private static final int NUMBER_OF_ELEMENTS = 20;
 
     private List<UserBoardGameHeaderDto> userBoardGameHeaderList;
+    private List<GameplayHeaderDto> userGameplayHeaderList;
 
     @BeforeEach
     void setUp() {
         userBoardGameHeaderList = populateUserBoardGameHeaderList(NUMBER_OF_ELEMENTS);
+        userGameplayHeaderList = populateUserGameplayHeaderList(NUMBER_OF_ELEMENTS);
     }
 
     @Test
@@ -131,5 +138,29 @@ class UserServiceTest {
         assertThatThrownBy(() -> userService.getUserBoardGameHeaders(userId, PageRequest.of(pageNumber, PAGE_SIZE)))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessage(createResourceNotFoundExceptionMessage(USER_RESOURCE_NAME, ID_FIELD, userId));
+    }
+
+    @Test
+    @DisplayName("Should return only one but not last page of user gameplay headers")
+    void shouldReturnOnlyOnePageOfUserGameplayHeaders() {
+        // given
+        long id = 1L;
+        int pageNumber = 1;
+        int fromIndex = 0;
+        int toIndex = PAGE_SIZE;
+        given(userRepository.existsById(anyLong())).willReturn(true);
+        given(gameplayRepository.findUserGameplayHeaders(anyLong(), any(Pageable.class)))
+                .willReturn(new PageImpl<>(userGameplayHeaderList.subList(fromIndex, toIndex)));
+
+        // when
+        Page<GameplayHeaderDto> gameplayHeaders =
+                userService.getUserGameplayHeaders(id, PageRequest.of(pageNumber, PAGE_SIZE));
+
+        // then
+        assertThat(gameplayHeaders)
+                .isNotNull()
+                .hasSize(PAGE_SIZE)
+                .usingRecursiveFieldByFieldElementComparator()
+                .isEqualTo(userGameplayHeaderList.subList(fromIndex,toIndex));
     }
 }

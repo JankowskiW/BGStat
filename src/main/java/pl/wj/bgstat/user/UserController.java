@@ -21,7 +21,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}/gameplays")
-    public Page<GameplayHeaderDto> getUserGameplayHeaders(Pageable pageable) {
+    public Page<GameplayHeaderDto> getUserGameplayHeaders(@PathVariable long id, Pageable pageable) {
         return null;
     }
 

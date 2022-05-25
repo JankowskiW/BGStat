@@ -1,5 +1,6 @@
 package pl.wj.bgstat.user;
 
+import pl.wj.bgstat.gameplay.model.dto.GameplayHeaderDto;
 import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameHeaderDto;
 
 import java.util.ArrayList;
@@ -29,5 +30,19 @@ public class UserServiceTestHelper {
         }
         userBoardGameId = 0;
         return userBoardGameHeaderList;
+    }
+
+    public static List<GameplayHeaderDto> populateUserGameplayHeaderList(long numberOfElements) {
+        List<GameplayHeaderDto> userGameplayHeaderList = new ArrayList<>();
+        GameplayHeaderDto gameplayHeaderDto;
+        for (int i = 1; i <= numberOfElements; i++) {
+            gameplayHeaderDto = GameplayHeaderDto.builder()
+                    .id(i)
+                    .boardGameName("Name " + i)
+                    .playtime(50)
+                    .build();
+            userGameplayHeaderList.add(gameplayHeaderDto);
+        }
+        return userGameplayHeaderList;
     }
 }
