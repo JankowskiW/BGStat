@@ -16,6 +16,9 @@ import java.time.LocalDate;
 @RequestMapping("/users")
 public class UserController {
 
+    private static final String MIN_DATE = "1990-01-01";
+    private static final String MAX_DATE = "2999-12-31";
+
     private final UserService userService;
 
     @GetMapping("/{id}/user-board-games")
@@ -30,11 +33,11 @@ public class UserController {
 
     @GetMapping("/{id}/gameplays/stats")
     public GameplaysStatsDto getUserGameplaysStats(
-            @PathVariable long id, @RequestParam(required = false) Long boardGameId,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fromDate,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate toDate) {
+            @PathVariable long id,
+            @RequestParam(required = false, defaultValue = MIN_DATE) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fromDate,
+            @RequestParam(required = false, defaultValue = MAX_DATE) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate toDate) {
 
-        return null;
+        return userService.getUserGameplayStats(id, fromDate, toDate);
     }
 
 
