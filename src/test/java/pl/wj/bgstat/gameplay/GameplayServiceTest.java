@@ -63,10 +63,10 @@ public class GameplayServiceTest {
         // given
         GameplaysStatsDto expectedResponse = createGameplaysStatsDto(fromDate, toDate);
         given(gameplayRepository.getStatsByGivenPeriod(any(LocalDate.class), any(LocalDate.class)))
-                .willReturn(expectedResponse.getSingleBoardGameGameplaysStatsList());
+                .willReturn(expectedResponse.getBoardGamesGameplaysStatsList());
 
         // when
-        GameplaysStatsDto gameplaysStatsDto = gameplayService.getGameplayStats(fromDate, toDate);
+        GameplaysStatsDto gameplaysStatsDto = gameplayService.getGameplayStats(fromDate, toDate, null);
 
         // then
         assertThat(gameplaysStatsDto)
@@ -84,7 +84,26 @@ public class GameplayServiceTest {
                 .willReturn(new ArrayList<>());
 
         // when
-        GameplaysStatsDto gameplaysStatsDto = gameplayService.getGameplayStats(fromDate, toDate);
+        GameplaysStatsDto gameplaysStatsDto = gameplayService.getGameplayStats(fromDate, toDate, null);
+
+        // then
+        assertThat(gameplaysStatsDto)
+                .isNotNull()
+                .usingRecursiveComparison()
+                .isEqualTo(expectedResponse);
+    }
+
+    @Test
+    @DisplayName("Should return statistics about gameplays of given user in given period")
+    void shouldReturnStatsAboutGameplaysOfGivenUserInGivenPeriod() {
+        // given
+        long userId = 1L;
+        GameplaysStatsDto expectedResponse = createGameplaysStatsDto(fromDate, toDate);
+        given(gameplayRepository.getStatsByUserIdAndGivenPeriod(anyLong(), any(LocalDate.class), any(LocalDate.class)))
+                .willReturn(expectedResponse.getBoardGamesGameplaysStatsList());
+
+        // when
+        GameplaysStatsDto gameplaysStatsDto = gameplayService.getGameplayStats(fromDate, toDate, userId);
 
         // then
         assertThat(gameplaysStatsDto)

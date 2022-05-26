@@ -21,7 +21,7 @@ public class GameplayController {
     public GameplaysStatsDto getGameplayStats(
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fromDate,
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate toDate) {
-        return gameplayService.getGameplayStats(fromDate, toDate);
+        return gameplayService.getGameplayStats(fromDate, toDate, null);
     }
 
     @PostMapping("")

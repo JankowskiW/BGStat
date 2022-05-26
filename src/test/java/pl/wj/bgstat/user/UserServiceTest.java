@@ -13,10 +13,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import pl.wj.bgstat.exception.ResourceNotFoundException;
 import pl.wj.bgstat.gameplay.GameplayRepository;
+import pl.wj.bgstat.gameplay.GameplayService;
 import pl.wj.bgstat.gameplay.model.dto.GameplayHeaderDto;
+import pl.wj.bgstat.gameplay.model.dto.GameplaysStatsDto;
 import pl.wj.bgstat.userboardgame.UserBoardGameRepository;
 import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameHeaderDto;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +30,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static pl.wj.bgstat.exception.ExceptionHelper.*;
+import static pl.wj.bgstat.gameplay.GameplayServiceTestHelper.createGameplaysStatsDto;
 import static pl.wj.bgstat.user.UserServiceTestHelper.populateUserBoardGameHeaderList;
 import static pl.wj.bgstat.user.UserServiceTestHelper.populateUserGameplayHeaderList;
 
@@ -38,6 +42,8 @@ class UserServiceTest {
     private UserBoardGameRepository userBoardGameRepository;
     @Mock
     private GameplayRepository gameplayRepository;
+    @Mock
+    private GameplayService gameplayService;
     @InjectMocks
     private UserService userService;
 
@@ -225,10 +231,18 @@ class UserServiceTest {
     void shouldReturnStatsForAllGameplaysOfGivenUser() {
         // given
         long id = 1L;
-
-
+        LocalDate fromDate = LocalDate.of(2022,1,1);
+        LocalDate toDate = LocalDate.of(2022,1,31);
+        GameplaysStatsDto expectedResponse = createGameplaysStatsDto(fromDate, toDate);
+        given(userRepository.existsById(anyLong())).willReturn(true);
+        given(gameplayService.getGameplayStats(any(LocalDate.class), any(LocalDate.class), anyLong())).willReturn(expectedResponse);
         // when
+        GameplaysStatsDto gameplaysStatsDto = userService.getUserGameplayStats(id, fromDate, toDate);
 
         // then
+        assertThat(gameplaysStatsDto)
+                .isNotNull()
+                .usingRecursiveComparison()
+                .isEqualTo(expectedResponse);
     }
 }

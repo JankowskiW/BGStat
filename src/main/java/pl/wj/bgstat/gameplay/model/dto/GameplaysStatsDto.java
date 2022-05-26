@@ -34,7 +34,7 @@ public class GameplaysStatsDto {
     /**
      * Represents the amount of gameplays and avg gameplay time per board game in given period
      */
-    private List<BoardGameGameplaysStatsDto> singleBoardGameGameplaysStatsList;
+    private List<BoardGameGameplaysStatsDto> boardGamesGameplaysStatsList;
     /**
      * Represents a percentage amount of gameplays per board game in given period
      */

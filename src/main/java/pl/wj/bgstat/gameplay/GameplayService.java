@@ -31,41 +31,46 @@ public class GameplayService {
     private final UserRepository userRepository;
     private final SystemObjectTypeRepository systemObjectTypeRepository;
 
-    public GameplaysStatsDto getGameplayStats(LocalDate fromDate, LocalDate toDate) {
-        List<BoardGameGameplaysStatsDto> singleBoardGameGameplaysStatsList =
-            gameplayRepository.getStatsByGivenPeriod(fromDate, toDate);
+    public GameplaysStatsDto getGameplayStats(LocalDate fromDate, LocalDate toDate, Long userId) {
+        List<BoardGameGameplaysStatsDto> boardGamesGameplaysStatsList;
+
+        if (userId == null) {
+            boardGamesGameplaysStatsList = gameplayRepository.getStatsByGivenPeriod(fromDate, toDate);
+        } else {
+            boardGamesGameplaysStatsList = gameplayRepository.getStatsByUserIdAndGivenPeriod(userId, fromDate, toDate);
+        }
 
         GameplaysStatsDto gameplaysStatsDto = new GameplaysStatsDto();
         gameplaysStatsDto.setFromDate(fromDate);
         gameplaysStatsDto.setToDate(toDate);
-        gameplaysStatsDto.setSingleBoardGameGameplaysStatsList(new ArrayList<>());
+        gameplaysStatsDto.setBoardGamesGameplaysStatsList(new ArrayList<>());
         gameplaysStatsDto.setPercentageAmountOfGameplaysPerBoardGame(new HashMap<>());
 
-        if (singleBoardGameGameplaysStatsList.size() == 0) {
+        if (boardGamesGameplaysStatsList.size() == 0) {
             gameplaysStatsDto.setNumOfGameplays(0);
             gameplaysStatsDto.setAvgTimeOfGameplay(0);
             gameplaysStatsDto.setNumOfDifferentBoardGames(0);
             return gameplaysStatsDto;
         }
 
-        int numOfBg = singleBoardGameGameplaysStatsList.size();
-        int numOfGp =  singleBoardGameGameplaysStatsList.stream()
+        int numOfBg = boardGamesGameplaysStatsList.size();
+        int numOfGp =  boardGamesGameplaysStatsList.stream()
                 .mapToInt(BoardGameGameplaysStatsDto::getNumOfGameplays)
                 .sum();
 
         gameplaysStatsDto.setNumOfGameplays(numOfGp);
         gameplaysStatsDto.setAvgTimeOfGameplay(
-                singleBoardGameGameplaysStatsList.stream()
+                boardGamesGameplaysStatsList.stream()
                         .mapToDouble(BoardGameGameplaysStatsDto::getAvgTimeOfGameplay)
                         .sum());
         gameplaysStatsDto.setNumOfDifferentBoardGames(numOfBg);
-        gameplaysStatsDto.setSingleBoardGameGameplaysStatsList(singleBoardGameGameplaysStatsList);
+        gameplaysStatsDto.setBoardGamesGameplaysStatsList(boardGamesGameplaysStatsList);
 
         Map<Long, Double> percentageAmountOfGameplayserPerBoardGame = new HashMap<>();
         double pAmount;
         int pSum = 0;
 
-        for (BoardGameGameplaysStatsDto bggs : singleBoardGameGameplaysStatsList) {
+        for (BoardGameGameplaysStatsDto bggs : boardGamesGameplaysStatsList) {
             pAmount = (100.0*bggs.getNumOfGameplays()/numOfGp);
             pSum += (int)pAmount;
             percentageAmountOfGameplayserPerBoardGame.put(bggs.getBoardGameId(), pAmount);

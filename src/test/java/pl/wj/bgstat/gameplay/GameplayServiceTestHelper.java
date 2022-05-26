@@ -43,7 +43,7 @@ public class GameplayServiceTestHelper {
                                 .mapToDouble(bg -> bg.getAvgTimeOfGameplay())
                                 .sum())
                 .numOfDifferentBoardGames(numOfDifferentBoardGames)
-                .singleBoardGameGameplaysStatsList(singleBoardGameGameplayStatsList)
+                .boardGamesGameplaysStatsList(singleBoardGameGameplayStatsList)
                 .percentageAmountOfGameplaysPerBoardGame(percentageAmountOfGameplaysPerBoardGame)
                 .build();
     }
@@ -55,7 +55,7 @@ public class GameplayServiceTestHelper {
                 .numOfGameplays(0)
                 .avgTimeOfGameplay(0)
                 .numOfDifferentBoardGames(0)
-                .singleBoardGameGameplaysStatsList(new ArrayList<>())
+                .boardGamesGameplaysStatsList(new ArrayList<>())
                 .percentageAmountOfGameplaysPerBoardGame(new HashMap<>())
                 .build();
     }
