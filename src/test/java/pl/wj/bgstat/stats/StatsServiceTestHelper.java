@@ -45,6 +45,18 @@ public class StatsServiceTestHelper {
                 .build();
     }
 
+    public static StatsGameplaysResponseDto createEmptyStatsGameplaysResponseDto(LocalDate fromDate, LocalDate toDate) {
+        return StatsGameplaysResponseDto.builder()
+                .fromDate(fromDate)
+                .toDate(toDate)
+                .numOfGameplays(0)
+                .avgTimeOfGameplay(0)
+                .numOfBoardGames(0)
+                .statsBoardGameGameplaysList(new ArrayList<>())
+                .percentageAmountOfGameplaysPerBoardGame(new HashMap<>())
+                .build();
+    }
+
     private static StatsBoardGameGameplaysDto createStatsBoardGameGameplayDtoImpl(
             long bgId, String name, int numOfGp, double avgTimeOfGp) {
         return new StatsBoardGameGameplaysDto() {

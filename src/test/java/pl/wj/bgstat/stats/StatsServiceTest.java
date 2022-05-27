@@ -17,6 +17,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static pl.wj.bgstat.stats.StatsServiceTestHelper.createEmptyStatsGameplaysResponseDto;
 import static pl.wj.bgstat.stats.StatsServiceTestHelper.createGameplaysStatsDto;
 
 @ExtendWith(MockitoExtension.class)
@@ -54,5 +55,22 @@ class StatsServiceTest {
                 .isEqualTo(expectedResponse);
     }
 
+    @Test
+    @DisplayName("Should return empty stats if there is no gameplays in given period")
+    void shouldReturnEmptyStatsIfThereIsNoGameplaysInGivenPeriod() {
+        // given
+        StatsGameplaysResponseDto expectedResponse = createEmptyStatsGameplaysResponseDto(fromDate, toDate);
+        given(statsRepository.getStatsByGivenPeriod(any(LocalDate.class), any(LocalDate.class)))
+                .willReturn(expectedResponse.getStatsBoardGameGameplaysList());
+
+        // when
+        StatsGameplaysResponseDto statsGameplaysResponseDto = statsService.getGameplaysStats(fromDate, toDate);
+
+        // then
+        assertThat(statsGameplaysResponseDto)
+                .isNotNull()
+                .usingRecursiveComparison()
+                .isEqualTo(expectedResponse);
+    }
 
 }
