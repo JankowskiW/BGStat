@@ -2,18 +2,24 @@ package pl.wj.bgstat.stats;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import pl.wj.bgstat.boardgame.BoardGameRepository;
 import pl.wj.bgstat.stats.model.dto.StatsBoardGameGameplaysDto;
 import pl.wj.bgstat.stats.model.dto.StatsGameplaysResponseDto;
+import pl.wj.bgstat.user.UserRepository;
 
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static pl.wj.bgstat.exception.ExceptionHelper.throwExceptionWhenNotExistsById;
 
 @Service
 @RequiredArgsConstructor
 public class StatsService {
 
     private final StatsRepository statsRepository;
+    private final UserRepository userRepository;
+    private final BoardGameRepository boardGameRepository;
 
     public StatsGameplaysResponseDto getGameplaysStats(LocalDate fromDate, LocalDate toDate) {
         StatsGameplaysResponseDto statsGameplaysResponseDto =
@@ -27,8 +33,12 @@ public class StatsService {
         return getStatsGameplaysResponseDto(statsGameplaysResponseDto, statsRepository.getStatsByGivenPeriod(fromDate, toDate));
     }
 
+    public StatsGameplaysResponseDto getGameplaysStatsOfGivenUser(long userId, LocalDate fromDate, LocalDate toDate, Long boardGameId) {
 
-    public StatsGameplaysResponseDto getGameplaysStatsOfGivenUser(long id, LocalDate fromDate, LocalDate toDate, Long boardGameId) {
+        throwExceptionWhenNotExistsById(userId, userRepository);
+        if (boardGameId != null)
+            throwExceptionWhenNotExistsById(boardGameId, boardGameRepository);
+
         StatsGameplaysResponseDto statsGameplaysResponseDto =
                 StatsGameplaysResponseDto.builder()
                         .fromDate(fromDate)
@@ -39,9 +49,9 @@ public class StatsService {
 
         return boardGameId == null ?
                 getStatsGameplaysResponseDto(statsGameplaysResponseDto,
-                        statsRepository.getStatsByGivenPeriodAndByUserId(id, fromDate, toDate)) :
+                        statsRepository.getStatsByGivenPeriodAndByUserId(userId, fromDate, toDate)) :
                 getStatsGameplaysResponseDto(statsGameplaysResponseDto,
-                        statsRepository.getStatsByGivenPeriodAndByUserIdAndByBoardGameId(id, fromDate, toDate, boardGameId));
+                        statsRepository.getStatsByGivenPeriodAndByUserIdAndByBoardGameId(userId, fromDate, toDate, boardGameId));
     }
 
     private StatsGameplaysResponseDto getStatsGameplaysResponseDto(
