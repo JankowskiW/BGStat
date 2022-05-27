@@ -39,7 +39,7 @@ public class StatsServiceTestHelper {
                                 .stream()
                                 .mapToDouble(bg -> bg.getAvgTimeOfGameplay())
                                 .sum())
-                .numOfDifferentBoardGames(numOfBoardGames)
+                .numOfBoardGames(numOfBoardGames)
                 .statsBoardGameGameplaysList(statsBoardGameGameplaysList)
                 .percentageAmountOfGameplaysPerBoardGame(percentageAmountOfGameplaysPerBoardGame)
                 .build();

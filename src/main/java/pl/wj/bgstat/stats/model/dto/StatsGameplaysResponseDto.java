@@ -1,8 +1,6 @@
 package pl.wj.bgstat.stats.model.dto;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import pl.wj.bgstat.boardgame.model.dto.BoardGameGameplaysStatsDto;
 
 import java.time.LocalDate;
@@ -12,6 +10,8 @@ import java.util.Map;
 @Getter
 @Setter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class StatsGameplaysResponseDto {
     /**
      * Represents given period of time
@@ -30,7 +30,7 @@ public class StatsGameplaysResponseDto {
     /**
      * Represents the number of different board games played in given period
      */
-    private int numOfDifferentBoardGames;
+    private int numOfBoardGames;
     /**
      * Represents stats of board game in given period
      */
