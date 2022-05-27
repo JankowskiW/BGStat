@@ -156,6 +156,28 @@ class StatsServiceTest {
     }
 
     @Test
+    @DisplayName("Should return stats about gameplays of specific board game in given period")
+    void shouldReturnStatsAboutGameplaysOfSpecificBoardGameInGivenPeriod() {
+        // given
+        long boardGameId = 1L;
+        StatsGameplaysResponseDto expectedResponse = createGameplaysStatsDto(fromDate, toDate);
+        given(boardGameRepository.existsById(anyLong())).willReturn(true);
+        given(statsRepository.getStatsByGivenPeriodAndByBoardGameId(
+                anyLong(), any(LocalDate.class), any(LocalDate.class)))
+                .willReturn(expectedResponse.getStatsBoardGameGameplaysList());
+
+        // when
+        StatsGameplaysResponseDto statsGameplaysResponseDto =
+                statsService.getGameplaysStatsOfGivenBoardGame(boardGameId, fromDate, toDate);
+
+        // then
+        assertThat(statsGameplaysResponseDto)
+                .isNotNull()
+                .usingRecursiveComparison()
+                .isEqualTo(expectedResponse);
+    }
+
+    @Test
     @DisplayName("Should throw ResourceNotFoundException when gameplays board game does not exist in database")
     void shouldThrowExceptionWhenGameplaysBoardGameDoesNotExistsInDatabase() {
         // given
