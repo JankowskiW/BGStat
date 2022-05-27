@@ -41,8 +41,10 @@ public class StatsService {
             return statsGameplaysResponseDto;
         }
 
-        numOfGp = statsBoardGameGameplaysList.stream().mapToInt(StatsBoardGameGameplaysDto::getNumOfGameplays).sum();
-        avgTimeOfGp = statsBoardGameGameplaysList.stream().mapToDouble(StatsBoardGameGameplaysDto::getAvgTimeOfGameplay).sum();
+        numOfGp = statsBoardGameGameplaysList.stream()
+                .mapToInt(StatsBoardGameGameplaysDto::getNumOfGameplays).sum();
+        avgTimeOfGp = statsBoardGameGameplaysList.stream()
+                .mapToDouble(StatsBoardGameGameplaysDto::getAvgTimeOfGameplay).average().getAsDouble();
 
         statsGameplaysResponseDto.setNumOfGameplays(numOfGp);
         statsGameplaysResponseDto.setAvgTimeOfGameplay(avgTimeOfGp);

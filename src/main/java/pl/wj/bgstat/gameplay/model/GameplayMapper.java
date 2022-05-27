@@ -5,7 +5,6 @@ import pl.wj.bgstat.gameplay.model.dto.GameplayResponseDto;
 
 public class GameplayMapper {
 
-
     public static Gameplay mapToGameplay(long id, GameplayRequestDto gameplayRequestDto) {
         Gameplay gameplay = mapToGameplay(gameplayRequestDto);
         gameplay.setId(id);

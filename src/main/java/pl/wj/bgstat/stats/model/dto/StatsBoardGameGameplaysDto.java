@@ -1,16 +1,22 @@
 package pl.wj.bgstat.stats.model.dto;
 
-public interface StatsBoardGameGameplaysDto {
-    long getBoardGameId();
-    String getBoardGameName();
+import lombok.*;
 
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class StatsBoardGameGameplaysDto {
+    long boardGameId;
+    String boardGameName;
     /**
      * Represents the number of gameplays of board game in given period.
      */
-    int getNumOfGameplays();
+    int numOfGameplays;
     /**
      * Represents the gameplay average time in minutes of board game in given period
      */
-    double getAvgTimeOfGameplay();
+    int avgTimeOfGameplay;
 }
 

@@ -21,7 +21,7 @@ public class StatsController {
     public StatsGameplaysResponseDto getGameplaysStats(
             @RequestParam(required = false, defaultValue = MIN_DATE) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fromDate,
             @RequestParam(required = false, defaultValue = MAX_DATE) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate toDate) {
-        return null;
+        return statsService.getGameplaysStats(fromDate, toDate);
     }
 
     @GetMapping("/gameplays/users/{id}")

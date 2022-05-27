@@ -19,11 +19,11 @@ public class StatsServiceTestHelper {
         List<StatsBoardGameGameplaysDto> statsBoardGameGameplaysList = new ArrayList<>();
         Map<Long, Integer> percentageAmountOfGameplaysPerBoardGame = new HashMap<>();
 
-        statsBoardGameGameplaysList.add(createStatsBoardGameGameplayDtoImpl(1, "Name 1", 1, 200));
-        statsBoardGameGameplaysList.add(createStatsBoardGameGameplayDtoImpl(2, "Name 1", 4, 150));
-        statsBoardGameGameplaysList.add(createStatsBoardGameGameplayDtoImpl(3, "Name 1", 9, 35));
-        statsBoardGameGameplaysList.add(createStatsBoardGameGameplayDtoImpl(4, "Name 1", 16, 55));
-        statsBoardGameGameplaysList.add(createStatsBoardGameGameplayDtoImpl(5, "Name 1", 25, 66));
+        statsBoardGameGameplaysList.add(new StatsBoardGameGameplaysDto(1, "Name 1", 1, 100));
+        statsBoardGameGameplaysList.add(new StatsBoardGameGameplaysDto(2, "Name 1", 4, 200));
+        statsBoardGameGameplaysList.add(new StatsBoardGameGameplaysDto(3, "Name 1", 9, 300));
+        statsBoardGameGameplaysList.add(new StatsBoardGameGameplaysDto(4, "Name 1", 16, 400));
+        statsBoardGameGameplaysList.add(new StatsBoardGameGameplaysDto(5, "Name 1", 25, 500));
         percentageAmountOfGameplaysPerBoardGame.put(1L, 2);
         percentageAmountOfGameplaysPerBoardGame.put(2L, 7);
         percentageAmountOfGameplaysPerBoardGame.put(3L, 16);
@@ -38,7 +38,7 @@ public class StatsServiceTestHelper {
                         statsBoardGameGameplaysList
                                 .stream()
                                 .mapToDouble(bg -> bg.getAvgTimeOfGameplay())
-                                .sum())
+                                .average().getAsDouble())
                 .numOfBoardGames(numOfBoardGames)
                 .statsBoardGameGameplaysList(statsBoardGameGameplaysList)
                 .percentageAmountOfGameplaysPerBoardGame(percentageAmountOfGameplaysPerBoardGame)
@@ -55,27 +55,5 @@ public class StatsServiceTestHelper {
                 .statsBoardGameGameplaysList(new ArrayList<>())
                 .percentageAmountOfGameplaysPerBoardGame(new HashMap<>())
                 .build();
-    }
-
-    private static StatsBoardGameGameplaysDto createStatsBoardGameGameplayDtoImpl(
-            long bgId, String name, int numOfGp, double avgTimeOfGp) {
-        return new StatsBoardGameGameplaysDto() {
-            @Override
-            public long getBoardGameId() {
-                return bgId;
-            }
-            @Override
-            public String getBoardGameName() {
-                return name;
-            }
-            @Override
-            public int getNumOfGameplays() {
-                return numOfGp;
-            }
-            @Override
-            public double getAvgTimeOfGameplay() {
-                return avgTimeOfGp;
-            }
-        };
     }
 }
