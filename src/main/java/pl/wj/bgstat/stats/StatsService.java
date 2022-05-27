@@ -16,12 +16,6 @@ public class StatsService {
     private final StatsRepository statsRepository;
 
     public StatsGameplaysResponseDto getGameplaysStats(LocalDate fromDate, LocalDate toDate) {
-        int numOfBg;
-        int numOfGp;
-        double avgTimeOfGp;
-        double pAmount;
-        int pSum = 0;
-        int pDiff;
         StatsGameplaysResponseDto statsGameplaysResponseDto =
                 StatsGameplaysResponseDto.builder()
                         .fromDate(fromDate)
@@ -30,8 +24,35 @@ public class StatsService {
                         .percentageAmountOfGameplaysPerBoardGame(new HashMap<>())
                         .build();
 
-        List<StatsBoardGameGameplaysDto> statsBoardGameGameplaysList = statsRepository.getStatsByGivenPeriod(fromDate, toDate);
+        return getStatsGameplaysResponseDto(statsGameplaysResponseDto, statsRepository.getStatsByGivenPeriod(fromDate, toDate));
+    }
 
+
+    public StatsGameplaysResponseDto getGameplaysStatsOfGivenUser(long id, LocalDate fromDate, LocalDate toDate, Long boardGameId) {
+        StatsGameplaysResponseDto statsGameplaysResponseDto =
+                StatsGameplaysResponseDto.builder()
+                        .fromDate(fromDate)
+                        .toDate(toDate)
+                        .statsBoardGameGameplaysList(new ArrayList<>())
+                        .percentageAmountOfGameplaysPerBoardGame(new HashMap<>())
+                        .build();
+
+        return boardGameId == null ?
+                getStatsGameplaysResponseDto(statsGameplaysResponseDto,
+                        statsRepository.getStatsByGivenPeriodAndByUserId(id, fromDate, toDate)) :
+                getStatsGameplaysResponseDto(statsGameplaysResponseDto,
+                        statsRepository.getStatsByGivenPeriodAndByUserIdAndByBoardGameId(id, fromDate, toDate, boardGameId));
+    }
+
+    private StatsGameplaysResponseDto getStatsGameplaysResponseDto(
+            StatsGameplaysResponseDto statsGameplaysResponseDto,
+            List<StatsBoardGameGameplaysDto> statsBoardGameGameplaysList) {
+        int numOfBg;
+        int numOfGp;
+        double avgTimeOfGp;
+        double pAmount;
+        int pDiff;
+        int pSum = 0;
         numOfBg = statsBoardGameGameplaysList.size();
 
         if (numOfBg == 0) {

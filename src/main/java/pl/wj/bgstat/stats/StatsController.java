@@ -29,8 +29,8 @@ public class StatsController {
             @PathVariable long id,
             @RequestParam(required = false, defaultValue = MIN_DATE) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fromDate,
             @RequestParam(required = false, defaultValue = MAX_DATE) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate toDate,
-            @RequestParam(required = false) long boardGameId) {
-        return null;
+            @RequestParam(required = false) Long boardGameId) {
+        return statsService.getGameplaysStatsOfGivenUser(id, fromDate, toDate, boardGameId);
     }
 
     @GetMapping("/gameplays/board-games/{id}")
