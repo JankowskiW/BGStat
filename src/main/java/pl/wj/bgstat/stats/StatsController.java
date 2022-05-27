@@ -38,7 +38,7 @@ public class StatsController {
             @PathVariable long id,
             @RequestParam(required = false, defaultValue = MIN_DATE) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fromDate,
             @RequestParam(required = false, defaultValue = MAX_DATE) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate toDate) {
-        return null;
+        return statsService.getGameplaysStatsOfGivenBoardGame(id, fromDate, toDate);
     }
 
 }

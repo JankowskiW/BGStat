@@ -49,7 +49,8 @@ public class StatsRepository implements CustomStatsRepository {
     }
 
     @Override
-    public List<StatsBoardGameGameplaysDto> getStatsByGivenPeriodAndByUserIdAndByBoardGameId(long userId, LocalDate fromDate, LocalDate toDate, long boardGameId) {
+    public List<StatsBoardGameGameplaysDto> getStatsByGivenPeriodAndByUserIdAndByBoardGameId(
+            long userId, LocalDate fromDate, LocalDate toDate, long boardGameId) {
         Query query = entityManager.createNativeQuery(
                         "SELECT gp.board_game_id AS boardGameId, bg.name AS boardGameName, " +
                                 "COUNT(gp.board_game_id) AS numOfGameplays, " +
@@ -61,6 +62,24 @@ public class StatsRepository implements CustomStatsRepository {
                 .setParameter("fromDate", fromDate)
                 .setParameter("toDate", toDate)
                 .setParameter("userId", userId)
+                .setParameter("boardGameId", boardGameId);
+
+        return mapToStatsBoardGameGameplaysDtoList(query.getResultList());
+    }
+
+    @Override
+    public List<StatsBoardGameGameplaysDto> getStatsByGivenPeriodAndByBoardGameId(
+            long boardGameId, LocalDate fromDate, LocalDate toDate) {
+        Query query = entityManager.createNativeQuery(
+                        "SELECT gp.board_game_id AS boardGameId, bg.name AS boardGameName, " +
+                                "COUNT(gp.board_game_id) AS numOfGameplays, " +
+                                "AVG(gp.playtime) AS avgTimeOfGameplay " +
+                                "FROM gameplays gp LEFT JOIN board_games bg ON gp.board_game_id = bg.id " +
+                                "WHERE gp.start_time >= :fromDate AND gp.end_time <= :toDate AND " +
+                                "gp.board_game_id = :boardGameId " +
+                                "GROUP BY gp.board_game_id, bg.name")
+                .setParameter("fromDate", fromDate)
+                .setParameter("toDate", toDate)
                 .setParameter("boardGameId", boardGameId);
 
         return mapToStatsBoardGameGameplaysDtoList(query.getResultList());

@@ -34,7 +34,6 @@ public class StatsService {
     }
 
     public StatsGameplaysResponseDto getGameplaysStatsOfGivenUser(long userId, LocalDate fromDate, LocalDate toDate, Long boardGameId) {
-
         throwExceptionWhenNotExistsById(userId, userRepository);
         if (boardGameId != null)
             throwExceptionWhenNotExistsById(boardGameId, boardGameRepository);
@@ -52,6 +51,21 @@ public class StatsService {
                         statsRepository.getStatsByGivenPeriodAndByUserId(userId, fromDate, toDate)) :
                 getStatsGameplaysResponseDto(statsGameplaysResponseDto,
                         statsRepository.getStatsByGivenPeriodAndByUserIdAndByBoardGameId(userId, fromDate, toDate, boardGameId));
+    }
+
+    public StatsGameplaysResponseDto getGameplaysStatsOfGivenBoardGame(long boardGameId, LocalDate fromDate, LocalDate toDate) {
+        throwExceptionWhenNotExistsById(boardGameId, boardGameRepository);
+
+        StatsGameplaysResponseDto statsGameplaysResponseDto =
+                StatsGameplaysResponseDto.builder()
+                        .fromDate(fromDate)
+                        .toDate(toDate)
+                        .statsBoardGameGameplaysList(new ArrayList<>())
+                        .percentageAmountOfGameplaysPerBoardGame(new HashMap<>())
+                        .build();
+
+        return getStatsGameplaysResponseDto(statsGameplaysResponseDto,
+                statsRepository.getStatsByGivenPeriodAndByBoardGameId(boardGameId, fromDate, toDate));
     }
 
     private StatsGameplaysResponseDto getStatsGameplaysResponseDto(

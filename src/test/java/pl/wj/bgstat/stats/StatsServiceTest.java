@@ -8,16 +8,19 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pl.wj.bgstat.boardgame.BoardGameRepository;
+import pl.wj.bgstat.exception.ResourceNotFoundException;
 import pl.wj.bgstat.stats.model.dto.StatsGameplaysResponseDto;
 import pl.wj.bgstat.user.UserRepository;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.ArrayList;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
+import static pl.wj.bgstat.exception.ExceptionHelper.*;
 import static pl.wj.bgstat.stats.StatsServiceTestHelper.createEmptyStatsGameplaysResponseDto;
 import static pl.wj.bgstat.stats.StatsServiceTestHelper.createGameplaysStatsDto;
 
@@ -121,6 +124,36 @@ class StatsServiceTest {
                 .isNotNull()
                 .usingRecursiveComparison()
                 .isEqualTo(expectedResponse);
+    }
+
+    @Test
+    @DisplayName("Should throw ResourceNotFoundException when gameplays owner does not exist in database")
+    void shouldThrowExceptionWhenGameplaysOwnerDoesNotExistsInDatabase() {
+        // given
+        long userId = 100L;
+        given(userRepository.existsById(anyLong())).willReturn(false);
+
+        // when
+        assertThatThrownBy(() -> statsService.getGameplaysStatsOfGivenUser(userId, fromDate, toDate, null))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage(createResourceNotFoundExceptionMessage(USER_RESOURCE_NAME, ID_FIELD, userId));
+
+    }
+
+    @Test
+    @DisplayName("Should throw ResourceNotFoundException when gameplays board game does not exist in database")
+    void shouldThrowExceptionWhenGameplaysBoardGameDoesNotExistsInDatabase() {
+        // given
+        long userId = 100L;
+        long boardGameId = 99L;
+        given(userRepository.existsById(anyLong())).willReturn(true);
+        given(boardGameRepository.existsById(anyLong())).willReturn(false);
+
+        // when
+        assertThatThrownBy(() -> statsService.getGameplaysStatsOfGivenUser(userId, fromDate, toDate, boardGameId))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage(createResourceNotFoundExceptionMessage(BOARD_GAME_RESOURCE_NAME, ID_FIELD, boardGameId));
+
     }
 
 }
