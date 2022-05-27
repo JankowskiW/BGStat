@@ -141,8 +141,8 @@ class StatsServiceTest {
     }
 
     @Test
-    @DisplayName("Should throw ResourceNotFoundException when gameplays board game does not exist in database")
-    void shouldThrowExceptionWhenGameplaysBoardGameDoesNotExistsInDatabase() {
+    @DisplayName("Should throw ResourceNotFoundException when gameplays owner exists but board game does not exist in database")
+    void shouldThrowExceptionWhenGameplaysOwnerExistsBoardGameDoesNotExistsInDatabase() {
         // given
         long userId = 100L;
         long boardGameId = 99L;
@@ -153,7 +153,19 @@ class StatsServiceTest {
         assertThatThrownBy(() -> statsService.getGameplaysStatsOfGivenUser(userId, fromDate, toDate, boardGameId))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessage(createResourceNotFoundExceptionMessage(BOARD_GAME_RESOURCE_NAME, ID_FIELD, boardGameId));
-
     }
 
+    @Test
+    @DisplayName("Should throw ResourceNotFoundException when gameplays board game does not exist in database")
+    void shouldThrowExceptionWhenGameplaysBoardGameDoesNotExistsInDatabase() {
+        // given
+        long boardGameId = 100L;
+        given(boardGameRepository.existsById(anyLong())).willReturn(false);
+
+        // when
+        assertThatThrownBy(() -> statsService.getGameplaysStatsOfGivenBoardGame(boardGameId, fromDate, toDate))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage(createResourceNotFoundExceptionMessage(BOARD_GAME_RESOURCE_NAME, ID_FIELD, boardGameId));
+
+    }
 }
