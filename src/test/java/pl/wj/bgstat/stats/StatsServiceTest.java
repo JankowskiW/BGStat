@@ -188,6 +188,5 @@ class StatsServiceTest {
         assertThatThrownBy(() -> statsService.getGameplaysStatsOfGivenBoardGame(boardGameId, fromDate, toDate))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessage(createResourceNotFoundExceptionMessage(BOARD_GAME_RESOURCE_NAME, ID_FIELD, boardGameId));
-
     }
 }

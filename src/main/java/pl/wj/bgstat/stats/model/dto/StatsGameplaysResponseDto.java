@@ -37,6 +37,6 @@ public class StatsGameplaysResponseDto {
     /**
      * Represents a percentage amount of gameplays per board game in given period
      */
-    private Map<Long, Integer> percentageAmountOfGameplaysPerBoardGame;
+    private List<GameplaysPercentageAmountDto> percentageAmountOfGameplaysPerBoardGame;
 
 }

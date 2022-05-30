@@ -3,6 +3,7 @@ package pl.wj.bgstat.stats;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pl.wj.bgstat.boardgame.BoardGameRepository;
+import pl.wj.bgstat.stats.model.dto.GameplaysPercentageAmountDto;
 import pl.wj.bgstat.stats.model.dto.StatsBoardGameGameplaysDto;
 import pl.wj.bgstat.stats.model.dto.StatsGameplaysResponseDto;
 import pl.wj.bgstat.user.UserRepository;
@@ -27,7 +28,7 @@ public class StatsService {
                         .fromDate(fromDate)
                         .toDate(toDate)
                         .statsBoardGameGameplaysList(new ArrayList<>())
-                        .percentageAmountOfGameplaysPerBoardGame(new HashMap<>())
+                        .percentageAmountOfGameplaysPerBoardGame(new ArrayList<>())
                         .build();
 
         return getStatsGameplaysResponseDto(statsGameplaysResponseDto, statsRepository.getStatsByGivenPeriod(fromDate, toDate));
@@ -43,7 +44,7 @@ public class StatsService {
                         .fromDate(fromDate)
                         .toDate(toDate)
                         .statsBoardGameGameplaysList(new ArrayList<>())
-                        .percentageAmountOfGameplaysPerBoardGame(new HashMap<>())
+                        .percentageAmountOfGameplaysPerBoardGame(new ArrayList<>())
                         .build();
 
         return boardGameId == null ?
@@ -61,7 +62,7 @@ public class StatsService {
                         .fromDate(fromDate)
                         .toDate(toDate)
                         .statsBoardGameGameplaysList(new ArrayList<>())
-                        .percentageAmountOfGameplaysPerBoardGame(new HashMap<>())
+                        .percentageAmountOfGameplaysPerBoardGame(new ArrayList<>())
                         .build();
 
         return getStatsGameplaysResponseDto(statsGameplaysResponseDto,
@@ -74,7 +75,6 @@ public class StatsService {
         int numOfBg;
         int numOfGp;
         double avgTimeOfGp;
-        double pAmount;
         int pDiff;
         int pSum = 0;
         numOfBg = statsBoardGameGameplaysList.size();
@@ -96,28 +96,31 @@ public class StatsService {
         statsGameplaysResponseDto.setNumOfBoardGames(numOfBg);
         statsGameplaysResponseDto.setStatsBoardGameGameplaysList(statsBoardGameGameplaysList);
 
-        Map<Long, Double> percentageAmountOfGameplaysPerBoardGame = new HashMap<>();
+        List<GameplaysPercentageAmountDto> percentageAmountOfGameplaysPerBoardGame =
+                statsBoardGameGameplaysList
+                .stream()
+                .map(sbgg ->new GameplaysPercentageAmountDto(sbgg.getBoardGameId(), (100.0 * sbgg.getNumOfGameplays()/numOfGp)))
+                .sorted(Comparator.comparing(pa -> pa.getPercentageAmount() - Math.floor(pa.getPercentageAmount())))
+                .collect(Collectors.toList());
 
-        for (StatsBoardGameGameplaysDto sbgg : statsBoardGameGameplaysList) {
-            pAmount = (100.0 * sbgg.getNumOfGameplays()/numOfGp);
-            pSum += (int) pAmount;
-            percentageAmountOfGameplaysPerBoardGame.put(sbgg.getBoardGameId(), pAmount);
-        }
+        pSum = percentageAmountOfGameplaysPerBoardGame.stream().mapToInt(pa -> (int)pa.getPercentageAmount()).sum();
 
         pDiff = Math.abs(100 - pSum);
 
-        List<Long> sortedMapKeys = percentageAmountOfGameplaysPerBoardGame.entrySet()
-                .stream()
-                .sorted(Map.Entry.comparingByValue(Comparator.comparingDouble((Double d) -> (d - Math.floor(d))).reversed()))
-                .map(Map.Entry::getKey)
-                .collect(Collectors.toList());
+        Collections.reverse(percentageAmountOfGameplaysPerBoardGame);
 
-        for (int i = 0; i < numOfBg; i++) {
-            long k = sortedMapKeys.get(i);
-            int v = (int)Math.floor(percentageAmountOfGameplaysPerBoardGame.get(k));
-            v = i < pDiff ? v + 1 : v;
-            statsGameplaysResponseDto.getPercentageAmountOfGameplaysPerBoardGame().put(k,v);
+        percentageAmountOfGameplaysPerBoardGame.stream().forEach(pa -> pa.setPercentageAmount(Math.floor(pa.getPercentageAmount())));
+
+        for (int i = 0; i < pDiff; i++) {
+            GameplaysPercentageAmountDto pa = percentageAmountOfGameplaysPerBoardGame.get(i);
+            pa.setPercentageAmount(pa.getPercentageAmount()+1);
         }
+
+        statsGameplaysResponseDto.setPercentageAmountOfGameplaysPerBoardGame(
+                percentageAmountOfGameplaysPerBoardGame
+                        .stream()
+                        .sorted(Comparator.comparingDouble(GameplaysPercentageAmountDto::getPercentageAmount))
+                        .collect(Collectors.toList()));
 
         return statsGameplaysResponseDto;
     }
