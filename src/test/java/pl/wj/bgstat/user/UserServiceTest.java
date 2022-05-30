@@ -225,24 +225,4 @@ class UserServiceTest {
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessage(createResourceNotFoundExceptionMessage(USER_RESOURCE_NAME, ID_FIELD, id));
     }
-
-    @Test
-    @DisplayName("Should return statistics for all gameplays of given user")
-    void shouldReturnStatsForAllGameplaysOfGivenUser() {
-        // given
-        long id = 1L;
-        LocalDate fromDate = LocalDate.of(2022,1,1);
-        LocalDate toDate = LocalDate.of(2022,1,31);
-        GameplaysStatsDto expectedResponse = createGameplaysStatsDto(fromDate, toDate);
-        given(userRepository.existsById(anyLong())).willReturn(true);
-        given(gameplayService.getGameplayStats(any(LocalDate.class), any(LocalDate.class), anyLong())).willReturn(expectedResponse);
-        // when
-        GameplaysStatsDto gameplaysStatsDto = userService.getUserGameplayStats(id, fromDate, toDate);
-
-        // then
-        assertThat(gameplaysStatsDto)
-                .isNotNull()
-                .usingRecursiveComparison()
-                .isEqualTo(expectedResponse);
-    }
 }

@@ -63,12 +63,6 @@ public class BoardGameService {
         boardGameRepository.deleteById(id);
     }
 
-    public BoardGameGameplaysStatsDto getBoardGameStats(long id, LocalDate fromDate, LocalDate toDate) {
-        if (!boardGameRepository.existsById(id))
-            throwExceptionWhenNotExistsById(id, boardGameRepository);
-        return boardGameRepository.getStatsByGivenPeriod(id, fromDate, toDate);
-    }
-
     private void throwExceptionWhenExistsByName(String name) {
         if (boardGameRepository.existsByName(name))
             throw new ResourceExistsException(BOARD_GAME_RESOURCE_NAME, NAME_FIELD);

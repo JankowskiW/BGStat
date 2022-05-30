@@ -31,14 +31,4 @@ public class UserController {
         return null;
     }
 
-    @GetMapping("/{id}/gameplays/stats")
-    public GameplaysStatsDto getUserGameplaysStats(
-            @PathVariable long id,
-            @RequestParam(required = false, defaultValue = MIN_DATE) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fromDate,
-            @RequestParam(required = false, defaultValue = MAX_DATE) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate toDate) {
-
-        return userService.getUserGameplayStats(id, fromDate, toDate);
-    }
-
-
 }

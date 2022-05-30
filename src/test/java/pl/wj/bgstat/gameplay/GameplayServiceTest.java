@@ -58,61 +58,6 @@ public class GameplayServiceTest {
     }
 
     @Test
-    @DisplayName("Should return statistics about gameplays in given period")
-    void shouldReturnStatsAboutGameplaysInGivenPeriod() {
-        // given
-        GameplaysStatsDto expectedResponse = createGameplaysStatsDto(fromDate, toDate);
-        given(gameplayRepository.getStatsByGivenPeriod(any(LocalDate.class), any(LocalDate.class)))
-                .willReturn(expectedResponse.getBoardGamesGameplaysStatsList());
-
-        // when
-        GameplaysStatsDto gameplaysStatsDto = gameplayService.getGameplayStats(fromDate, toDate, null);
-
-        // then
-        assertThat(gameplaysStatsDto)
-                .isNotNull()
-                .usingRecursiveComparison()
-                .isEqualTo(expectedResponse);
-    }
-
-    @Test
-    @DisplayName("Should return empty stats when there is no gameplays in given period")
-    void shouldReturnEmptyStatsWhenThereIsNoGameplaysInGivenPeriod() {
-        // given
-        GameplaysStatsDto expectedResponse = createEmptyGameplaysStatsDto(fromDate, toDate);
-        given(gameplayRepository.getStatsByGivenPeriod(any(LocalDate.class), any(LocalDate.class)))
-                .willReturn(new ArrayList<>());
-
-        // when
-        GameplaysStatsDto gameplaysStatsDto = gameplayService.getGameplayStats(fromDate, toDate, null);
-
-        // then
-        assertThat(gameplaysStatsDto)
-                .isNotNull()
-                .usingRecursiveComparison()
-                .isEqualTo(expectedResponse);
-    }
-
-    @Test
-    @DisplayName("Should return statistics about gameplays of given user in given period")
-    void shouldReturnStatsAboutGameplaysOfGivenUserInGivenPeriod() {
-        // given
-        long userId = 1L;
-        GameplaysStatsDto expectedResponse = createGameplaysStatsDto(fromDate, toDate);
-        given(gameplayRepository.getStatsByUserIdAndGivenPeriod(anyLong(), any(LocalDate.class), any(LocalDate.class)))
-                .willReturn(expectedResponse.getBoardGamesGameplaysStatsList());
-
-        // when
-        GameplaysStatsDto gameplaysStatsDto = gameplayService.getGameplayStats(fromDate, toDate, userId);
-
-        // then
-        assertThat(gameplaysStatsDto)
-                .isNotNull()
-                .usingRecursiveComparison()
-                .isEqualTo(expectedResponse);
-    }
-
-    @Test
     @DisplayName("Should return created gameplay")
     void shouldReturnCreatedGameplay() {
         // given

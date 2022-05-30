@@ -48,13 +48,5 @@ public class BoardGameController {
     public void deleteBoardGame(@PathVariable long id) {
         boardGameService.deleteBoardGame(id);
     }
-
-    @GetMapping("/{id}/stats")
-    public BoardGameGameplaysStatsDto getBoardGameStats(
-            @PathVariable long id,
-            @RequestParam(required = false, defaultValue = MIN_DATE) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fromDate,
-            @RequestParam(required = false, defaultValue = MAX_DATE) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate toDate) {
-        return boardGameService.getBoardGameStats(id, fromDate, toDate);
-    }
 }
 

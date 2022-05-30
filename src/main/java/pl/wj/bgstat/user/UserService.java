@@ -31,8 +31,6 @@ public class UserService {
     private final UserBoardGameRepository userBoardGameRepository;
     private final GameplayRepository gameplayRepository;
 
-    private final GameplayService gameplayService;
-
     public Page<UserBoardGameHeaderDto> getUserBoardGameHeaders(long id, Pageable pageable) {
         throwExceptionWhenNotExistsById(id, userRepository);
         return userBoardGameRepository.findUserBoardGameHeaders(id, pageable);
@@ -41,10 +39,5 @@ public class UserService {
     public Page<GameplayHeaderDto> getUserGameplayHeaders(long id, Pageable pageable) {
         throwExceptionWhenNotExistsById(id, userRepository);
         return gameplayRepository.findUserGameplayHeaders(id, pageable);
-    }
-
-    public GameplaysStatsDto getUserGameplayStats(long id, LocalDate fromDate, LocalDate toDate) {
-        throwExceptionWhenNotExistsById(id, userRepository);
-        return gameplayService.getGameplayStats(fromDate, toDate, id);
     }
 }
