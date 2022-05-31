@@ -13,10 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import pl.wj.bgstat.boardgame.model.BoardGame;
 import pl.wj.bgstat.boardgame.model.BoardGameMapper;
-import pl.wj.bgstat.boardgame.model.dto.BoardGameGameplaysStatsDto;
-import pl.wj.bgstat.boardgame.model.dto.BoardGameHeaderDto;
-import pl.wj.bgstat.boardgame.model.dto.BoardGameRequestDto;
-import pl.wj.bgstat.boardgame.model.dto.BoardGameResponseDto;
+import pl.wj.bgstat.boardgame.model.dto.*;
 import pl.wj.bgstat.exception.ResourceExistsException;
 import pl.wj.bgstat.exception.ResourceNotFoundException;
 import pl.wj.bgstat.systemobjecttype.SystemObjectTypeRepository;
@@ -356,7 +353,6 @@ class BoardGameServiceTest {
                 .hasMessage(createResourceNotFoundExceptionMessage(BOARD_GAME_RESOURCE_NAME, ID_FIELD, id));
     }
 
-
     @Test
     @DisplayName("Should throw ResourceExistsException when trying to set new name that already exists")
     void shouldThrowExceptionWhenTryingToSetNameThatAlreadyExists() {
@@ -378,6 +374,32 @@ class BoardGameServiceTest {
                 .hasMessage(createResourceExistsExceptionMessage(BOARD_GAME_RESOURCE_NAME, NAME_FIELD));
     }
 
+    @Test
+    @DisplayName("Should partially edit board game when exists")
+    void shouldPartiallyEditBoardGameWhenExists() {
+        // given
+        long id = 1L;
+        BoardGame boardGame = boardGameList.stream().filter(bg -> bg.getId() == id).findFirst().orElseThrow();
+        BoardGamePartialRequestDto boardGamePartialRequestDto = BoardGamePartialRequestDto.builder()
+                .name("New board game name")
+                .build();
+        given(boardGameRepository.findWithDescriptionById(anyLong())).willReturn(Optional.of(boardGame));
+        given(boardGameRepository.existsByNameAndIdNot(anyString(), anyLong())).willReturn(false);
+        given(boardGameRepository.save(any(BoardGame.class))).willAnswer(
+                i -> {
+                    BoardGame bg = i.getArgument(0, BoardGame.class);
+                    bg.setId(id);
+                    return bg;
+                });
+
+        // when
+        BoardGameResponseDto boardGameResponseDto = boardGameService.editBoardGamePartially(id, boardGamePartialRequestDto);
+
+        // then
+        assertThat(boardGameResponseDto).isNotNull();
+        assertThat(boardGameResponseDto.getId()).isEqualTo(id);
+        assertThat(boardGameResponseDto.getName()).isEqualTo(boardGamePartialRequestDto.getName());
+    }
 
     @Test
     @DisplayName("Should remove board game and assigned attributes by id when id exists in database")

@@ -44,7 +44,7 @@ public class BoardGameController {
 
     @PatchMapping("/{id}")
     public BoardGameResponseDto editBoardGamePartially(
-            @PathVariable long id, @RequestBody @Valid BoardGamePartialRequestDto boardGamePartialRequestDto) {
+            @PathVariable long id, @Valid @RequestBody BoardGamePartialRequestDto boardGamePartialRequestDto) {
         return boardGameService.editBoardGamePartially(id, boardGamePartialRequestDto);
     }
 
