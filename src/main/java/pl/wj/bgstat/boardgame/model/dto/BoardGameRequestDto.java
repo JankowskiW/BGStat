@@ -11,7 +11,7 @@ import javax.validation.constraints.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BoardGameRequestDto {
-    @NotBlank @Length(max = 255)
+    @Length(max = 255)
     private String name;
     private long objectTypeId;
     @NotNull @Min(1)

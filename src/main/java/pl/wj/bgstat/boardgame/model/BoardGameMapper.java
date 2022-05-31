@@ -2,12 +2,24 @@ package pl.wj.bgstat.boardgame.model;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import pl.wj.bgstat.boardgame.model.dto.BoardGamePartialRequestDto;
 import pl.wj.bgstat.boardgame.model.dto.BoardGameRequestDto;
 import pl.wj.bgstat.boardgame.model.dto.BoardGameResponseDto;
 import pl.wj.bgstat.boardgamedescription.model.BoardGameDescription;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class BoardGameMapper {
+
+    public static BoardGame mapToBoardGame(BoardGame boardGame, BoardGamePartialRequestDto partialBg) {
+        if (partialBg.getName() != null) boardGame.setName(partialBg.getName());
+        if (partialBg.getRecommendedAge() != null) boardGame.setRecommendedAge(partialBg.getRecommendedAge());
+        if (partialBg.getMinPlayersNumber() != null) boardGame.setMinPlayersNumber(partialBg.getMinPlayersNumber());
+        if (partialBg.getMaxPlayersNumber() != null) boardGame.setMaxPlayersNumber(partialBg.getMaxPlayersNumber());
+        if (partialBg.getComplexity() != null) boardGame.setComplexity(partialBg.getComplexity());
+        if (partialBg.getEstimatedPlaytime() != null) boardGame.setEstimatedPlaytime(partialBg.getEstimatedPlaytime());
+        if (partialBg.getDescription() != null) boardGame.getBoardGameDescription().setDescription(partialBg.getDescription());
+        return boardGame;
+    }
 
     public static BoardGame mapToBoardGame(long id, BoardGameRequestDto boardGameRequestDto) {
         BoardGame boardGame = mapToBoardGame(boardGameRequestDto);

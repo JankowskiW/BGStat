@@ -7,10 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import pl.wj.bgstat.boardgame.model.BoardGame;
 import pl.wj.bgstat.boardgame.model.BoardGameMapper;
-import pl.wj.bgstat.boardgame.model.dto.BoardGameGameplaysStatsDto;
-import pl.wj.bgstat.boardgame.model.dto.BoardGameHeaderDto;
-import pl.wj.bgstat.boardgame.model.dto.BoardGameRequestDto;
-import pl.wj.bgstat.boardgame.model.dto.BoardGameResponseDto;
+import pl.wj.bgstat.boardgame.model.dto.*;
 import pl.wj.bgstat.exception.ResourceExistsException;
 import pl.wj.bgstat.exception.ResourceNotFoundException;
 import pl.wj.bgstat.systemobjecttype.SystemObjectTypeRepository;
@@ -55,6 +52,18 @@ public class BoardGameService {
 
         BoardGame boardGame = BoardGameMapper.mapToBoardGame(id, boardGameRequestDto);
         boardGameRepository.save(boardGame);
+        return BoardGameMapper.mapToBoardGameResponseDto(boardGame);
+    }
+
+    public BoardGameResponseDto editBoardGamePartially(long id, BoardGamePartialRequestDto boardGamePartialRequestDto) {
+        throwExceptionWhenExistsByNameAndNotId(id, boardGamePartialRequestDto.getName());
+        BoardGame boardGame = boardGameRepository.findWithDescriptionById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(BOARD_GAME_RESOURCE_NAME, ID_FIELD, id));
+
+        boardGame = BoardGameMapper.mapToBoardGame(boardGame, boardGamePartialRequestDto);
+
+        boardGameRepository.save(boardGame);
+
         return BoardGameMapper.mapToBoardGameResponseDto(boardGame);
     }
 

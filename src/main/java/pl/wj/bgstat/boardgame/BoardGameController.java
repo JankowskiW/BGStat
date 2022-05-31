@@ -5,14 +5,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
-import pl.wj.bgstat.boardgame.model.dto.BoardGameGameplaysStatsDto;
-import pl.wj.bgstat.boardgame.model.dto.BoardGameHeaderDto;
-import pl.wj.bgstat.boardgame.model.dto.BoardGameRequestDto;
-import pl.wj.bgstat.boardgame.model.dto.BoardGameResponseDto;
+import pl.wj.bgstat.boardgame.model.dto.*;
 import pl.wj.bgstat.gameplay.model.dto.GameplaysStatsDto;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -42,6 +40,12 @@ public class BoardGameController {
     @PutMapping("/{id}")
     public BoardGameResponseDto editBoardGame(@PathVariable long id, @RequestBody @Valid BoardGameRequestDto boardGameRequestDto) {
         return boardGameService.editBoardGame(id, boardGameRequestDto);
+    }
+
+    @PatchMapping("/{id}")
+    public BoardGameResponseDto editBoardGamePartially(
+            @PathVariable long id, @RequestBody @Valid BoardGamePartialRequestDto boardGamePartialRequestDto) {
+        return boardGameService.editBoardGamePartially(id, boardGamePartialRequestDto);
     }
 
     @DeleteMapping("/{id}")
