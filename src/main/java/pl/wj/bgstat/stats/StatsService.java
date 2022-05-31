@@ -100,14 +100,12 @@ public class StatsService {
                 statsBoardGameGameplaysList
                 .stream()
                 .map(sbgg ->new GameplaysPercentageAmountDto(sbgg.getBoardGameId(), (100.0 * sbgg.getNumOfGameplays()/numOfGp)))
-                .sorted(Comparator.comparing(pa -> pa.getPercentageAmount() - Math.floor(pa.getPercentageAmount())))
+                .sorted(Comparator.comparing(GameplaysPercentageAmountDto::getFracPercAmount).reversed())
                 .collect(Collectors.toList());
 
         pSum = percentageAmountOfGameplaysPerBoardGame.stream().mapToInt(pa -> (int)pa.getPercentageAmount()).sum();
 
         pDiff = Math.abs(100 - pSum);
-
-        Collections.reverse(percentageAmountOfGameplaysPerBoardGame);
 
         percentageAmountOfGameplaysPerBoardGame.stream().forEach(pa -> pa.setPercentageAmount(Math.floor(pa.getPercentageAmount())));
 

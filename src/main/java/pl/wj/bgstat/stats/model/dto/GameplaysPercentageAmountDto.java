@@ -10,4 +10,8 @@ import lombok.Setter;
 public class GameplaysPercentageAmountDto {
     private long boardGameId;
     private double percentageAmount;
+
+    public double getFracPercAmount() {
+        return percentageAmount - Math.floor(percentageAmount);
+    }
 }
