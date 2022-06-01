@@ -25,6 +25,7 @@ public class BoardGame implements Serializable {
     private int maxPlayersNumber;
     private int complexity;
     private int estimatedPlaytime;
+    private String thumbnailPath;
 
     @OneToOne(cascade = {CascadeType.REMOVE,
                          CascadeType.PERSIST,

@@ -24,6 +24,7 @@ public class BoardGameRequestDto {
     private int complexity;
     @NotNull @Min(1)
     private int estimatedPlaytime;
-    @NotBlank
+    @Length(max = 260)
     private String description;
+
 }

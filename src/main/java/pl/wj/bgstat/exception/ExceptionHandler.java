@@ -29,4 +29,14 @@ public class ExceptionHandler {
         );
     }
 
+    @org.springframework.web.bind.annotation.ExceptionHandler(RequestFileException.class)
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    public ExceptionBody handleRequestFileException(RequestFileException e) {
+        return new ExceptionBody(
+          e.getMessage(),
+          HttpStatus.BAD_REQUEST,
+          ZonedDateTime.now()
+        );
+    }
+
 }

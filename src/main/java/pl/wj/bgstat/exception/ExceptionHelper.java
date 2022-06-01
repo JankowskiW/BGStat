@@ -1,9 +1,9 @@
 package pl.wj.bgstat.exception;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.http.MediaType;
 import pl.wj.bgstat.attribute.AttributeRepository;
 import pl.wj.bgstat.attributeclass.AttributeClassRepository;
-import pl.wj.bgstat.attributeclass.model.dto.AttributeClassRequestDto;
 import pl.wj.bgstat.attributeclasstype.AttributeClassTypeRepository;
 import pl.wj.bgstat.boardgame.BoardGameRepository;
 import pl.wj.bgstat.boardgamedescription.BoardGameDescriptionRepository;
@@ -14,7 +14,12 @@ import pl.wj.bgstat.systemobjecttype.SystemObjectTypeRepository;
 import pl.wj.bgstat.user.UserRepository;
 import pl.wj.bgstat.userboardgame.UserBoardGameRepository;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ExceptionHelper {
+
+    public static final List<MediaType> SUPPORTED_THUMBNAIL_MEDIA_TYPES = List.of(MediaType.IMAGE_JPEG, MediaType.IMAGE_PNG);
 
     public static final String SYSTEM_OBJECT_ATTRIBUTE_CLASS_RESOURCE_NAME = "System object attribute class";
     public static final String SYSTEM_OBJECT_TYPE_RESOURCE_NAME = "System object type";
@@ -30,6 +35,12 @@ public class ExceptionHelper {
 
     public static final String ID_FIELD = "id";
     public static final String NAME_FIELD = "name";
+
+
+    public static String createRequestFileExceptionMessage(String fileType, int minHeight, int maxHeight, int minWidth, int maxWidth, int maxSize) {
+        return String.format("%s height should be between %d and %d px, width should be between %d and %d px and size should be less than %d kB",
+                fileType, minHeight, maxHeight, minWidth, maxWidth, maxSize);
+    }
 
     public static String createResourceExistsExceptionMessage(String resource, String field) {
         return String.format("%s with specified %s already exists in database", resource, field);

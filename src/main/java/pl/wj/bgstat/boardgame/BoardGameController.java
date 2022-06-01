@@ -4,11 +4,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import pl.wj.bgstat.boardgame.model.dto.*;
 import pl.wj.bgstat.gameplay.model.dto.GameplaysStatsDto;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Map;
 
@@ -22,6 +25,11 @@ public class BoardGameController {
 
     private final BoardGameService boardGameService;
 
+    @PostMapping("/thumbnail")
+    public String addThumbnail(@RequestPart("file") MultipartFile file) {
+        return "OK";
+    }
+
     @GetMapping("")
     public Page<BoardGameHeaderDto> getBoardGameHeaders(Pageable pageable) {
         return boardGameService.getBoardGameHeaders(pageable);
@@ -33,8 +41,9 @@ public class BoardGameController {
     }
 
     @PostMapping("")
-    public BoardGameResponseDto addBoardGame(@RequestBody @Valid BoardGameRequestDto boardGameRequestDto) {
-        return boardGameService.addBoardGame(boardGameRequestDto);
+    public BoardGameResponseDto addBoardGame(@RequestPart @Valid BoardGameRequestDto boardGameRequestDto,
+                                             @RequestPart("thumbnail") MultipartFile thumbnail) throws IOException, HttpMediaTypeNotSupportedException {
+        return boardGameService.addBoardGame(boardGameRequestDto, thumbnail);
     }
 
     @PutMapping("/{id}")
