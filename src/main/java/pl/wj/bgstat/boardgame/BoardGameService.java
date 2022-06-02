@@ -27,6 +27,7 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.UUID;
 
 import static pl.wj.bgstat.exception.ExceptionHelper.*;
@@ -57,23 +58,23 @@ public class BoardGameService {
         return BoardGameMapper.mapToBoardGameResponseDto(boardGame);
     }
 
-    public BoardGameResponseDto addBoardGame(BoardGameRequestDto boardGameRequestDto, MultipartFile thumbnail) throws IOException, HttpMediaTypeNotSupportedException {
-
-
-        MediaType mediaType = MediaType.valueOf(thumbnail.getContentType());
-
-        if (!SUPPORTED_THUMBNAIL_MEDIA_TYPES.stream().anyMatch(p -> p.equals(mediaType))) {
-            throw new HttpMediaTypeNotSupportedException(mediaType, ExceptionHelper.SUPPORTED_THUMBNAIL_MEDIA_TYPES);
-        }
-
+    public BoardGameResponseDto addBoardGame(BoardGameRequestDto boardGameRequestDto, MultipartFile thumbnail)
+            throws HttpMediaTypeNotSupportedException, IOException {
         boardGameRequestDto.setObjectTypeId(validateSystemObjectTypeId(boardGameRequestDto.getObjectTypeId()));
         throwExceptionWhenExistsByName(boardGameRequestDto.getName());
         throwExceptionWhenNotExistsById(boardGameRequestDto.getObjectTypeId(), systemObjectTypeRepository);
         BoardGame boardGame = BoardGameMapper.mapToBoardGame(boardGameRequestDto);
+        if (!thumbnail.isEmpty() && thumbnail.getContentType() != null) {
+            MediaType mediaType = MediaType.valueOf(thumbnail.getContentType());
 
-        if (!thumbnail.isEmpty()) {
-            BufferedImage biThumbnail = ImageIO.read(thumbnail.getInputStream());
+            if (SUPPORTED_THUMBNAIL_MEDIA_TYPES.stream().noneMatch(p -> p.equals(mediaType))) {
+                // TODO: 02.06.2022 Change to custom exception
+                throw new HttpMediaTypeNotSupportedException(mediaType, ExceptionHelper.SUPPORTED_THUMBNAIL_MEDIA_TYPES);
+            }
 
+            BufferedImage biThumbnail = null;
+            // TODO: 02.06.2022 Surround with try catch block and throw custom IOException
+            biThumbnail = ImageIO.read(thumbnail.getInputStream());
             if (!(biThumbnail.getHeight() >= MIN_THUMBNAIL_HEIGHT && biThumbnail.getHeight() <= MAX_THUMBNAIL_HEIGHT &&
                     biThumbnail.getWidth() >= MIN_THUMBNAIL_WIDTH && biThumbnail.getWidth() <= MAX_THUMBNAIL_WIDTH &&
                     thumbnail.getSize() <= MAX_THUMBNAIL_SIZE))
@@ -85,6 +86,7 @@ public class BoardGameService {
             ImageIO.write(biThumbnail, mediaType.getSubtype(), new File(thumbnailPath));
 
             boardGame.setThumbnailPath(thumbnailPath);
+
         }
         boardGameRepository.save(boardGame);
         return BoardGameMapper.mapToBoardGameResponseDto(boardGame);

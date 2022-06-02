@@ -11,23 +11,33 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
+import org.springframework.web.multipart.MultipartFile;
 import pl.wj.bgstat.boardgame.model.BoardGame;
 import pl.wj.bgstat.boardgame.model.BoardGameMapper;
-import pl.wj.bgstat.boardgame.model.dto.*;
+import pl.wj.bgstat.boardgame.model.dto.BoardGameHeaderDto;
+import pl.wj.bgstat.boardgame.model.dto.BoardGamePartialRequestDto;
+import pl.wj.bgstat.boardgame.model.dto.BoardGameRequestDto;
+import pl.wj.bgstat.boardgame.model.dto.BoardGameResponseDto;
 import pl.wj.bgstat.exception.ResourceExistsException;
 import pl.wj.bgstat.exception.ResourceNotFoundException;
 import pl.wj.bgstat.systemobjecttype.SystemObjectTypeRepository;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static java.lang.Math.*;
-import static org.assertj.core.api.Assertions.*;
+import static java.lang.Math.ceil;
+import static java.lang.Math.floor;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.BDDMockito.*;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.verify;
 import static pl.wj.bgstat.boardgame.BoardGameServiceTestHelper.*;
 import static pl.wj.bgstat.exception.ExceptionHelper.*;
@@ -45,6 +55,11 @@ class BoardGameServiceTest {
     private static final int PAGE_SIZE = 4;
     private static final int NUMBER_OF_ELEMENTS = 20;
     private static final long BOARD_GAME_DEFAULT_OBJECT_TYPE_ID = 1L;
+    private static final int MIN_THUMBNAIL_HEIGHT = 600;
+    private static final int MAX_THUMBNAIL_HEIGHT = 1200;
+    private static final int MIN_THUMBNAIL_WIDTH = 600;
+    private static final int MAX_THUMBNAIL_WIDTH = 1200;
+    private static final int MAX_THUMBNAIL_SIZE = 10240;
 
     private List<BoardGame> boardGameList;
     private List<BoardGameHeaderDto> boardGameHeaderList;
@@ -162,8 +177,9 @@ class BoardGameServiceTest {
 
     @Test
     @DisplayName("Should create and return created board game")
-    void shouldReturnCreatedBoardGame() {
+    void shouldReturnCreatedBoardGame() throws HttpMediaTypeNotSupportedException, IOException {
         // given
+        MultipartFile file = createMultipartFile("image/png", true);
         BoardGameRequestDto boardGameRequestDto = BoardGameServiceTestHelper.createBoardGameRequestDto(
                 NUMBER_OF_ELEMENTS, BOARD_GAME_DEFAULT_OBJECT_TYPE_ID);
         BoardGame boardGame = BoardGameMapper.mapToBoardGame(boardGameRequestDto);
@@ -182,7 +198,7 @@ class BoardGameServiceTest {
                 });
 
         // when
-        BoardGameResponseDto boardGameResponseDto = boardGameService.addBoardGame(boardGameRequestDto);
+        BoardGameResponseDto boardGameResponseDto = boardGameService.addBoardGame(boardGameRequestDto, file);
 
         // then
         assertThat(boardGameResponseDto)
@@ -193,8 +209,11 @@ class BoardGameServiceTest {
 
     @Test
     @DisplayName("Should return created board game with default system object type id")
-    void shouldReturnCreatedBoardGameWithDefaultSystemObjectTypeIdWhenObjectTypeNotSet() {
+    void shouldReturnCreatedBoardGameWithDefaultSystemObjectTypeIdWhenObjectTypeNotSet() throws HttpMediaTypeNotSupportedException, IOException {
         // given
+        String fileName = "sourceFile.png";
+        String fileContent = "Example file content";
+        MultipartFile file = new MockMultipartFile(fileName, fileContent.getBytes());
         BoardGameRequestDto boardGameRequestDto = BoardGameServiceTestHelper.createBoardGameRequestDto(
                 NUMBER_OF_ELEMENTS, 0);
         BoardGame boardGame = BoardGameMapper.mapToBoardGame(boardGameRequestDto);
@@ -214,7 +233,7 @@ class BoardGameServiceTest {
                 });
 
         // when
-        BoardGameResponseDto boardGameResponseDto = boardGameService.addBoardGame(boardGameRequestDto);
+        BoardGameResponseDto boardGameResponseDto = boardGameService.addBoardGame(boardGameRequestDto, file);
 
         // then
         assertThat(boardGameResponseDto)
@@ -222,18 +241,57 @@ class BoardGameServiceTest {
                 .usingRecursiveComparison()
                 .isEqualTo(expectedResponse);
     }
+    
+    @Test
+    @DisplayName("Should throw HttpMediaTypeNotSupportedException when given media type is unsupported")
+    void shouldThrowExceptionWhenGivenMediaTypeIsUnsupported() {
+        // TODO: 02.06.2022 Change to custom exception
+        // given
+        String mediaType = "image/txt";
+        MultipartFile file = createMultipartFile(mediaType, true);
+        BoardGameRequestDto boardGameRequestDto = createBoardGameRequestDto(1,1);
+        given(boardGameRepository.existsByName(anyString())).willReturn(false);
+        given(systemObjectTypeRepository.existsById(anyLong())).willReturn(true);
 
+        // when
+        assertThatThrownBy(() -> boardGameService.addBoardGame(boardGameRequestDto, file))
+                .isInstanceOf(HttpMediaTypeNotSupportedException.class)
+                .hasMessage(String.format("Content type '%s' not supported", mediaType));
+    }
+
+    @Test
+    @DisplayName("Should throw RequestFileException when image size or resolution is not correct")
+    void shouldThrowExceptionWhenImageSizeOrResolutionIsNotCorrect() {
+        // TODO: 02.06.2022 Write that test correctly
+//        // given
+//        String mediaType = "image/png";
+//        MultipartFile file = createMultipartFile(mediaType, false);
+//        BoardGameRequestDto boardGameRequestDto = createBoardGameRequestDto(1,1);
+//        given(boardGameRepository.existsByName(anyString())).willReturn(false);
+//        given(systemObjectTypeRepository.existsById(anyLong())).willReturn(true);
+//
+//        // when
+//        assertThatThrownBy(() -> boardGameService.addBoardGame(boardGameRequestDto, file))
+//                .isInstanceOf(RequestFileException.class)
+//                .hasMessage(createRequestFileExceptionMessage(
+//                        "Thumbnail", MIN_THUMBNAIL_HEIGHT, MAX_THUMBNAIL_HEIGHT,
+//                        MIN_THUMBNAIL_WIDTH, MAX_THUMBNAIL_WIDTH, MAX_THUMBNAIL_SIZE));
+    }
+    
     @Test
     @DisplayName("Should throw ResourceNotFoundException when SystemObjectType id does not exist in database")
     void shouldThrowExceptionWhenSystemObjectTypeIdDoesNotExist() {
         // given
         long systemObjectTypeId = 99L;
+        String fileName = "sourceFile.png";
+        String fileContent = "Example file content";
+        MultipartFile file = new MockMultipartFile(fileName, fileContent.getBytes());
         BoardGameRequestDto boardGameRequestDto = new BoardGameRequestDto();
         boardGameRequestDto.setObjectTypeId(systemObjectTypeId);
         given(systemObjectTypeRepository.existsById(anyLong())).willReturn(false);
 
         // when
-        assertThatThrownBy(() -> boardGameService.addBoardGame(boardGameRequestDto))
+        assertThatThrownBy(() -> boardGameService.addBoardGame(boardGameRequestDto, file))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessage(createResourceNotFoundExceptionMessage(SYSTEM_OBJECT_TYPE_RESOURCE_NAME, ID_FIELD, systemObjectTypeId));
     }
@@ -243,13 +301,16 @@ class BoardGameServiceTest {
     void shouldThrowExceptionWhenBoardGameNameExists() {
         // given
         String boardGameName = "Name No. 1";
+        String fileName = "sourceFile.png";
+        String fileContent = "Example file content";
+        MultipartFile file = new MockMultipartFile(fileName, fileContent.getBytes());
         BoardGameRequestDto boardGameRequestDto = new BoardGameRequestDto(
                 boardGameName,BOARD_GAME_DEFAULT_OBJECT_TYPE_ID, 1, 1, 5, 2, 150, "DESCRIPTION");
         given(boardGameRepository.existsByName(anyString()))
                 .willReturn(boardGameList.stream().anyMatch(bg -> bg.getName().equals(boardGameName)));
 
         // when
-        assertThatThrownBy(() -> boardGameService.addBoardGame(boardGameRequestDto))
+        assertThatThrownBy(() -> boardGameService.addBoardGame(boardGameRequestDto, file))
                 .isInstanceOf(ResourceExistsException.class)
                 .hasMessage(createResourceExistsExceptionMessage(BOARD_GAME_RESOURCE_NAME, NAME_FIELD));
     }
