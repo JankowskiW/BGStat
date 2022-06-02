@@ -1,7 +1,9 @@
 package pl.wj.bgstat.boardgame;
 
+import com.google.common.io.Files;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.cfg.NotYetImplementedException;
+import org.hibernate.result.Output;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,16 +19,15 @@ import org.springframework.web.multipart.MultipartFile;
 import pl.wj.bgstat.boardgame.model.BoardGame;
 import pl.wj.bgstat.boardgame.model.BoardGameMapper;
 import pl.wj.bgstat.boardgame.model.dto.*;
-import pl.wj.bgstat.exception.ExceptionHelper;
-import pl.wj.bgstat.exception.RequestFileException;
-import pl.wj.bgstat.exception.ResourceExistsException;
-import pl.wj.bgstat.exception.ResourceNotFoundException;
+import pl.wj.bgstat.exception.*;
 import pl.wj.bgstat.systemobjecttype.SystemObjectTypeRepository;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.util.UUID;
 
 import static pl.wj.bgstat.exception.ExceptionHelper.*;
 
@@ -40,6 +41,8 @@ public class BoardGameService {
     private static final int MIN_THUMBNAIL_WIDTH = 600;
     private static final int MAX_THUMBNAIL_WIDTH = 1200;
     private static final int MAX_THUMBNAIL_SIZE = 10240;
+    private static final int MAX_NUM_OF_CREATE_FILE_ATTEMPTS = 5;
+    private static final String THUMBNAILS_PATH = "\\\\localhost\\resources\\thumbnails";
 
 
     private final BoardGameRepository boardGameRepository;
@@ -60,12 +63,6 @@ public class BoardGameService {
 
         MediaType mediaType = MediaType.valueOf(thumbnail.getContentType());
 
-        System.out.println("Name = " + thumbnail.getName());
-        System.out.println("OrigName = " + thumbnail.getOriginalFilename());
-        System.out.println("CType = " + thumbnail.getContentType());
-        System.out.println("Size = " + thumbnail.getSize());
-        System.out.println("Res = " + thumbnail.getResource());
-
         if (!SUPPORTED_THUMBNAIL_MEDIA_TYPES.stream().anyMatch(p -> p.equals(mediaType))) {
             throw new HttpMediaTypeNotSupportedException(mediaType, ExceptionHelper.SUPPORTED_THUMBNAIL_MEDIA_TYPES);
         }
@@ -76,20 +73,27 @@ public class BoardGameService {
         BoardGame boardGame = BoardGameMapper.mapToBoardGame(boardGameRequestDto);
 
         if (!thumbnail.isEmpty()) {
-//            File tmpThumbnail = new File("src/main/resources/tagetFile.");
-//            try (OutputStream os = new FileOutputStream(tmpThumbnail)) {
-//                os.write(thumbnail.getBytes());
-//            }
+            BufferedImage biThumbnail = ImageIO.read(thumbnail.getInputStream());
 
-            BufferedImage bThumbnail = ImageIO.read(thumbnail.getInputStream());
+            if (!(biThumbnail.getHeight() >= MIN_THUMBNAIL_HEIGHT && biThumbnail.getHeight() <= MAX_THUMBNAIL_HEIGHT &&
+                    biThumbnail.getWidth() >= MIN_THUMBNAIL_WIDTH && biThumbnail.getWidth() <= MAX_THUMBNAIL_WIDTH &&
+                    thumbnail.getSize() <= MAX_THUMBNAIL_SIZE))
+                throw new RequestFileException(createRequestFileExceptionMessage(
+                        "Thumbnail", MIN_THUMBNAIL_HEIGHT, MAX_THUMBNAIL_HEIGHT,
+                        MIN_THUMBNAIL_WIDTH, MAX_THUMBNAIL_WIDTH, MAX_THUMBNAIL_SIZE));
+            String thumbnailPath;
+            File file;
+            int numOfCreateFileAttempts = 0;
+            do {
+                if (numOfCreateFileAttempts++ == MAX_NUM_OF_CREATE_FILE_ATTEMPTS) throw new FileExistsException();
+                thumbnailPath = String.format("%s\\%s.%s", THUMBNAILS_PATH, UUID.randomUUID(), mediaType.getSubtype());
+                file = new File(thumbnailPath);
+            }
+            while (file.isFile());
 
-            if (!(bThumbnail.getHeight() >= MIN_THUMBNAIL_HEIGHT && bThumbnail.getHeight() <= MAX_THUMBNAIL_HEIGHT &&
-                    bThumbnail.getWidth() >= MIN_THUMBNAIL_WIDTH && bThumbnail.getWidth() <= MAX_THUMBNAIL_WIDTH &&
-                    thumbnail.getSize() > MAX_THUMBNAIL_SIZE))
-                throw new RequestFileException(createRequestFileExceptionMessage("Thumbnail",
-                        MIN_THUMBNAIL_HEIGHT, MAX_THUMBNAIL_HEIGHT, MIN_THUMBNAIL_WIDTH,
-                        MAX_THUMBNAIL_WIDTH, MAX_THUMBNAIL_SIZE));
-            boardGame.setThumbnailPath(thumbnail.getContentType());
+            ImageIO.write(biThumbnail, mediaType.getSubtype(), new File(thumbnailPath));
+
+            boardGame.setThumbnailPath(thumbnailPath);
         }
         boardGameRepository.save(boardGame);
         return BoardGameMapper.mapToBoardGameResponseDto(boardGame);

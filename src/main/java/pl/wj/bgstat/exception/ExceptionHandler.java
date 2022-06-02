@@ -39,4 +39,14 @@ public class ExceptionHandler {
         );
     }
 
+    @org.springframework.web.bind.annotation.ExceptionHandler(FileExistsException.class)
+    @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
+    public ExceptionBody handleFileExistsException(FileExistsException e) {
+        return new ExceptionBody(
+                e.getMessage(),
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                ZonedDateTime.now()
+        );
+    }
+
 }
