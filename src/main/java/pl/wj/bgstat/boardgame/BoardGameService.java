@@ -41,7 +41,6 @@ public class BoardGameService {
     private static final int MIN_THUMBNAIL_WIDTH = 600;
     private static final int MAX_THUMBNAIL_WIDTH = 1200;
     private static final int MAX_THUMBNAIL_SIZE = 10240;
-    private static final int MAX_NUM_OF_CREATE_FILE_ATTEMPTS = 5;
     private static final String THUMBNAILS_PATH = "\\\\localhost\\resources\\thumbnails";
 
 
@@ -81,16 +80,8 @@ public class BoardGameService {
                 throw new RequestFileException(createRequestFileExceptionMessage(
                         "Thumbnail", MIN_THUMBNAIL_HEIGHT, MAX_THUMBNAIL_HEIGHT,
                         MIN_THUMBNAIL_WIDTH, MAX_THUMBNAIL_WIDTH, MAX_THUMBNAIL_SIZE));
-            String thumbnailPath;
-            File file;
-            int numOfCreateFileAttempts = 0;
-            do {
-                if (numOfCreateFileAttempts++ == MAX_NUM_OF_CREATE_FILE_ATTEMPTS) throw new FileExistsException();
-                thumbnailPath = String.format("%s\\%s.%s", THUMBNAILS_PATH, UUID.randomUUID(), mediaType.getSubtype());
-                file = new File(thumbnailPath);
-            }
-            while (file.isFile());
 
+            String thumbnailPath = String.format("%s\\%s.%s", THUMBNAILS_PATH, UUID.nameUUIDFromBytes(thumbnail.getBytes()), mediaType.getSubtype());
             ImageIO.write(biThumbnail, mediaType.getSubtype(), new File(thumbnailPath));
 
             boardGame.setThumbnailPath(thumbnailPath);
