@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import pl.wj.bgstat.boardgame.model.BoardGame;
 import pl.wj.bgstat.boardgame.model.dto.BoardGameGameplaysStatsDto;
 import pl.wj.bgstat.boardgame.model.dto.BoardGameHeaderDto;
+import pl.wj.bgstat.boardgame.model.dto.BoardGameThumbnailResponseDto;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -24,4 +25,7 @@ public interface BoardGameRepository extends JpaRepository<BoardGame, Long> {
     boolean existsByNameAndIdNot(String name, long id);
     boolean existsByName(String name);
 
+    @Query("SELECT new pl.wj.bgstat.boardgame.model.dto.BoardGameThumbnailResponseDto(bg.id, bg.thumbnailPath) " +
+            "FROM BoardGame bg WHERE bg.id = :id")
+    BoardGameThumbnailResponseDto findThumbnailPath(long id);
 }

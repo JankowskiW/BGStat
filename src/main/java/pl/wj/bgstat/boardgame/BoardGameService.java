@@ -8,10 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import pl.wj.bgstat.boardgame.model.BoardGame;
 import pl.wj.bgstat.boardgame.model.BoardGameMapper;
-import pl.wj.bgstat.boardgame.model.dto.BoardGameHeaderDto;
-import pl.wj.bgstat.boardgame.model.dto.BoardGamePartialRequestDto;
-import pl.wj.bgstat.boardgame.model.dto.BoardGameRequestDto;
-import pl.wj.bgstat.boardgame.model.dto.BoardGameResponseDto;
+import pl.wj.bgstat.boardgame.model.dto.*;
 import pl.wj.bgstat.exception.*;
 import pl.wj.bgstat.systemobjecttype.SystemObjectTypeRepository;
 
@@ -106,9 +103,17 @@ public class BoardGameService {
         return BoardGameMapper.mapToBoardGameResponseDto(boardGame);
     }
 
+    public BoardGameThumbnailResponseDto addOrReplaceThumbnail(long id, MultipartFile thumbnail) {
+
+    }
+
     public void deleteBoardGame(long id) {
         throwExceptionWhenNotExistsById(id, boardGameRepository);
         boardGameRepository.deleteById(id);
+    }
+
+    private void sendThumbnail(MultipartFile thumbnail) {
+
     }
 
     private void throwExceptionWhenExistsByName(String name) {
@@ -124,4 +129,5 @@ public class BoardGameService {
     private long validateSystemObjectTypeId(long id) {
         return id == 0 ? BOARD_GAME_DEFAULT_OBJECT_TYPE_ID : id;
     }
+
 }

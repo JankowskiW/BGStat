@@ -15,10 +15,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 import pl.wj.bgstat.boardgame.model.BoardGame;
 import pl.wj.bgstat.boardgame.model.BoardGameMapper;
-import pl.wj.bgstat.boardgame.model.dto.BoardGameHeaderDto;
-import pl.wj.bgstat.boardgame.model.dto.BoardGamePartialRequestDto;
-import pl.wj.bgstat.boardgame.model.dto.BoardGameRequestDto;
-import pl.wj.bgstat.boardgame.model.dto.BoardGameResponseDto;
+import pl.wj.bgstat.boardgame.model.dto.*;
 import pl.wj.bgstat.exception.*;
 import pl.wj.bgstat.systemobjecttype.SystemObjectTypeRepository;
 
@@ -28,6 +25,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static java.lang.Math.ceil;
 import static java.lang.Math.floor;
@@ -469,6 +467,20 @@ class BoardGameServiceTest {
         assertThat(boardGameResponseDto).isNotNull();
         assertThat(boardGameResponseDto.getId()).isEqualTo(id);
         assertThat(boardGameResponseDto.getName()).isEqualTo(boardGamePartialRequestDto.getName());
+    }
+
+    @Test
+    @DisplayName("Should add new thumbnail when board game exists")
+    void shouldAddNewThumbnailWhenBoardGameExists() {
+        // given
+        long id = 1L;
+        BoardGameThumbnailResponseDto boardGameThumbnailResponseDto = new BoardGameThumbnailResponseDto(id, null);
+        given(boardGameRepository.findThumbnailPath(anyLong())).willReturn(boardGameThumbnailResponseDto);
+
+
+        // when
+
+        // then
     }
 
     @Test

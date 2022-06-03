@@ -25,11 +25,6 @@ public class BoardGameController {
 
     private final BoardGameService boardGameService;
 
-    @PostMapping("/thumbnail")
-    public String addThumbnail(@RequestPart("file") MultipartFile file) {
-        return "OK";
-    }
-
     @GetMapping("")
     public Page<BoardGameHeaderDto> getBoardGameHeaders(Pageable pageable) {
         return boardGameService.getBoardGameHeaders(pageable);
@@ -42,13 +37,18 @@ public class BoardGameController {
 
     @PostMapping("")
     public BoardGameResponseDto addBoardGame(@RequestPart @Valid BoardGameRequestDto boardGameRequestDto,
-                                             @RequestPart("thumbnail") MultipartFile thumbnail) throws IOException, HttpMediaTypeNotSupportedException {
+                                             @RequestPart("thumbnail") MultipartFile thumbnail) {
         return boardGameService.addBoardGame(boardGameRequestDto, thumbnail);
     }
 
     @PutMapping("/{id}")
     public BoardGameResponseDto editBoardGame(@PathVariable long id, @RequestBody @Valid BoardGameRequestDto boardGameRequestDto) {
         return boardGameService.editBoardGame(id, boardGameRequestDto);
+    }
+
+    @PostMapping("/{id}/thumbnail")
+    public BoardGameThumbnailResponseDto addThumbnail(@PathVariable long id, @RequestPart("thumbnail") MultipartFile thumbnail) {
+        return boardGameService.addOrReplaceThumbnail(id, thumbnail);
     }
 
     @PatchMapping("/{id}")
