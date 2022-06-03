@@ -1,7 +1,6 @@
 package pl.wj.bgstat.exception;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -41,12 +40,12 @@ public class CustomExceptionHandler {
         );
     }
 
-    @ExceptionHandler(FileExistsException.class)
-    @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
-    public ExceptionBody handleFileExistsException(FileExistsException e) {
+    @ExceptionHandler(UnsupportedFileMediaTypeException.class)
+    @ResponseStatus(value = HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+    public ExceptionBody handleFileExistsException(UnsupportedFileMediaTypeException e) {
         return new ExceptionBody(
                 e.getMessage(),
-                HttpStatus.INTERNAL_SERVER_ERROR,
+                HttpStatus.UNSUPPORTED_MEDIA_TYPE,
                 ZonedDateTime.now()
         );
     }

@@ -13,10 +13,7 @@ import pl.wj.bgstat.boardgame.model.dto.BoardGameHeaderDto;
 import pl.wj.bgstat.boardgame.model.dto.BoardGamePartialRequestDto;
 import pl.wj.bgstat.boardgame.model.dto.BoardGameRequestDto;
 import pl.wj.bgstat.boardgame.model.dto.BoardGameResponseDto;
-import pl.wj.bgstat.exception.ExceptionHelper;
-import pl.wj.bgstat.exception.RequestFileException;
-import pl.wj.bgstat.exception.ResourceExistsException;
-import pl.wj.bgstat.exception.ResourceNotFoundException;
+import pl.wj.bgstat.exception.*;
 import pl.wj.bgstat.systemobjecttype.SystemObjectTypeRepository;
 
 import javax.imageio.ImageIO;
@@ -64,7 +61,7 @@ public class BoardGameService {
 
             if (SUPPORTED_THUMBNAIL_MEDIA_TYPES.stream().noneMatch(p -> p.equals(mediaType))) {
                 // TODO: 02.06.2022 Change to custom exception
-                throw new HttpMediaTypeNotSupportedException(mediaType, ExceptionHelper.SUPPORTED_THUMBNAIL_MEDIA_TYPES);
+                throw new UnsupportedFileMediaTypeException(mediaType, ExceptionHelper.SUPPORTED_THUMBNAIL_MEDIA_TYPES);
             }
 
             BufferedImage biThumbnail = null;

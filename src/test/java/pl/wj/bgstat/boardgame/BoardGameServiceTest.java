@@ -20,9 +20,7 @@ import pl.wj.bgstat.boardgame.model.dto.BoardGameHeaderDto;
 import pl.wj.bgstat.boardgame.model.dto.BoardGamePartialRequestDto;
 import pl.wj.bgstat.boardgame.model.dto.BoardGameRequestDto;
 import pl.wj.bgstat.boardgame.model.dto.BoardGameResponseDto;
-import pl.wj.bgstat.exception.RequestFileException;
-import pl.wj.bgstat.exception.ResourceExistsException;
-import pl.wj.bgstat.exception.ResourceNotFoundException;
+import pl.wj.bgstat.exception.*;
 import pl.wj.bgstat.systemobjecttype.SystemObjectTypeRepository;
 
 import java.io.IOException;
@@ -242,11 +240,12 @@ class BoardGameServiceTest {
     }
     
     @Test
-    @DisplayName("Should throw HttpMediaTypeNotSupportedException when given media type is unsupported")
+    @DisplayName("Should throw UnsupportedFileMediaTypeException when given media type is unsupported")
     void shouldThrowExceptionWhenGivenMediaTypeIsUnsupported() {
         // TODO: 02.06.2022 Change to custom exception
         // given
         String mediaType = "image/txt";
+        String supportedMT = "[image/jpeg, image/png]";
         MultipartFile file = createMultipartFile(mediaType, true);
         BoardGameRequestDto boardGameRequestDto = createBoardGameRequestDto(1,1);
         given(boardGameRepository.existsByName(anyString())).willReturn(false);
@@ -254,8 +253,8 @@ class BoardGameServiceTest {
 
         // when
         assertThatThrownBy(() -> boardGameService.addBoardGame(boardGameRequestDto, file))
-                .isInstanceOf(HttpMediaTypeNotSupportedException.class)
-                .hasMessage(String.format("Content type '%s' not supported", mediaType));
+                .isInstanceOf(UnsupportedFileMediaTypeException.class)
+                .hasMessage(String.format("Unsupported %s media type. Supported media types: %s", mediaType, ExceptionHelper.SUPPORTED_THUMBNAIL_MEDIA_TYPES.toString()));
     }
 
     @Test
