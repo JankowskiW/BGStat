@@ -22,8 +22,9 @@ import pl.wj.bgstat.boardgame.model.dto.BoardGameResponseDto;
 import pl.wj.bgstat.exception.*;
 import pl.wj.bgstat.systemobjecttype.SystemObjectTypeRepository;
 
-import java.time.LocalDate;
-import java.time.Month;
+import javax.imageio.ImageIO;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -35,6 +36,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 import static pl.wj.bgstat.boardgame.BoardGameServiceTestHelper.*;
 import static pl.wj.bgstat.exception.ExceptionHelper.*;
@@ -60,15 +62,11 @@ class BoardGameServiceTest {
 
     private List<BoardGame> boardGameList;
     private List<BoardGameHeaderDto> boardGameHeaderList;
-    private LocalDate fromDate;
-    private LocalDate toDate;
 
     @BeforeEach
     void setUp() {
         boardGameList = populateBoardGameList(NUMBER_OF_ELEMENTS);
         boardGameHeaderList = populateBoardGameHeaderDtoList(boardGameList);
-        fromDate = LocalDate.of(2021, Month.JANUARY, 1);
-        toDate = LocalDate.of(2021, Month.DECEMBER,31);
     }
 
     @Test
@@ -274,21 +272,19 @@ class BoardGameServiceTest {
 
     @Test
     @DisplayName("Should throw RequestFileException when IOException was thrown")
-    void shouldThrowExceptionWhenIOExceptionWasThrown() {
+    void shouldThrowExceptionWhenIOExceptionWasThrown() throws IOException {
         // given
         String mediaType = "image/png";
-        String fileName = "fileName.png";
-        MultipartFile file = null;
+        MultipartFile file = createMultipartFile(mediaType, true);
+        mockStatic(ImageIO.class);
         BoardGameRequestDto boardGameRequestDto = createBoardGameRequestDto(1,1);
         given(boardGameRepository.existsByName(anyString())).willReturn(false);
         given(systemObjectTypeRepository.existsById(anyLong())).willReturn(true);
-
+        given(ImageIO.read(any(InputStream.class))).willThrow(IOException.class);
         // when
         assertThatThrownBy(() -> boardGameService.addBoardGame(boardGameRequestDto, file))
                 .isInstanceOf(RequestFileException.class)
-                .hasMessage(createRequestFileExceptionMessage(
-                        "Thumbnail", MIN_THUMBNAIL_HEIGHT, MAX_THUMBNAIL_HEIGHT,
-                        MIN_THUMBNAIL_WIDTH, MAX_THUMBNAIL_WIDTH, MAX_THUMBNAIL_SIZE));
+                .hasMessage(createRequestFileExceptionSaveFailedMessage(file.getName()));
     }
     
     @Test

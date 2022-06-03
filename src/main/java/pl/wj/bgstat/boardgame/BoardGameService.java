@@ -19,6 +19,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.UUID;
 
 import static pl.wj.bgstat.exception.ExceptionHelper.*;
@@ -61,7 +62,9 @@ public class BoardGameService {
                 throw new UnsupportedFileMediaTypeException(mediaType, ExceptionHelper.SUPPORTED_THUMBNAIL_MEDIA_TYPES);
             }
             try {
-                BufferedImage biThumbnail = ImageIO.read(thumbnail.getInputStream());
+                InputStream is = thumbnail.getInputStream();
+                BufferedImage biThumbnail = ImageIO.read(is);
+                is.close();
                 if (!(biThumbnail.getHeight() >= MIN_THUMBNAIL_HEIGHT && biThumbnail.getHeight() <= MAX_THUMBNAIL_HEIGHT &&
                         biThumbnail.getWidth() >= MIN_THUMBNAIL_WIDTH && biThumbnail.getWidth() <= MAX_THUMBNAIL_WIDTH &&
                         thumbnail.getSize() <= MAX_THUMBNAIL_SIZE))
