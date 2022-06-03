@@ -473,12 +473,12 @@ class BoardGameServiceTest {
     @DisplayName("Should add new thumbnail when board game exists")
     void shouldAddNewThumbnailWhenBoardGameExists() {
         // given
-        long id = 1L;
-        BoardGameThumbnailResponseDto boardGameThumbnailResponseDto = new BoardGameThumbnailResponseDto(id, null);
-        given(boardGameRepository.findThumbnailPath(anyLong())).willReturn(boardGameThumbnailResponseDto);
-
+//        long id = 1L;
+//        BoardGameThumbnailResponseDto boardGameThumbnailResponseDto = new BoardGameThumbnailResponseDto(id, null);
+//        given(boardGameRepository.findThumbnailPath(anyLong())).willReturn(boardGameThumbnailResponseDto);
 
         // when
+
 
         // then
     }

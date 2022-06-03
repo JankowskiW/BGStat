@@ -1,6 +1,7 @@
 package pl.wj.bgstat.boardgame;
 
 import lombok.RequiredArgsConstructor;
+import org.hibernate.cfg.NotYetImplementedException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
@@ -104,7 +105,8 @@ public class BoardGameService {
     }
 
     public BoardGameThumbnailResponseDto addOrReplaceThumbnail(long id, MultipartFile thumbnail) {
-
+        // TODO: 03.06.2022 Implement that method with correct response https://docs.oracle.com/en/cloud/paas/content-cloud/rest-api-documents/op-documents-api-1.2-files-data-post.html  
+        throw new NotYetImplementedException();
     }
 
     public void deleteBoardGame(long id) {
