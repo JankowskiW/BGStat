@@ -20,6 +20,7 @@ import pl.wj.bgstat.boardgame.model.dto.BoardGameHeaderDto;
 import pl.wj.bgstat.boardgame.model.dto.BoardGamePartialRequestDto;
 import pl.wj.bgstat.boardgame.model.dto.BoardGameRequestDto;
 import pl.wj.bgstat.boardgame.model.dto.BoardGameResponseDto;
+import pl.wj.bgstat.exception.RequestFileException;
 import pl.wj.bgstat.exception.ResourceExistsException;
 import pl.wj.bgstat.exception.ResourceNotFoundException;
 import pl.wj.bgstat.systemobjecttype.SystemObjectTypeRepository;
@@ -211,9 +212,7 @@ class BoardGameServiceTest {
     @DisplayName("Should return created board game with default system object type id")
     void shouldReturnCreatedBoardGameWithDefaultSystemObjectTypeIdWhenObjectTypeNotSet() throws HttpMediaTypeNotSupportedException, IOException {
         // given
-        String fileName = "sourceFile.png";
-        String fileContent = "Example file content";
-        MultipartFile file = new MockMultipartFile(fileName, fileContent.getBytes());
+        MultipartFile file = createMultipartFile("image/png", true);
         BoardGameRequestDto boardGameRequestDto = BoardGameServiceTestHelper.createBoardGameRequestDto(
                 NUMBER_OF_ELEMENTS, 0);
         BoardGame boardGame = BoardGameMapper.mapToBoardGame(boardGameRequestDto);
@@ -263,19 +262,19 @@ class BoardGameServiceTest {
     @DisplayName("Should throw RequestFileException when image size or resolution is not correct")
     void shouldThrowExceptionWhenImageSizeOrResolutionIsNotCorrect() {
         // TODO: 02.06.2022 Write that test correctly
-//        // given
-//        String mediaType = "image/png";
-//        MultipartFile file = createMultipartFile(mediaType, false);
-//        BoardGameRequestDto boardGameRequestDto = createBoardGameRequestDto(1,1);
-//        given(boardGameRepository.existsByName(anyString())).willReturn(false);
-//        given(systemObjectTypeRepository.existsById(anyLong())).willReturn(true);
-//
-//        // when
-//        assertThatThrownBy(() -> boardGameService.addBoardGame(boardGameRequestDto, file))
-//                .isInstanceOf(RequestFileException.class)
-//                .hasMessage(createRequestFileExceptionMessage(
-//                        "Thumbnail", MIN_THUMBNAIL_HEIGHT, MAX_THUMBNAIL_HEIGHT,
-//                        MIN_THUMBNAIL_WIDTH, MAX_THUMBNAIL_WIDTH, MAX_THUMBNAIL_SIZE));
+        // given
+        String mediaType = "image/png";
+        MultipartFile file = createMultipartFile(mediaType, false);
+        BoardGameRequestDto boardGameRequestDto = createBoardGameRequestDto(1,1);
+        given(boardGameRepository.existsByName(anyString())).willReturn(false);
+        given(systemObjectTypeRepository.existsById(anyLong())).willReturn(true);
+
+        // when
+        assertThatThrownBy(() -> boardGameService.addBoardGame(boardGameRequestDto, file))
+                .isInstanceOf(RequestFileException.class)
+                .hasMessage(createRequestFileExceptionMessage(
+                        "Thumbnail", MIN_THUMBNAIL_HEIGHT, MAX_THUMBNAIL_HEIGHT,
+                        MIN_THUMBNAIL_WIDTH, MAX_THUMBNAIL_WIDTH, MAX_THUMBNAIL_SIZE));
     }
     
     @Test

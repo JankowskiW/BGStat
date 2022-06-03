@@ -1,33 +1,28 @@
 package pl.wj.bgstat.boardgame;
 
-import com.google.common.io.Files;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.cfg.NotYetImplementedException;
-import org.hibernate.result.Output;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.util.InvalidMimeTypeException;
-import org.springframework.util.MimeType;
-import org.springframework.web.HttpMediaTypeException;
-import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.multipart.MultipartFile;
 import pl.wj.bgstat.boardgame.model.BoardGame;
 import pl.wj.bgstat.boardgame.model.BoardGameMapper;
-import pl.wj.bgstat.boardgame.model.dto.*;
-import pl.wj.bgstat.exception.*;
+import pl.wj.bgstat.boardgame.model.dto.BoardGameHeaderDto;
+import pl.wj.bgstat.boardgame.model.dto.BoardGamePartialRequestDto;
+import pl.wj.bgstat.boardgame.model.dto.BoardGameRequestDto;
+import pl.wj.bgstat.boardgame.model.dto.BoardGameResponseDto;
+import pl.wj.bgstat.exception.ExceptionHelper;
+import pl.wj.bgstat.exception.RequestFileException;
+import pl.wj.bgstat.exception.ResourceExistsException;
+import pl.wj.bgstat.exception.ResourceNotFoundException;
 import pl.wj.bgstat.systemobjecttype.SystemObjectTypeRepository;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.*;
-import java.nio.file.Paths;
-import java.time.LocalDate;
-import java.util.Arrays;
+import java.io.File;
+import java.io.IOException;
 import java.util.UUID;
 
 import static pl.wj.bgstat.exception.ExceptionHelper.*;
