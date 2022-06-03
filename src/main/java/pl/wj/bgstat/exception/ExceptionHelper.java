@@ -36,10 +36,18 @@ public class ExceptionHelper {
     public static final String ID_FIELD = "id";
     public static final String NAME_FIELD = "name";
 
+    public static String createRequestFileExceptionSaveFailedMessage(String fileName) {
+        return String.format("Failed to save file '%s'", fileName);
+    }
 
-    public static String createRequestFileExceptionMessage(String fileType, int minHeight, int maxHeight, int minWidth, int maxWidth, int maxSize) {
+    public static String createRequestFileExceptionIncorrectSizeMessage(String fileTypeName, int minHeight, int maxHeight, int minWidth, int maxWidth, int maxSize) {
         return String.format("%s height should be between %d and %d px, width should be between %d and %d px and size should be less than %d kB",
-                fileType, minHeight, maxHeight, minWidth, maxWidth, maxSize);
+                fileTypeName, minHeight, maxHeight, minWidth, maxWidth, maxSize);
+    }
+
+    public static String createRequestFileExceptionMessage(String fileTypeName, int minHeight, int maxHeight, int minWidth, int maxWidth, int maxSize) {
+        return String.format("%s height should be between %d and %d px, width should be between %d and %d px and size should be less than %d kB",
+                fileTypeName, minHeight, maxHeight, minWidth, maxWidth, maxSize);
     }
 
     public static String createResourceExistsExceptionMessage(String resource, String field) {

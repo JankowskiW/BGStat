@@ -12,7 +12,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.multipart.MultipartFile;
 import pl.wj.bgstat.boardgame.model.BoardGame;
 import pl.wj.bgstat.boardgame.model.BoardGameMapper;
@@ -23,7 +22,6 @@ import pl.wj.bgstat.boardgame.model.dto.BoardGameResponseDto;
 import pl.wj.bgstat.exception.*;
 import pl.wj.bgstat.systemobjecttype.SystemObjectTypeRepository;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.ArrayList;
@@ -176,7 +174,7 @@ class BoardGameServiceTest {
 
     @Test
     @DisplayName("Should create and return created board game")
-    void shouldReturnCreatedBoardGame() throws HttpMediaTypeNotSupportedException, IOException {
+    void shouldReturnCreatedBoardGame() {
         // given
         MultipartFile file = createMultipartFile("image/png", true);
         BoardGameRequestDto boardGameRequestDto = BoardGameServiceTestHelper.createBoardGameRequestDto(
@@ -208,7 +206,7 @@ class BoardGameServiceTest {
 
     @Test
     @DisplayName("Should return created board game with default system object type id")
-    void shouldReturnCreatedBoardGameWithDefaultSystemObjectTypeIdWhenObjectTypeNotSet() throws HttpMediaTypeNotSupportedException, IOException {
+    void shouldReturnCreatedBoardGameWithDefaultSystemObjectTypeIdWhenObjectTypeNotSet()  {
         // given
         MultipartFile file = createMultipartFile("image/png", true);
         BoardGameRequestDto boardGameRequestDto = BoardGameServiceTestHelper.createBoardGameRequestDto(
@@ -242,7 +240,6 @@ class BoardGameServiceTest {
     @Test
     @DisplayName("Should throw UnsupportedFileMediaTypeException when given media type is unsupported")
     void shouldThrowExceptionWhenGivenMediaTypeIsUnsupported() {
-        // TODO: 02.06.2022 Change to custom exception
         // given
         String mediaType = "image/txt";
         String supportedMT = "[image/jpeg, image/png]";
@@ -260,10 +257,28 @@ class BoardGameServiceTest {
     @Test
     @DisplayName("Should throw RequestFileException when image size or resolution is not correct")
     void shouldThrowExceptionWhenImageSizeOrResolutionIsNotCorrect() {
-        // TODO: 02.06.2022 Write that test correctly
         // given
         String mediaType = "image/png";
         MultipartFile file = createMultipartFile(mediaType, false);
+        BoardGameRequestDto boardGameRequestDto = createBoardGameRequestDto(1,1);
+        given(boardGameRepository.existsByName(anyString())).willReturn(false);
+        given(systemObjectTypeRepository.existsById(anyLong())).willReturn(true);
+
+        // when
+        assertThatThrownBy(() -> boardGameService.addBoardGame(boardGameRequestDto, file))
+                .isInstanceOf(RequestFileException.class)
+                .hasMessage(createRequestFileExceptionMessage(
+                        "Thumbnail", MIN_THUMBNAIL_HEIGHT, MAX_THUMBNAIL_HEIGHT,
+                        MIN_THUMBNAIL_WIDTH, MAX_THUMBNAIL_WIDTH, MAX_THUMBNAIL_SIZE));
+    }
+
+    @Test
+    @DisplayName("Should throw RequestFileException when IOException was thrown")
+    void shouldThrowExceptionWhenIOExceptionWasThrown() {
+        // given
+        String mediaType = "image/png";
+        String fileName = "fileName.png";
+        MultipartFile file = null;
         BoardGameRequestDto boardGameRequestDto = createBoardGameRequestDto(1,1);
         given(boardGameRepository.existsByName(anyString())).willReturn(false);
         given(systemObjectTypeRepository.existsById(anyLong())).willReturn(true);

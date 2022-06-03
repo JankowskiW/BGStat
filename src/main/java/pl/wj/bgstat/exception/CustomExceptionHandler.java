@@ -42,7 +42,7 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler(UnsupportedFileMediaTypeException.class)
     @ResponseStatus(value = HttpStatus.UNSUPPORTED_MEDIA_TYPE)
-    public ExceptionBody handleFileExistsException(UnsupportedFileMediaTypeException e) {
+    public ExceptionBody handleUnsupportedFileMediaTypeException(UnsupportedFileMediaTypeException e) {
         return new ExceptionBody(
                 e.getMessage(),
                 HttpStatus.UNSUPPORTED_MEDIA_TYPE,
