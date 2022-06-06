@@ -1,7 +1,6 @@
 package pl.wj.bgstat.boardgame;
 
 import lombok.RequiredArgsConstructor;
-import org.hibernate.cfg.NotYetImplementedException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
@@ -49,6 +48,8 @@ public class BoardGameService {
     }
 
     public BoardGameResponseDto addBoardGame(BoardGameRequestDto boardGameRequestDto, MultipartFile thumbnail) {
+
+        // TODO: 06.06.2022 Remove part with file creation and replace it with  createThumbnail() method and change test shouldReturnCreatedBoardGame
         boardGameRequestDto.setObjectTypeId(validateSystemObjectTypeId(boardGameRequestDto.getObjectTypeId()));
         throwExceptionWhenExistsByName(boardGameRequestDto.getName());
         throwExceptionWhenNotExistsById(boardGameRequestDto.getObjectTypeId(), systemObjectTypeRepository);
@@ -107,9 +108,19 @@ public class BoardGameService {
     public BoardGameThumbnailResponseDto addOrReplaceThumbnail(long boardGameId, MultipartFile thumbnail) {
         boardGameRepository.existsById(boardGameId);
         BoardGameThumbnailResponseDto boardGameThumbnailResponseDto = boardGameRepository.findThumbnailPath(boardGameId);
-
-
-        throw new NotYetImplementedException();
+        if (boardGameThumbnailResponseDto.getThumbnailPath() == null) {
+            boardGameThumbnailResponseDto.setThumbnailPath(createThumbnail(thumbnail));
+        } else {
+            try {
+                File file = new File(boardGameThumbnailResponseDto.getThumbnailPath());
+                file.delete();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            boardGameThumbnailResponseDto.setThumbnailPath(createThumbnail(thumbnail));
+        }
+        boardGameRepository.updateThumbnailPathById(boardGameThumbnailResponseDto.getId(), boardGameThumbnailResponseDto.getThumbnailPath());
+        return boardGameThumbnailResponseDto;
     }
 
     public void deleteBoardGame(long id) {

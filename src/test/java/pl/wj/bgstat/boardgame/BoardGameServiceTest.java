@@ -20,6 +20,7 @@ import pl.wj.bgstat.exception.*;
 import pl.wj.bgstat.systemobjecttype.SystemObjectTypeRepository;
 
 import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -475,10 +476,12 @@ class BoardGameServiceTest {
         long boardGameId = 1L;
         String mediaType = "image/png";
         MultipartFile file = createMultipartFile(mediaType, true);
+        InputStream is = file.getInputStream();
+        BufferedImage bi = ImageIO.read(is);
         mockStatic(ImageIO.class);
         given(boardGameRepository.existsById(anyLong())).willReturn(true);
         given(boardGameRepository.findThumbnailPath(anyLong())).willReturn(new BoardGameThumbnailResponseDto(boardGameId, null));
-        given(ImageIO.read(any(InputStream.class))).willThrow(IOException.class);
+        given(ImageIO.read(any(InputStream.class))).willReturn(bi);
 
         // when
         BoardGameThumbnailResponseDto boardGameThumbnailResponseDto = boardGameService.addOrReplaceThumbnail(boardGameId, file);

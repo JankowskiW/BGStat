@@ -28,4 +28,7 @@ public interface BoardGameRepository extends JpaRepository<BoardGame, Long> {
     @Query("SELECT new pl.wj.bgstat.boardgame.model.dto.BoardGameThumbnailResponseDto(bg.id, bg.thumbnailPath) " +
             "FROM BoardGame bg WHERE bg.id = :id")
     BoardGameThumbnailResponseDto findThumbnailPath(long id);
+
+    @Query("UPDATE BoardGame bg SET bg.thumbnailPath = :thumbnailPath WHERE bg.id = :boardGameId")
+    void updateThumbnailPathById(long boardGameId, String thumbnailPath);
 }
