@@ -28,6 +28,7 @@ public class BoardGameServiceTestHelper {
     private static final String NOT_OK_FILE_PATH = "src/test/resources/" + NOT_OK_FILE_NAME;
     private static final String OK_FILE_PATH = "src/test/resources/" + OK_FILE_NAME;
 
+
     public static MultipartFile createMultipartFile(String mediaType, boolean correctResolution) {
         MultipartFile mpf = null;
         try {

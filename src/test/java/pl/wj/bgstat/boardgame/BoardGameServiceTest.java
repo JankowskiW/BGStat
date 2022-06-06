@@ -25,7 +25,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import static java.lang.Math.ceil;
 import static java.lang.Math.floor;
@@ -57,6 +56,7 @@ class BoardGameServiceTest {
     private static final int MIN_THUMBNAIL_WIDTH = 600;
     private static final int MAX_THUMBNAIL_WIDTH = 1200;
     private static final int MAX_THUMBNAIL_SIZE = 10240;
+    private static final String THUMBNAILS_PATH = "\\\\localhost\\resources\\thumbnails";
 
     private List<BoardGame> boardGameList;
     private List<BoardGameHeaderDto> boardGameHeaderList;
@@ -238,7 +238,6 @@ class BoardGameServiceTest {
     void shouldThrowExceptionWhenGivenMediaTypeIsUnsupported() {
         // given
         String mediaType = "image/txt";
-        String supportedMT = "[image/jpeg, image/png]";
         MultipartFile file = createMultipartFile(mediaType, true);
         BoardGameRequestDto boardGameRequestDto = createBoardGameRequestDto(1,1);
         given(boardGameRepository.existsByName(anyString())).willReturn(false);
@@ -471,16 +470,23 @@ class BoardGameServiceTest {
 
     @Test
     @DisplayName("Should add new thumbnail when board game exists")
-    void shouldAddNewThumbnailWhenBoardGameExists() {
+    void shouldAddNewThumbnailWhenBoardGameExists() throws IOException {
         // given
-//        long id = 1L;
-//        BoardGameThumbnailResponseDto boardGameThumbnailResponseDto = new BoardGameThumbnailResponseDto(id, null);
-//        given(boardGameRepository.findThumbnailPath(anyLong())).willReturn(boardGameThumbnailResponseDto);
+        long boardGameId = 1L;
+        String mediaType = "image/png";
+        MultipartFile file = createMultipartFile(mediaType, true);
+        mockStatic(ImageIO.class);
+        given(boardGameRepository.existsById(anyLong())).willReturn(true);
+        given(boardGameRepository.findThumbnailPath(anyLong())).willReturn(new BoardGameThumbnailResponseDto(boardGameId, null));
+        given(ImageIO.read(any(InputStream.class))).willThrow(IOException.class);
 
         // when
-
+        BoardGameThumbnailResponseDto boardGameThumbnailResponseDto = boardGameService.addOrReplaceThumbnail(boardGameId, file);
 
         // then
+        assertThat(boardGameThumbnailResponseDto).isNotNull();
+        assertThat(boardGameThumbnailResponseDto.getId()).isEqualTo(boardGameId);
+        assertThat(boardGameThumbnailResponseDto.getThumbnailPath()).startsWith(THUMBNAILS_PATH);
     }
 
     @Test

@@ -104,8 +104,11 @@ public class BoardGameService {
         return BoardGameMapper.mapToBoardGameResponseDto(boardGame);
     }
 
-    public BoardGameThumbnailResponseDto addOrReplaceThumbnail(long id, MultipartFile thumbnail) {
-        // TODO: 03.06.2022 Implement that method with correct response https://docs.oracle.com/en/cloud/paas/content-cloud/rest-api-documents/op-documents-api-1.2-files-data-post.html  
+    public BoardGameThumbnailResponseDto addOrReplaceThumbnail(long boardGameId, MultipartFile thumbnail) {
+        boardGameRepository.existsById(boardGameId);
+        BoardGameThumbnailResponseDto boardGameThumbnailResponseDto = boardGameRepository.findThumbnailPath(boardGameId);
+
+
         throw new NotYetImplementedException();
     }
 
@@ -114,8 +117,32 @@ public class BoardGameService {
         boardGameRepository.deleteById(id);
     }
 
-    private void sendThumbnail(MultipartFile thumbnail) {
+    private String createThumbnail(MultipartFile thumbnail) {
+        String thumbnailPath = null;
+        if (thumbnail != null && !thumbnail.isEmpty() && thumbnail.getContentType() != null) {
+            MediaType mediaType = MediaType.valueOf(thumbnail.getContentType());
 
+            if (SUPPORTED_THUMBNAIL_MEDIA_TYPES.stream().noneMatch(p -> p.equals(mediaType))) {
+                throw new UnsupportedFileMediaTypeException(mediaType, ExceptionHelper.SUPPORTED_THUMBNAIL_MEDIA_TYPES);
+            }
+            try {
+                InputStream is = thumbnail.getInputStream();
+                BufferedImage biThumbnail = ImageIO.read(is);
+                is.close();
+                if (!(biThumbnail.getHeight() >= MIN_THUMBNAIL_HEIGHT && biThumbnail.getHeight() <= MAX_THUMBNAIL_HEIGHT &&
+                        biThumbnail.getWidth() >= MIN_THUMBNAIL_WIDTH && biThumbnail.getWidth() <= MAX_THUMBNAIL_WIDTH &&
+                        thumbnail.getSize() <= MAX_THUMBNAIL_SIZE))
+                    throw new RequestFileException(
+                            "Thumbnail", MIN_THUMBNAIL_HEIGHT, MAX_THUMBNAIL_HEIGHT,
+                            MIN_THUMBNAIL_WIDTH, MAX_THUMBNAIL_WIDTH, MAX_THUMBNAIL_SIZE);
+
+                thumbnailPath = String.format("%s\\%s.%s", THUMBNAILS_PATH, UUID.nameUUIDFromBytes(thumbnail.getBytes()), mediaType.getSubtype());
+                ImageIO.write(biThumbnail, mediaType.getSubtype(), new File(thumbnailPath));
+            } catch (IOException e) {
+                throw new RequestFileException(thumbnail.getName());
+            }
+        }
+        return thumbnailPath;
     }
 
     private void throwExceptionWhenExistsByName(String name) {
