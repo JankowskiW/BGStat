@@ -50,14 +50,6 @@ public class BoardGameServiceTestHelper {
         }
     }
 
-    public static BufferedImage getBufferedImageOfMultipartFile(MultipartFile file) throws IOException {
-        InputStream is = file.getInputStream();
-        System.out.println("IS == null? " + (is == null));
-        BufferedImage bi = ImageIO.read(is);
-        System.out.println("bi == null? " + (bi == null));
-        return bi;
-    }
-
     public static List<BoardGame> populateBoardGameList(int numberOfElements) {
         List<BoardGame> boardGameList = new ArrayList<>();
         BoardGame boardGame;

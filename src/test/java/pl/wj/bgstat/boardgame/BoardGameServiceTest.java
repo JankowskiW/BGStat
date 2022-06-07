@@ -20,6 +20,7 @@ import pl.wj.bgstat.systemobjecttype.SystemObjectTypeRepository;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -33,8 +34,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
-import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 import static pl.wj.bgstat.boardgame.BoardGameServiceTestHelper.*;
 import static pl.wj.bgstat.exception.ExceptionHelper.*;
 
@@ -92,7 +92,7 @@ class BoardGameServiceTest {
     static void afterAll() {
         ms.close();
     }
-    
+
 
     @Test
     @DisplayName("Should return only one but not last page of board game headers")
@@ -459,6 +459,44 @@ class BoardGameServiceTest {
         assertThat(boardGameThumbnailResponseDto).isNotNull();
         assertThat(boardGameThumbnailResponseDto.getId()).isEqualTo(boardGameId);
         assertThat(boardGameThumbnailResponseDto.getThumbnailPath()).startsWith(THUMBNAILS_PATH);
+    }
+
+    @Test
+    @DisplayName("Should replace thumbnail when board game exists")
+    void shouldReplaceThumbnailWhenBoardGameExists() throws IOException {
+        // given
+        long boardGameId = 1L;
+        given(boardGameRepository.existsById(anyLong())).willReturn(true);
+        given(boardGameRepository.findThumbnailPath(anyLong())).willReturn(new BoardGameThumbnailResponseDto(boardGameId, okFile.getName()));
+        given(ImageIO.read(any(InputStream.class))).willReturn(okBi);
+
+        // when
+        BoardGameThumbnailResponseDto boardGameThumbnailResponseDto = boardGameService.addOrReplaceThumbnail(boardGameId, okFile);
+
+        // then
+        assertThat(boardGameThumbnailResponseDto).isNotNull();
+        assertThat(boardGameThumbnailResponseDto.getId()).isEqualTo(boardGameId);
+        assertThat(boardGameThumbnailResponseDto.getThumbnailPath()).startsWith(THUMBNAILS_PATH);
+    }
+
+    @Test
+    @DisplayName("Should not delete old thumbnail")
+    void shouldNotDeleteThumbnailWhenBoardGameExists() throws IOException {
+        // given
+        // TODO: 07.06.2022 create test which check if IOException was called
+//        long boardGameId = 1L;
+////        Exception e = spy(new Exception());
+//        given(boardGameRepository.existsById(anyLong())).willReturn(true);
+//        given(boardGameRepository.findThumbnailPath(anyLong())).willReturn(new BoardGameThumbnailResponseDto(boardGameId, okFile.getName()));
+//        given(ImageIO.read(any(InputStream.class))).willReturn(okBi);
+//        //doThrow(e).when(boardGameService).addOrReplaceThumbnail(anyLong(), any(MultipartFile.class));
+//        // when
+//        BoardGameThumbnailResponseDto boardGameThumbnailResponseDto = boardGameService.addOrReplaceThumbnail(boardGameId, okFile);
+//
+//        // then
+//        assertThat(boardGameThumbnailResponseDto).isNotNull();
+//        assertThat(boardGameThumbnailResponseDto.getId()).isEqualTo(boardGameId);
+//        assertThat(boardGameThumbnailResponseDto.getThumbnailPath()).startsWith(THUMBNAILS_PATH);
     }
 
     @Test

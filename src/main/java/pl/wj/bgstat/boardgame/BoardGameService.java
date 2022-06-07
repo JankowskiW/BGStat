@@ -86,17 +86,15 @@ public class BoardGameService {
     public BoardGameThumbnailResponseDto addOrReplaceThumbnail(long boardGameId, MultipartFile thumbnail) {
         throwExceptionWhenNotExistsById(boardGameId, boardGameRepository);
         BoardGameThumbnailResponseDto boardGameThumbnailResponseDto = boardGameRepository.findThumbnailPath(boardGameId);
-        if (boardGameThumbnailResponseDto.getThumbnailPath() == null) {
-            boardGameThumbnailResponseDto.setThumbnailPath(createThumbnail(thumbnail));
-        } else {
+        if (boardGameThumbnailResponseDto.getThumbnailPath() != null) {
             try {
                 File file = new File(boardGameThumbnailResponseDto.getThumbnailPath());
                 file.delete();
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            boardGameThumbnailResponseDto.setThumbnailPath(createThumbnail(thumbnail));
         }
+        boardGameThumbnailResponseDto.setThumbnailPath(createThumbnail(thumbnail));
         boardGameRepository.updateThumbnailPathById(boardGameThumbnailResponseDto.getId(), boardGameThumbnailResponseDto.getThumbnailPath());
         return boardGameThumbnailResponseDto;
     }
@@ -105,6 +103,7 @@ public class BoardGameService {
         throwExceptionWhenNotExistsById(id, boardGameRepository);
         boardGameRepository.deleteById(id);
     }
+
 
     private String createThumbnail(MultipartFile thumbnail) {
         String thumbnailPath = null;
