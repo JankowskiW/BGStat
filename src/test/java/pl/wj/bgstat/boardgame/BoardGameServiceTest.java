@@ -1,11 +1,10 @@
 package pl.wj.bgstat.boardgame;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -59,6 +58,16 @@ class BoardGameServiceTest {
     private static final int MAX_THUMBNAIL_SIZE = 10240;
     private static final String THUMBNAILS_PATH = "\\\\localhost\\resources\\thumbnails";
 
+    private static MockedStatic ms;
+    private static MultipartFile okFile;
+    private static MultipartFile notOkFileMT;
+    private static MultipartFile notOkFileRes;
+    private static BufferedImage okBi;
+    private static BufferedImage notOkBiMT;
+    private static BufferedImage notOkBiRes;
+    private static String okMediaType = "image/png";
+    private static String notOkMediaType = "image/txt";
+
     private List<BoardGame> boardGameList;
     private List<BoardGameHeaderDto> boardGameHeaderList;
 
@@ -67,6 +76,23 @@ class BoardGameServiceTest {
         boardGameList = populateBoardGameList(NUMBER_OF_ELEMENTS);
         boardGameHeaderList = populateBoardGameHeaderDtoList(boardGameList);
     }
+
+    @BeforeAll
+    static void beforeAll() throws IOException {
+        okFile = createMultipartFile(okMediaType, true);
+        notOkFileMT = createMultipartFile(notOkMediaType, true);
+        notOkFileRes = createMultipartFile(okMediaType, false);
+        okBi = ImageIO.read(okFile.getInputStream());
+        notOkBiMT = ImageIO.read(notOkFileMT.getInputStream());
+        notOkBiRes = ImageIO.read(notOkFileRes.getInputStream());
+        ms = mockStatic(ImageIO.class);
+    }
+
+    @AfterAll
+    static void afterAll() {
+        ms.close();
+    }
+    
 
     @Test
     @DisplayName("Should return only one but not last page of board game headers")
@@ -171,9 +197,8 @@ class BoardGameServiceTest {
 
     @Test
     @DisplayName("Should create and return created board game")
-    void shouldReturnCreatedBoardGame() {
+    void shouldReturnCreatedBoardGame() throws IOException {
         // given
-        MultipartFile file = createMultipartFile("image/png", true);
         BoardGameRequestDto boardGameRequestDto = BoardGameServiceTestHelper.createBoardGameRequestDto(
                 NUMBER_OF_ELEMENTS, BOARD_GAME_DEFAULT_OBJECT_TYPE_ID);
         BoardGame boardGame = BoardGameMapper.mapToBoardGame(boardGameRequestDto);
@@ -183,6 +208,7 @@ class BoardGameServiceTest {
         given(boardGameRepository.existsByName(anyString())).willReturn(
                 boardGameList.stream().anyMatch(bg -> bg.getName().equals(boardGameRequestDto.getName())));
         given(systemObjectTypeRepository.existsById(anyLong())).willReturn(true);
+        given(ImageIO.read(any(InputStream.class))).willReturn(okBi);
         given(boardGameRepository.save(any(BoardGame.class))).willAnswer(
                 i -> {
                     BoardGame bg = i.getArgument(0, BoardGame.class);
@@ -192,7 +218,7 @@ class BoardGameServiceTest {
                 });
 
         // when
-        BoardGameResponseDto boardGameResponseDto = boardGameService.addBoardGame(boardGameRequestDto, file);
+        BoardGameResponseDto boardGameResponseDto = boardGameService.addBoardGame(boardGameRequestDto, okFile);
 
         // then
         assertThat(boardGameResponseDto)
@@ -205,7 +231,6 @@ class BoardGameServiceTest {
     @DisplayName("Should return created board game with default system object type id")
     void shouldReturnCreatedBoardGameWithDefaultSystemObjectTypeIdWhenObjectTypeNotSet()  {
         // given
-        MultipartFile file = createMultipartFile("image/png", true);
         BoardGameRequestDto boardGameRequestDto = BoardGameServiceTestHelper.createBoardGameRequestDto(
                 NUMBER_OF_ELEMENTS, 0);
         BoardGame boardGame = BoardGameMapper.mapToBoardGame(boardGameRequestDto);
@@ -225,7 +250,7 @@ class BoardGameServiceTest {
                 });
 
         // when
-        BoardGameResponseDto boardGameResponseDto = boardGameService.addBoardGame(boardGameRequestDto, file);
+        BoardGameResponseDto boardGameResponseDto = boardGameService.addBoardGame(boardGameRequestDto, null);
 
         // then
         assertThat(boardGameResponseDto)
@@ -233,58 +258,7 @@ class BoardGameServiceTest {
                 .usingRecursiveComparison()
                 .isEqualTo(expectedResponse);
     }
-    
-    @Test
-    @DisplayName("Should throw UnsupportedFileMediaTypeException when given media type is unsupported")
-    void shouldThrowExceptionWhenGivenMediaTypeIsUnsupported() {
-        // given
-        String mediaType = "image/txt";
-        MultipartFile file = createMultipartFile(mediaType, true);
-        BoardGameRequestDto boardGameRequestDto = createBoardGameRequestDto(1,1);
-        given(boardGameRepository.existsByName(anyString())).willReturn(false);
-        given(systemObjectTypeRepository.existsById(anyLong())).willReturn(true);
 
-        // when
-        assertThatThrownBy(() -> boardGameService.addBoardGame(boardGameRequestDto, file))
-                .isInstanceOf(UnsupportedFileMediaTypeException.class)
-                .hasMessage(String.format("Unsupported %s media type. Supported media types: %s", mediaType, ExceptionHelper.SUPPORTED_THUMBNAIL_MEDIA_TYPES.toString()));
-    }
-
-    @Test
-    @DisplayName("Should throw RequestFileException when image size or resolution is not correct")
-    void shouldThrowExceptionWhenImageSizeOrResolutionIsNotCorrect() {
-        // given
-        String mediaType = "image/png";
-        MultipartFile file = createMultipartFile(mediaType, false);
-        BoardGameRequestDto boardGameRequestDto = createBoardGameRequestDto(1,1);
-        given(boardGameRepository.existsByName(anyString())).willReturn(false);
-        given(systemObjectTypeRepository.existsById(anyLong())).willReturn(true);
-
-        // when
-        assertThatThrownBy(() -> boardGameService.addBoardGame(boardGameRequestDto, file))
-                .isInstanceOf(RequestFileException.class)
-                .hasMessage(createRequestFileExceptionMessage(
-                        "Thumbnail", MIN_THUMBNAIL_HEIGHT, MAX_THUMBNAIL_HEIGHT,
-                        MIN_THUMBNAIL_WIDTH, MAX_THUMBNAIL_WIDTH, MAX_THUMBNAIL_SIZE));
-    }
-
-    @Test
-    @DisplayName("Should throw RequestFileException when IOException was thrown")
-    void shouldThrowExceptionWhenIOExceptionWasThrown() throws IOException {
-        // given
-        String mediaType = "image/png";
-        MultipartFile file = createMultipartFile(mediaType, true);
-        mockStatic(ImageIO.class);
-        BoardGameRequestDto boardGameRequestDto = createBoardGameRequestDto(1,1);
-        given(boardGameRepository.existsByName(anyString())).willReturn(false);
-        given(systemObjectTypeRepository.existsById(anyLong())).willReturn(true);
-        given(ImageIO.read(any(InputStream.class))).willThrow(IOException.class);
-        // when
-        assertThatThrownBy(() -> boardGameService.addBoardGame(boardGameRequestDto, file))
-                .isInstanceOf(RequestFileException.class)
-                .hasMessage(createRequestFileExceptionSaveFailedMessage(file.getName()));
-    }
-    
     @Test
     @DisplayName("Should throw ResourceNotFoundException when SystemObjectType id does not exist in database")
     void shouldThrowExceptionWhenSystemObjectTypeIdDoesNotExist() {
@@ -474,22 +448,68 @@ class BoardGameServiceTest {
     void shouldAddNewThumbnailWhenBoardGameExists() throws IOException {
         // given
         long boardGameId = 1L;
-        String mediaType = "image/png";
-        MultipartFile file = createMultipartFile(mediaType, true);
-        InputStream is = file.getInputStream();
-        BufferedImage bi = ImageIO.read(is);
-        mockStatic(ImageIO.class);
         given(boardGameRepository.existsById(anyLong())).willReturn(true);
         given(boardGameRepository.findThumbnailPath(anyLong())).willReturn(new BoardGameThumbnailResponseDto(boardGameId, null));
-        given(ImageIO.read(any(InputStream.class))).willReturn(bi);
+        given(ImageIO.read(any(InputStream.class))).willReturn(okBi);
 
         // when
-        BoardGameThumbnailResponseDto boardGameThumbnailResponseDto = boardGameService.addOrReplaceThumbnail(boardGameId, file);
+        BoardGameThumbnailResponseDto boardGameThumbnailResponseDto = boardGameService.addOrReplaceThumbnail(boardGameId, okFile);
 
         // then
         assertThat(boardGameThumbnailResponseDto).isNotNull();
         assertThat(boardGameThumbnailResponseDto.getId()).isEqualTo(boardGameId);
         assertThat(boardGameThumbnailResponseDto.getThumbnailPath()).startsWith(THUMBNAILS_PATH);
+    }
+
+    @Test
+    @DisplayName("Should throw UnsupportedFileMediaTypeException when given media type is unsupported")
+    void shouldThrowExceptionWhenGivenMediaTypeIsUnsupported() {
+        // given
+        long id = 1L;
+        BoardGameThumbnailResponseDto boardGameThumbnailResponseDto = new BoardGameThumbnailResponseDto(id, null);
+        given(boardGameRepository.existsById(anyLong())).willReturn(true);
+        given(boardGameRepository.findThumbnailPath(anyLong())).willReturn(boardGameThumbnailResponseDto);
+
+        // when
+        assertThatThrownBy(() -> boardGameService.addOrReplaceThumbnail(id, notOkFileMT))
+                .isInstanceOf(UnsupportedFileMediaTypeException.class)
+                .hasMessage(String.format("Unsupported %s media type. Supported media types: %s", notOkMediaType, ExceptionHelper.SUPPORTED_THUMBNAIL_MEDIA_TYPES));
+    }
+
+    @Test
+    @DisplayName("Should throw RequestFileException when image size or resolution is not correct")
+    void shouldThrowExceptionWhenImageSizeOrResolutionIsNotCorrect() throws IOException {
+        // given
+        long id = 1L;
+        BoardGameThumbnailResponseDto boardGameThumbnailResponseDto = new BoardGameThumbnailResponseDto(id, null);
+
+        given(boardGameRepository.existsById(anyLong())).willReturn(true);
+        given(boardGameRepository.findThumbnailPath(anyLong())).willReturn(boardGameThumbnailResponseDto);
+        given(ImageIO.read(any(InputStream.class))).willReturn(notOkBiRes);
+
+        // when
+        assertThatThrownBy(() -> boardGameService.addOrReplaceThumbnail(id, notOkFileRes))
+                .isInstanceOf(RequestFileException.class)
+                .hasMessage(createRequestFileExceptionMessage(
+                        "Thumbnail", MIN_THUMBNAIL_HEIGHT, MAX_THUMBNAIL_HEIGHT,
+                        MIN_THUMBNAIL_WIDTH, MAX_THUMBNAIL_WIDTH, MAX_THUMBNAIL_SIZE));
+    }
+
+    @Test
+    @DisplayName("Should throw RequestFileException when IOException was thrown")
+    void shouldThrowExceptionWhenIOExceptionWasThrown() throws IOException {
+        // given
+        long id = 1L;
+        String mediaType = "image/png";
+        BoardGameThumbnailResponseDto boardGameThumbnailResponseDto = new BoardGameThumbnailResponseDto(id, null);
+        MultipartFile file = createMultipartFile(mediaType, true);
+        given(boardGameRepository.existsById(anyLong())).willReturn(true);
+        given(boardGameRepository.findThumbnailPath(anyLong())).willReturn(boardGameThumbnailResponseDto);
+        given(ImageIO.read(any(InputStream.class))).willThrow(IOException.class);
+        // when
+        assertThatThrownBy(() -> boardGameService.addOrReplaceThumbnail(id, file))
+                .isInstanceOf(RequestFileException.class)
+                .hasMessage(createRequestFileExceptionSaveFailedMessage(file.getName()));
     }
 
     @Test

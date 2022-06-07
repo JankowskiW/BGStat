@@ -54,30 +54,8 @@ public class BoardGameService {
         throwExceptionWhenExistsByName(boardGameRequestDto.getName());
         throwExceptionWhenNotExistsById(boardGameRequestDto.getObjectTypeId(), systemObjectTypeRepository);
         BoardGame boardGame = BoardGameMapper.mapToBoardGame(boardGameRequestDto);
-        if (thumbnail != null && !thumbnail.isEmpty() && thumbnail.getContentType() != null) {
-            MediaType mediaType = MediaType.valueOf(thumbnail.getContentType());
-
-            if (SUPPORTED_THUMBNAIL_MEDIA_TYPES.stream().noneMatch(p -> p.equals(mediaType))) {
-                throw new UnsupportedFileMediaTypeException(mediaType, ExceptionHelper.SUPPORTED_THUMBNAIL_MEDIA_TYPES);
-            }
-            try {
-                InputStream is = thumbnail.getInputStream();
-                BufferedImage biThumbnail = ImageIO.read(is);
-                is.close();
-                if (!(biThumbnail.getHeight() >= MIN_THUMBNAIL_HEIGHT && biThumbnail.getHeight() <= MAX_THUMBNAIL_HEIGHT &&
-                        biThumbnail.getWidth() >= MIN_THUMBNAIL_WIDTH && biThumbnail.getWidth() <= MAX_THUMBNAIL_WIDTH &&
-                        thumbnail.getSize() <= MAX_THUMBNAIL_SIZE))
-                    throw new RequestFileException(
-                            "Thumbnail", MIN_THUMBNAIL_HEIGHT, MAX_THUMBNAIL_HEIGHT,
-                            MIN_THUMBNAIL_WIDTH, MAX_THUMBNAIL_WIDTH, MAX_THUMBNAIL_SIZE);
-
-                String thumbnailPath = String.format("%s\\%s.%s", THUMBNAILS_PATH, UUID.nameUUIDFromBytes(thumbnail.getBytes()), mediaType.getSubtype());
-                ImageIO.write(biThumbnail, mediaType.getSubtype(), new File(thumbnailPath));
-                boardGame.setThumbnailPath(thumbnailPath);
-            } catch (IOException e) {
-                throw new RequestFileException(thumbnail.getName());
-            }
-        }
+        String thumbnailPath = createThumbnail(thumbnail);
+        boardGame.setThumbnailPath(thumbnailPath);
         boardGameRepository.save(boardGame);
         return BoardGameMapper.mapToBoardGameResponseDto(boardGame);
     }
@@ -106,7 +84,7 @@ public class BoardGameService {
     }
 
     public BoardGameThumbnailResponseDto addOrReplaceThumbnail(long boardGameId, MultipartFile thumbnail) {
-        boardGameRepository.existsById(boardGameId);
+        throwExceptionWhenNotExistsById(boardGameId, boardGameRepository);
         BoardGameThumbnailResponseDto boardGameThumbnailResponseDto = boardGameRepository.findThumbnailPath(boardGameId);
         if (boardGameThumbnailResponseDto.getThumbnailPath() == null) {
             boardGameThumbnailResponseDto.setThumbnailPath(createThumbnail(thumbnail));
@@ -139,7 +117,6 @@ public class BoardGameService {
             try {
                 InputStream is = thumbnail.getInputStream();
                 BufferedImage biThumbnail = ImageIO.read(is);
-                is.close();
                 if (!(biThumbnail.getHeight() >= MIN_THUMBNAIL_HEIGHT && biThumbnail.getHeight() <= MAX_THUMBNAIL_HEIGHT &&
                         biThumbnail.getWidth() >= MIN_THUMBNAIL_WIDTH && biThumbnail.getWidth() <= MAX_THUMBNAIL_WIDTH &&
                         thumbnail.getSize() <= MAX_THUMBNAIL_SIZE))

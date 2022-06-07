@@ -8,6 +8,8 @@ import pl.wj.bgstat.boardgame.model.dto.BoardGameHeaderDto;
 import pl.wj.bgstat.boardgame.model.dto.BoardGameRequestDto;
 import pl.wj.bgstat.boardgamedescription.model.BoardGameDescription;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -46,6 +48,14 @@ public class BoardGameServiceTestHelper {
         } finally {
                return mpf;
         }
+    }
+
+    public static BufferedImage getBufferedImageOfMultipartFile(MultipartFile file) throws IOException {
+        InputStream is = file.getInputStream();
+        System.out.println("IS == null? " + (is == null));
+        BufferedImage bi = ImageIO.read(is);
+        System.out.println("bi == null? " + (bi == null));
+        return bi;
     }
 
     public static List<BoardGame> populateBoardGameList(int numberOfElements) {
