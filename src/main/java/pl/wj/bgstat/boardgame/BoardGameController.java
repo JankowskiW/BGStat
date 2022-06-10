@@ -19,10 +19,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 @RequestMapping("/board-games")
 public class BoardGameController {
-
-    private static final String MIN_DATE = "1990-01-01";
-    private static final String MAX_DATE = "2999-12-31";
-
     private final BoardGameService boardGameService;
 
     @GetMapping("")

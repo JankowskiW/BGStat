@@ -48,8 +48,6 @@ public class BoardGameService {
     }
 
     public BoardGameResponseDto addBoardGame(BoardGameRequestDto boardGameRequestDto, MultipartFile thumbnail) {
-
-        // TODO: 06.06.2022 Remove part with file creation and replace it with  createThumbnail() method and change test shouldReturnCreatedBoardGame
         boardGameRequestDto.setObjectTypeId(validateSystemObjectTypeId(boardGameRequestDto.getObjectTypeId()));
         throwExceptionWhenExistsByName(boardGameRequestDto.getName());
         throwExceptionWhenNotExistsById(boardGameRequestDto.getObjectTypeId(), systemObjectTypeRepository);

@@ -480,26 +480,6 @@ class BoardGameServiceTest {
     }
 
     @Test
-    @DisplayName("Should not delete old thumbnail")
-    void shouldNotDeleteThumbnailWhenBoardGameExists() throws IOException {
-        // given
-        // TODO: 07.06.2022 create test which check if IOException was called
-//        long boardGameId = 1L;
-////        Exception e = spy(new Exception());
-//        given(boardGameRepository.existsById(anyLong())).willReturn(true);
-//        given(boardGameRepository.findThumbnailPath(anyLong())).willReturn(new BoardGameThumbnailResponseDto(boardGameId, okFile.getName()));
-//        given(ImageIO.read(any(InputStream.class))).willReturn(okBi);
-//        //doThrow(e).when(boardGameService).addOrReplaceThumbnail(anyLong(), any(MultipartFile.class));
-//        // when
-//        BoardGameThumbnailResponseDto boardGameThumbnailResponseDto = boardGameService.addOrReplaceThumbnail(boardGameId, okFile);
-//
-//        // then
-//        assertThat(boardGameThumbnailResponseDto).isNotNull();
-//        assertThat(boardGameThumbnailResponseDto.getId()).isEqualTo(boardGameId);
-//        assertThat(boardGameThumbnailResponseDto.getThumbnailPath()).startsWith(THUMBNAILS_PATH);
-    }
-
-    @Test
     @DisplayName("Should throw UnsupportedFileMediaTypeException when given media type is unsupported")
     void shouldThrowExceptionWhenGivenMediaTypeIsUnsupported() {
         // given
