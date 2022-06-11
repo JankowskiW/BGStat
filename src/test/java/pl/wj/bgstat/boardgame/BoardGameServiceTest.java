@@ -93,7 +93,6 @@ class BoardGameServiceTest {
         ms.close();
     }
 
-
     @Test
     @DisplayName("Should return only one but not last page of board game headers")
     void shouldReturnOnlyOneButNotLastPageOfBoardGameHeaders() {

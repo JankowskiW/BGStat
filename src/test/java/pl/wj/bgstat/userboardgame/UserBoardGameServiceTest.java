@@ -105,7 +105,7 @@ class  UserBoardGameServiceTest {
     }
 
     @Test
-    @DisplayName("Should throw ResourceNotFoundException when BoardGame not exists")
+    @DisplayName("Should throw ResourceNotFoundException when BoardGame does not exist")
     void shouldThrowExceptionWhenBoardGameNotExists() {
         // given
         long boardGameId = 100L;
@@ -121,7 +121,7 @@ class  UserBoardGameServiceTest {
     }
 
     @Test
-    @DisplayName("Should throw ResourceNotFoundException when User not exists")
+    @DisplayName("Should throw ResourceNotFoundException when User does not exist")
     void shouldThrowExceptionWhenUserNotExists() {
         // given
         long userId = 100L;
@@ -137,7 +137,7 @@ class  UserBoardGameServiceTest {
     }
 
     @Test
-    @DisplayName("Should throw ResourceNotFoundException when Store of new UserBoardGame not exists")
+    @DisplayName("Should throw ResourceNotFoundException when Store of new UserBoardGame does not exist")
     void shouldThrowExceptionWhenStoreOfNewUserBoardGameNotExists() {
         // given
         long storeId = 100L;
@@ -180,7 +180,7 @@ class  UserBoardGameServiceTest {
     }
 
     @Test
-    @DisplayName("Should throw ResourceNotFoundException when UserBoardGame not exists")
+    @DisplayName("Should throw ResourceNotFoundException when UserBoardGame does not exist")
     void shouldThrowExceptionWhenUserBoardGameNotExists() {
         // given
         long id = 100L;
@@ -194,7 +194,7 @@ class  UserBoardGameServiceTest {
     }
 
     @Test
-    @DisplayName("Should throw ResourceNotFoundException when Store of edited UserBoardGame not exists")
+    @DisplayName("Should throw ResourceNotFoundException when Store of edited UserBoardGame does not exist")
     void shouldThrowExceptionWhenStoreOfEditedUserBoardGameNotExists() {
         // given
         long id = 1L;

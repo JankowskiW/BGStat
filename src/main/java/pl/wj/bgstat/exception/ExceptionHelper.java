@@ -20,6 +20,7 @@ import java.util.List;
 public class ExceptionHelper {
 
     public static final List<MediaType> SUPPORTED_THUMBNAIL_MEDIA_TYPES = List.of(MediaType.IMAGE_JPEG, MediaType.IMAGE_PNG);
+    public static final List<MediaType> SUPPORTED_RULEBOOK_MEDIA_TYPES = List.of(MediaType.APPLICATION_PDF);
 
     public static final String SYSTEM_OBJECT_ATTRIBUTE_CLASS_RESOURCE_NAME = "System object attribute class";
     public static final String SYSTEM_OBJECT_TYPE_RESOURCE_NAME = "System object type";

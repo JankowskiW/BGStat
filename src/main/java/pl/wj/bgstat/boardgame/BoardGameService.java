@@ -98,12 +98,14 @@ public class BoardGameService {
     }
 
     public void deleteBoardGame(long id) {
+        // TODO: 11.06.2022 Delete thumbnail and rulebooks when client delete board game
         throwExceptionWhenNotExistsById(id, boardGameRepository);
         boardGameRepository.deleteById(id);
     }
 
 
     private String createThumbnail(MultipartFile thumbnail) {
+        // TODO: 11.06.2022 Check if ImageIO.write in tests create real file and if it is, then stub that method
         String thumbnailPath = null;
         if (thumbnail != null && !thumbnail.isEmpty() && thumbnail.getContentType() != null) {
             MediaType mediaType = MediaType.valueOf(thumbnail.getContentType());
