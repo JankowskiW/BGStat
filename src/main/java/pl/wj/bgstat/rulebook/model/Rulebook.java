@@ -2,6 +2,7 @@ package pl.wj.bgstat.rulebook.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import pl.wj.bgstat.rulebook.enumeration.LanguageISO;
 
 import javax.persistence.*;
 
@@ -14,6 +15,6 @@ public class Rulebook {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private long boardGameId;
-    private String languageIso;
+    private LanguageISO languageIso;
     private String path;
 }

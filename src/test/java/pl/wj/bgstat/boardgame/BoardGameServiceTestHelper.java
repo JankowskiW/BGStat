@@ -32,6 +32,7 @@ public class BoardGameServiceTestHelper {
 
 
     public static MultipartFile createMultipartFile(String mediaType, boolean correctResolution) {
+        // TODO: 11.06.2022 Try to mock everywhere mutlipart file with input stream instead of create actual multipart file 
         MultipartFile mpf = null;
         try {
             if (correctResolution) {

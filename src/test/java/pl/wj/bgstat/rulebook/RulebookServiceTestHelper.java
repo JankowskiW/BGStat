@@ -12,11 +12,15 @@ import java.io.InputStream;
 public class RulebookServiceTestHelper {
 
     private static final String OK_FILE_NAME = "SampleRulebook.pdf";
-    private static final String OK_FILE_PATH = "src/test/resource/" + OK_FILE_NAME;
+    private static final String OK_FILE_PATH = "src/test/resources/" + OK_FILE_NAME;
     private static final String NOT_OK_FILE_NAME = "notOkFile.png";
-    private static final String NOT_OK_FILE_PATH = "src/test/resource/" + NOT_OK_FILE_NAME;
+    private static final String NOT_OK_FILE_PATH = "src/test/resources/" + NOT_OK_FILE_NAME;
 
-    public static MultipartFile createMultipartRulebook(boolean correctMediaType) {
+    public static InputStream createInputStreamOfRulebook(boolean correctMediaType) throws IOException {
+        return createMultipartRulebook(correctMediaType).getInputStream();
+    }
+
+    private static MultipartFile createMultipartRulebook(boolean correctMediaType) {
         MultipartFile mpf = null;
 
         try {

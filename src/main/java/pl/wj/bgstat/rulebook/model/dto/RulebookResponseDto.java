@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import pl.wj.bgstat.rulebook.enumeration.LanguageISO;
 
 @Setter
 @Getter
@@ -12,6 +13,6 @@ import lombok.Setter;
 public class RulebookResponseDto {
     private long id;
     private long boardGameId;
-    private String languageIso;
+    private LanguageISO languageIso;
     private String path;
 }

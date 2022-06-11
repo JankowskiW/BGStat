@@ -47,12 +47,12 @@ public class BoardGameService {
         return BoardGameMapper.mapToBoardGameResponseDto(boardGame);
     }
 
-    public BoardGameResponseDto addBoardGame(BoardGameRequestDto boardGameRequestDto, MultipartFile thumbnail) {
+    public BoardGameResponseDto addBoardGame(BoardGameRequestDto boardGameRequestDto, MultipartFile thumbnailFile) {
         boardGameRequestDto.setObjectTypeId(validateSystemObjectTypeId(boardGameRequestDto.getObjectTypeId()));
         throwExceptionWhenExistsByName(boardGameRequestDto.getName());
         throwExceptionWhenNotExistsById(boardGameRequestDto.getObjectTypeId(), systemObjectTypeRepository);
         BoardGame boardGame = BoardGameMapper.mapToBoardGame(boardGameRequestDto);
-        String thumbnailPath = createThumbnail(thumbnail);
+        String thumbnailPath = createThumbnail(thumbnailFile);
         boardGame.setThumbnailPath(thumbnailPath);
         boardGameRepository.save(boardGame);
         return BoardGameMapper.mapToBoardGameResponseDto(boardGame);
@@ -81,7 +81,7 @@ public class BoardGameService {
         return BoardGameMapper.mapToBoardGameResponseDto(boardGame);
     }
 
-    public BoardGameThumbnailResponseDto addOrReplaceThumbnail(long boardGameId, MultipartFile thumbnail) {
+    public BoardGameThumbnailResponseDto addOrReplaceThumbnail(long boardGameId, MultipartFile thumbnailFile) {
         throwExceptionWhenNotExistsById(boardGameId, boardGameRepository);
         BoardGameThumbnailResponseDto boardGameThumbnailResponseDto = boardGameRepository.findThumbnailPath(boardGameId);
         if (boardGameThumbnailResponseDto.getThumbnailPath() != null) {
@@ -92,7 +92,7 @@ public class BoardGameService {
                 e.printStackTrace();
             }
         }
-        boardGameThumbnailResponseDto.setThumbnailPath(createThumbnail(thumbnail));
+        boardGameThumbnailResponseDto.setThumbnailPath(createThumbnail(thumbnailFile));
         boardGameRepository.updateThumbnailPathById(boardGameThumbnailResponseDto.getId(), boardGameThumbnailResponseDto.getThumbnailPath());
         return boardGameThumbnailResponseDto;
     }
@@ -104,29 +104,29 @@ public class BoardGameService {
     }
 
 
-    private String createThumbnail(MultipartFile thumbnail) {
+    private String createThumbnail(MultipartFile thumbnailFile) {
         // TODO: 11.06.2022 Check if ImageIO.write in tests create real file and if it is, then stub that method
         String thumbnailPath = null;
-        if (thumbnail != null && !thumbnail.isEmpty() && thumbnail.getContentType() != null) {
-            MediaType mediaType = MediaType.valueOf(thumbnail.getContentType());
+        if (thumbnailFile != null && !thumbnailFile.isEmpty() && thumbnailFile.getContentType() != null) {
+            MediaType mediaType = MediaType.valueOf(thumbnailFile.getContentType());
 
             if (SUPPORTED_THUMBNAIL_MEDIA_TYPES.stream().noneMatch(p -> p.equals(mediaType))) {
                 throw new UnsupportedFileMediaTypeException(mediaType, ExceptionHelper.SUPPORTED_THUMBNAIL_MEDIA_TYPES);
             }
             try {
-                InputStream is = thumbnail.getInputStream();
+                InputStream is = thumbnailFile.getInputStream();
                 BufferedImage biThumbnail = ImageIO.read(is);
                 if (!(biThumbnail.getHeight() >= MIN_THUMBNAIL_HEIGHT && biThumbnail.getHeight() <= MAX_THUMBNAIL_HEIGHT &&
                         biThumbnail.getWidth() >= MIN_THUMBNAIL_WIDTH && biThumbnail.getWidth() <= MAX_THUMBNAIL_WIDTH &&
-                        thumbnail.getSize() <= MAX_THUMBNAIL_SIZE))
+                        thumbnailFile.getSize() <= MAX_THUMBNAIL_SIZE))
                     throw new RequestFileException(
                             "Thumbnail", MIN_THUMBNAIL_HEIGHT, MAX_THUMBNAIL_HEIGHT,
                             MIN_THUMBNAIL_WIDTH, MAX_THUMBNAIL_WIDTH, MAX_THUMBNAIL_SIZE);
 
-                thumbnailPath = String.format("%s\\%s.%s", THUMBNAILS_PATH, UUID.nameUUIDFromBytes(thumbnail.getBytes()), mediaType.getSubtype());
+                thumbnailPath = String.format("%s\\%s.%s", THUMBNAILS_PATH, UUID.nameUUIDFromBytes(thumbnailFile.getBytes()), mediaType.getSubtype());
                 ImageIO.write(biThumbnail, mediaType.getSubtype(), new File(thumbnailPath));
             } catch (IOException e) {
-                throw new RequestFileException(thumbnail.getName());
+                throw new RequestFileException(thumbnailFile.getName());
             }
         }
         return thumbnailPath;
