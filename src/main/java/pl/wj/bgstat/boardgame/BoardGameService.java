@@ -123,7 +123,7 @@ public class BoardGameService {
                             "Thumbnail", MIN_THUMBNAIL_HEIGHT, MAX_THUMBNAIL_HEIGHT,
                             MIN_THUMBNAIL_WIDTH, MAX_THUMBNAIL_WIDTH, MAX_THUMBNAIL_SIZE);
 
-                thumbnailPath = String.format("%s\\%s.%s", THUMBNAILS_PATH, UUID.nameUUIDFromBytes(thumbnailFile.getBytes()), mediaType.getSubtype());
+                thumbnailPath = String.format("%s\\%s.%s", THUMBNAILS_PATH, UUID.randomUUID(), mediaType.getSubtype());
                 ImageIO.write(biThumbnail, mediaType.getSubtype(), new File(thumbnailPath));
             } catch (IOException e) {
                 throw new RequestFileException(thumbnailFile.getName());

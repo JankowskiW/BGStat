@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
@@ -12,7 +13,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 import pl.wj.bgstat.boardgame.BoardGameRepository;
-import pl.wj.bgstat.boardgame.model.BoardGame;
 import pl.wj.bgstat.rulebook.enumeration.LanguageISO;
 import pl.wj.bgstat.rulebook.model.Rulebook;
 import pl.wj.bgstat.rulebook.model.dto.RulebookRequestDto;
@@ -21,7 +21,6 @@ import pl.wj.bgstat.rulebook.model.dto.RulebookResponseDto;
 import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
@@ -34,14 +33,8 @@ import static pl.wj.bgstat.rulebook.model.RulebookMapper.mapToRulebookResponseDt
 
 @ExtendWith(MockitoExtension.class)
 class RulebookServiceTest {
-
-    /*
-     * 1) Add rulebook in specific language if rulebook does not exist
-     * 2) Replace rulebook in specific language if rulebook already exists
-     * 3) Delete existing rulebook
-     * 4) Return rulebook in specific language
-     */
-
+    @Mock
+    private MultipartFile multipartFile;
     @Mock
     private BoardGameRepository boardGameRepository;
     @Mock
@@ -52,7 +45,6 @@ class RulebookServiceTest {
     private static final String RULEBOOKS_PATH = "\\\\localhost\\resources\\rulebooks";
 
     private static MockedStatic ms;
-
 
     @BeforeAll
     static void beforeAll() throws IOException {
@@ -76,11 +68,9 @@ class RulebookServiceTest {
         String path = RULEBOOKS_PATH + String.format("\\%d\\%d_%s.pdf", boardGameId, boardGameId, language);
         Rulebook rulebook = mapToRulebook(rulebookRequestDto, path);
         rulebook.setId(rulebookId);
-        RulebookResponseDto expectedResponse = mapToRulebookResponseDto(rulebook);
-        MultipartFile file = new MockMultipartFile("Name", "OriginalName", language.name(), createInputStreamOfRulebook(true)); //createMultipartRulebook(true);
-        given(boardGameRepository.existsById(anyLong())).willReturn(true);
+        RulebookResponseDto expectedResponse = mapToRulebookResponseDto(rulebook);given(boardGameRepository.existsById(anyLong())).willReturn(true);
         given(rulebookRepository.existsByBoardGameIdAndLanguageIso(anyLong(), anyString())).willReturn(false);
-       // willDoNothing().given(file).transferTo(any(File.class));
+        willDoNothing().given(multipartFile).transferTo(any(File.class));
         given(rulebookRepository.save(any(Rulebook.class))).willAnswer(
                 i -> {
                     Rulebook rb = i.getArgument(0, Rulebook.class);
@@ -89,7 +79,7 @@ class RulebookServiceTest {
                 });
 
         // when
-        RulebookResponseDto rulebookResponseDto = rulebookService.addOrReplaceRulebook(rulebookRequestDto, file);
+        RulebookResponseDto rulebookResponseDto = rulebookService.addOrReplaceRulebook(rulebookRequestDto, multipartFile);
 
         // then
         assertThat(rulebookResponseDto)

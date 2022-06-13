@@ -35,6 +35,7 @@ public class RulebookService {
         String path = RULEBOOKS_PATH + String.format("\\%d\\%d_%s.pdf", rulebookRequestDto.getBoardGameId(),
                 rulebookRequestDto.getBoardGameId(), rulebookRequestDto.getLanguageIso());
         try {
+            // TODO: 11.06.2022 create folder for board game if does not exist 
             rulebookFile.transferTo(new File(path));
         } catch (IOException e) {
             e.printStackTrace();

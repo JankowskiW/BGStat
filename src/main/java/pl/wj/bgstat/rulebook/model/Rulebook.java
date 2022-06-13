@@ -15,6 +15,7 @@ public class Rulebook {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private long boardGameId;
+    @Enumerated(EnumType.STRING)
     private LanguageISO languageIso;
     private String path;
 }
