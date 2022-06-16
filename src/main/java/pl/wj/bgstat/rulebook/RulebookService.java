@@ -27,7 +27,6 @@ import static pl.wj.bgstat.rulebook.model.RulebookMapper.mapToRulebookResponseDt
 @Service
 @RequiredArgsConstructor
 public class RulebookService {
-
     private static final String RULEBOOKS_PATH = "\\\\localhost\\resources\\rulebooks";
 
     private final BoardGameRepository boardGameRepository;
@@ -62,13 +61,16 @@ public class RulebookService {
         Rulebook rulebook = rulebookRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(RULEBOOK_RESOURCE_NAME, ID_FIELD, id));
         if (rulebook.getPath() != null) {
-            try {
-                File file = new File(rulebook.getPath());
-                file.delete();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            File file = new File(rulebook.getPath());
+            file.delete();
         }
         rulebookRepository.deleteById(id);
+    }
+
+    public void deleteAllRulebooksByBoardGameId(long boardGameId) {
+        throwExceptionWhenNotExistsById(boardGameId, boardGameRepository);
+        rulebookRepository.deleteByBoardGameId(boardGameId);
+        File file = new File(String.format("%s\\%d", RULEBOOKS_PATH, boardGameId));
+        file.delete();
     }
 }

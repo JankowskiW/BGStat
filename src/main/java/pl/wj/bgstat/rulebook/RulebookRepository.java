@@ -6,4 +6,6 @@ import pl.wj.bgstat.rulebook.model.Rulebook;
 
 public interface RulebookRepository extends JpaRepository<Rulebook, Long> {
     boolean existsByBoardGameIdAndLanguageIso(long boardGameId, LanguageISO languageIso);
+
+    void deleteByBoardGameId(long boardGameId);
 }
