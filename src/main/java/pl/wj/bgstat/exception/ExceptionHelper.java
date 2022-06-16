@@ -8,6 +8,7 @@ import pl.wj.bgstat.attributeclasstype.AttributeClassTypeRepository;
 import pl.wj.bgstat.boardgame.BoardGameRepository;
 import pl.wj.bgstat.boardgamedescription.BoardGameDescriptionRepository;
 import pl.wj.bgstat.gameplay.GameplayRepository;
+import pl.wj.bgstat.rulebook.RulebookRepository;
 import pl.wj.bgstat.store.StoreRepository;
 import pl.wj.bgstat.systemobjectattributeclass.SystemObjectAttributeClassRepository;
 import pl.wj.bgstat.systemobjecttype.SystemObjectTypeRepository;
@@ -94,6 +95,8 @@ public class ExceptionHelper {
                 resourceName = USER_BOARD_GAME_RESOURCE_NAME;
             }else if (repository instanceof UserRepository) {
                 resourceName = USER_RESOURCE_NAME;
+            }else if (repository instanceof RulebookRepository) {
+                resourceName = RULEBOOK_RESOURCE_NAME;
             }
             throw new ResourceNotFoundException(resourceName, ID_FIELD, id);
         }

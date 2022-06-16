@@ -11,6 +11,7 @@ import pl.wj.bgstat.boardgame.BoardGameRepository;
 import pl.wj.bgstat.exception.ExceptionHelper;
 import pl.wj.bgstat.exception.RequestEnumException;
 import pl.wj.bgstat.exception.ResourceExistsException;
+import pl.wj.bgstat.exception.ResourceNotFoundException;
 import pl.wj.bgstat.rulebook.enumeration.LanguageISO;
 import pl.wj.bgstat.rulebook.model.Rulebook;
 import pl.wj.bgstat.rulebook.model.dto.RulebookRequestDto;
@@ -30,8 +31,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
-import static pl.wj.bgstat.exception.ExceptionHelper.createRequestEnumExceptionMessage;
-import static pl.wj.bgstat.exception.ExceptionHelper.createResourceExistsExceptionMessage;
+import static pl.wj.bgstat.exception.ExceptionHelper.*;
 import static pl.wj.bgstat.rulebook.model.RulebookMapper.mapToRulebook;
 import static pl.wj.bgstat.rulebook.model.RulebookMapper.mapToRulebookResponseDto;
 
@@ -142,5 +142,18 @@ class RulebookServiceTest {
 
         // then
         verify(rulebookRepository).deleteById(rulebookId);
+    }
+
+    @Test
+    @DisplayName("Should throw ResourceNotFoundException when rulebook does not exist in database")
+    void shouldThrowExceptionWhenRulebookDoesNotExistInDatabase() {
+        // given
+        long rulebookId = 100L;
+        given(rulebookRepository.findById(anyLong())).willReturn(Optional.empty());
+
+        // when
+        assertThatThrownBy(() -> rulebookService.deleteRulebook(rulebookId))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage(createResourceNotFoundExceptionMessage(RULEBOOK_RESOURCE_NAME, ID_FIELD, rulebookId));
     }
 }
