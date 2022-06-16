@@ -1,5 +1,9 @@
 package pl.wj.bgstat.rulebook.enumeration;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+
+import java.util.Arrays;
+
 /**
  * LanguageISO enum contains most common used
  * languages ISO 639-1 codes
@@ -26,5 +30,13 @@ public enum LanguageISO {
     /** Czech */
     CS,
     /** Slovak */
-    SK
+    SK;
+
+    @JsonCreator
+    public static LanguageISO getLanguageISO(String value) {
+        LanguageISO languageISO =
+                Arrays.stream(LanguageISO.values()).filter(v -> v.toString().equals(value)).findFirst().orElse(null);
+        System.out.println(languageISO);
+        return languageISO;
+    }
 }

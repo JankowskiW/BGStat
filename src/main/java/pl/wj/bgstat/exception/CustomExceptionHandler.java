@@ -49,4 +49,14 @@ public class CustomExceptionHandler {
                 ZonedDateTime.now()
         );
     }
+
+    @ExceptionHandler(RequestEnumException.class)
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    public ExceptionBody handleRequestEnumException(RequestEnumException e) {
+        return new ExceptionBody(
+                e.getMessage(),
+                HttpStatus.BAD_REQUEST,
+                ZonedDateTime.now()
+        );
+    }
 }

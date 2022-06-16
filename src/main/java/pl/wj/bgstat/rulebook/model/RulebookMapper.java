@@ -2,7 +2,6 @@ package pl.wj.bgstat.rulebook.model;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.tomcat.util.digester.Rule;
 import pl.wj.bgstat.rulebook.model.dto.RulebookRequestDto;
 import pl.wj.bgstat.rulebook.model.dto.RulebookResponseDto;
 
