@@ -156,4 +156,31 @@ class RulebookServiceTest {
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessage(createResourceNotFoundExceptionMessage(RULEBOOK_RESOURCE_NAME, ID_FIELD, rulebookId));
     }
+
+    @Test
+    @DisplayName("Should delete all rulebooks by board game id")
+    void shouldDeleteAllRulebooksByBoardGameId() {
+        // given
+        long boardGameId = 1L;
+        given(boardGameRepository.existsById(anyLong())).willReturn(true);
+
+        // when
+        rulebookService.deleteAllRulebooksByBoardGameId(boardGameId);
+
+        // then
+        verify(rulebookRepository).deleteByBoardGameId(boardGameId);
+    }
+
+    @Test
+    @DisplayName("Should throw ResourceNotFoundException when board game does not exist in database")
+    void shouldThrowExceptionWhenBoardGameDoesNotExistInDatabase() {
+        // given
+        long boardGameId = 100L;
+        given(boardGameRepository.existsById(anyLong())).willReturn(false);
+
+        // when
+        assertThatThrownBy(() -> rulebookService.deleteAllRulebooksByBoardGameId(boardGameId))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage(createResourceNotFoundExceptionMessage(BOARD_GAME_RESOURCE_NAME, ID_FIELD, boardGameId));
+    }
 }
