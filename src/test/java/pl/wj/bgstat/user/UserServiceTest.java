@@ -133,7 +133,7 @@ class UserServiceTest {
 
     @Test
     @DisplayName("Should throw ResourceNotFoundException when user id does not exist in database")
-    void shouldThrowExceptionWhenUserIdDoesNotExists() {
+    void shouldThrowExceptionWhenUserIdDoesNotExist() {
         // given
         long userId = 100L;
         int pageNumber = 1;

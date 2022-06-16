@@ -128,7 +128,7 @@ class StatsServiceTest {
 
     @Test
     @DisplayName("Should throw ResourceNotFoundException when gameplays owner does not exist in database")
-    void shouldThrowExceptionWhenGameplaysOwnerDoesNotExistsInDatabase() {
+    void shouldThrowExceptionWhenGameplaysOwnerDoesNotExistInDatabase() {
         // given
         long userId = 100L;
         given(userRepository.existsById(anyLong())).willReturn(false);
@@ -142,7 +142,7 @@ class StatsServiceTest {
 
     @Test
     @DisplayName("Should throw ResourceNotFoundException when gameplays owner exists but board game does not exist in database")
-    void shouldThrowExceptionWhenGameplaysOwnerExistsBoardGameDoesNotExistsInDatabase() {
+    void shouldThrowExceptionWhenGameplaysOwnerExistsBoardGameDoesNotExistInDatabase() {
         // given
         long userId = 100L;
         long boardGameId = 99L;
@@ -179,7 +179,7 @@ class StatsServiceTest {
 
     @Test
     @DisplayName("Should throw ResourceNotFoundException when gameplays board game does not exist in database")
-    void shouldThrowExceptionWhenGameplaysBoardGameDoesNotExistsInDatabase() {
+    void shouldThrowExceptionWhenGameplaysBoardGameDoesNotExistInDatabase() {
         // given
         long boardGameId = 100L;
         given(boardGameRepository.existsById(anyLong())).willReturn(false);
