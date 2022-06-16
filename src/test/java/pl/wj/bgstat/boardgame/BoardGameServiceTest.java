@@ -16,16 +16,17 @@ import pl.wj.bgstat.boardgame.model.BoardGame;
 import pl.wj.bgstat.boardgame.model.BoardGameMapper;
 import pl.wj.bgstat.boardgame.model.dto.*;
 import pl.wj.bgstat.exception.*;
+import pl.wj.bgstat.rulebook.RulebookService;
 import pl.wj.bgstat.systemobjecttype.SystemObjectTypeRepository;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static java.lang.Math.ceil;
 import static java.lang.Math.floor;
@@ -34,7 +35,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.verify;
 import static pl.wj.bgstat.boardgame.BoardGameServiceTestHelper.*;
 import static pl.wj.bgstat.exception.ExceptionHelper.*;
 
@@ -45,6 +47,8 @@ class BoardGameServiceTest {
     private BoardGameRepository boardGameRepository;
     @Mock
     private SystemObjectTypeRepository systemObjectTypeRepository;
+    @Mock
+    private RulebookService rulebookService;
     @InjectMocks
     private BoardGameService boardGameService;
 
@@ -534,8 +538,11 @@ class BoardGameServiceTest {
     void shouldRemoveBoardGameByIdWhenIdExists () {
         // given
         long id = 3L;
-        given(boardGameRepository.existsById(anyLong()))
-                .willReturn(boardGameList.stream().anyMatch(bg -> bg.getId() == id));
+        BoardGame boardGame = new BoardGame();
+        boardGame.setId(id);
+        boardGame.setThumbnailPath(String.format("%s\\%s.jpeg",THUMBNAILS_PATH, UUID.randomUUID()));
+        given(boardGameRepository.findById(anyLong())).willReturn(Optional.of(boardGame));
+        willDoNothing().given(rulebookService).deleteAllRulebooksByBoardGameId(id);
         willDoNothing().given(boardGameRepository).deleteById(anyLong());
 
         // when
@@ -550,8 +557,7 @@ class BoardGameServiceTest {
     void shouldThrowExceptionWhenTryingToRemoveNotExistingBoardGame() {
         // given
         long id = 100L;
-        given(boardGameRepository.existsById(anyLong()))
-                .willReturn(boardGameList.stream().anyMatch(bg -> bg.getId() == id));
+        given(boardGameRepository.findById(anyLong())).willReturn(Optional.empty());
 
         // when
         assertThatThrownBy(() -> boardGameService.deleteBoardGame(id))

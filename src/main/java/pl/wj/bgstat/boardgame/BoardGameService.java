@@ -10,6 +10,8 @@ import pl.wj.bgstat.boardgame.model.BoardGame;
 import pl.wj.bgstat.boardgame.model.BoardGameMapper;
 import pl.wj.bgstat.boardgame.model.dto.*;
 import pl.wj.bgstat.exception.*;
+import pl.wj.bgstat.rulebook.RulebookRepository;
+import pl.wj.bgstat.rulebook.RulebookService;
 import pl.wj.bgstat.systemobjecttype.SystemObjectTypeRepository;
 
 import javax.imageio.ImageIO;
@@ -33,9 +35,10 @@ public class BoardGameService {
     private static final int MAX_THUMBNAIL_SIZE = 10240;
     private static final String THUMBNAILS_PATH = "\\\\localhost\\resources\\thumbnails";
 
-
     private final BoardGameRepository boardGameRepository;
     private final SystemObjectTypeRepository systemObjectTypeRepository;
+
+    private final RulebookService rulebookService;
 
     public Page<BoardGameHeaderDto> getBoardGameHeaders(Pageable pageable) {
         return boardGameRepository.findBoardGameHeaders(pageable);
@@ -98,8 +101,13 @@ public class BoardGameService {
     }
 
     public void deleteBoardGame(long id) {
-        // TODO: 11.06.2022 Delete thumbnail and rulebooks when client delete board game
-        throwExceptionWhenNotExistsById(id, boardGameRepository);
+        BoardGame boardGame = boardGameRepository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundException(BOARD_GAME_RESOURCE_NAME, ID_FIELD, id));
+        if (boardGame.getThumbnailPath() != null) {
+            File file = new File(boardGame.getThumbnailPath());
+            file.delete();
+        }
+        rulebookService.deleteAllRulebooksByBoardGameId(id);
         boardGameRepository.deleteById(id);
     }
 

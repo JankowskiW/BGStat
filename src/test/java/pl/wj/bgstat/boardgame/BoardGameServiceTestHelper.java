@@ -94,38 +94,4 @@ public class BoardGameServiceTestHelper {
                 150,
                 "DESCRIPTION OF Name No. " + (currentSize + 1));
     }
-
-    public static BoardGameGameplaysStatsDto createBoardGameGameplaysStatsDto(boolean isEmpty) {
-        int numOfGp;
-        double avgTime;
-        if (isEmpty) {
-            numOfGp = 0;
-            avgTime = 0;
-        }
-        else {
-            numOfGp = 37;
-            avgTime = 99;
-        }
-        return new BoardGameGameplaysStatsDto() {
-            @Override
-            public long getBoardGameId() {
-                return 1;
-            }
-
-            @Override
-            public String getBoardGameName() {
-                return "Name";
-            }
-
-            @Override
-            public int getNumOfGameplays() {
-                return numOfGp;
-            }
-
-            @Override
-            public double getAvgTimeOfGameplay() {
-                return avgTime;
-            }
-        };
-    }
 }
