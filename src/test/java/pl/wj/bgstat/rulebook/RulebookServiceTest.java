@@ -8,6 +8,8 @@ import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.multipart.MultipartFile;
 import pl.wj.bgstat.boardgame.BoardGameRepository;
+import pl.wj.bgstat.exception.ExceptionHelper;
+import pl.wj.bgstat.exception.RequestEnumException;
 import pl.wj.bgstat.rulebook.enumeration.LanguageISO;
 import pl.wj.bgstat.rulebook.model.Rulebook;
 import pl.wj.bgstat.rulebook.model.dto.RulebookRequestDto;
@@ -16,12 +18,16 @@ import pl.wj.bgstat.rulebook.model.dto.RulebookResponseDto;
 import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.mockStatic;
+import static pl.wj.bgstat.exception.ExceptionHelper.createRequestEnumExceptionMessage;
 import static pl.wj.bgstat.rulebook.model.RulebookMapper.mapToRulebook;
 import static pl.wj.bgstat.rulebook.model.RulebookMapper.mapToRulebookResponseDto;
 
@@ -41,7 +47,7 @@ class RulebookServiceTest {
     private static MockedStatic ms;
 
     @BeforeAll
-    static void beforeAll() throws IOException {
+    static void beforeAll() {
         ms = mockStatic(ImageIO.class);
     }
 
@@ -80,5 +86,20 @@ class RulebookServiceTest {
                 .isNotNull()
                 .usingRecursiveComparison()
                 .isEqualTo(expectedResponse);
+    }
+
+    @Test
+    @DisplayName("Should throw RequestEnumException when given language iso code is null")
+    void shouldThrowRequestEnumExceptionWhenGivenLanguageIsoCodeIsNull() {
+        // given
+        long boardGameId = 1L;
+        RulebookRequestDto rulebookRequestDto = new RulebookRequestDto(boardGameId, null);
+        given(boardGameRepository.existsById(anyLong())).willReturn(true);
+
+        // when
+        assertThatThrownBy(() -> rulebookService.addOrReplaceRulebook(rulebookRequestDto, multipartFile))
+                .isInstanceOf(RequestEnumException.class)
+                .hasMessage(createRequestEnumExceptionMessage("languageIso",
+                        Arrays.stream(LanguageISO.values()).map(Enum::toString).collect(Collectors.toList())));
     }
 }

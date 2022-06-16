@@ -37,6 +37,10 @@ public class ExceptionHelper {
     public static final String ID_FIELD = "id";
     public static final String NAME_FIELD = "name";
 
+    public static String createRequestEnumExceptionMessage(String fieldName, List<String> supportedValues) {
+        return String.format("Unsupported %s value. Supported values: %s", fieldName, supportedValues.toString());
+    }
+
     public static String createRequestFileExceptionSaveFailedMessage(String fileName) {
         return String.format("Failed to save file '%s'", fileName);
     }
