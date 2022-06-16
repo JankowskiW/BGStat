@@ -43,8 +43,7 @@ public class RulebookService {
         try {
             File boardGameDirectory = new File(String.format("%s\\%d", RULEBOOKS_PATH, rulebookRequestDto.getBoardGameId()));
             if (!boardGameDirectory.exists()) {
-                if(!boardGameDirectory.mkdirs())
-                    throw new RequestFileException(rulebookFile.getName());
+                boardGameDirectory.mkdirs();
             }
             rulebookFile.transferTo(new File(path));
         } catch (IOException e) {
