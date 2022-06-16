@@ -1,6 +1,7 @@
 package pl.wj.bgstat.rulebook;
 
 import lombok.RequiredArgsConstructor;
+import org.hibernate.cfg.NotYetImplementedException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import pl.wj.bgstat.boardgame.BoardGameRepository;
@@ -30,7 +31,7 @@ public class RulebookService {
     private final BoardGameRepository boardGameRepository;
     private final RulebookRepository rulebookRepository;
 
-    public RulebookResponseDto addOrReplaceRulebook(RulebookRequestDto rulebookRequestDto, MultipartFile rulebookFile) {
+    public RulebookResponseDto addRulebook(RulebookRequestDto rulebookRequestDto, MultipartFile rulebookFile) {
         throwExceptionWhenNotExistsById(rulebookRequestDto.getBoardGameId(), boardGameRepository);
         if (rulebookRequestDto.getLanguageIso() == null) {
             throw new RequestEnumException("languageIso", Arrays.stream(LanguageISO.values()).map(Enum::toString).collect(Collectors.toList()));
@@ -53,5 +54,9 @@ public class RulebookService {
         Rulebook rulebook = mapToRulebook(rulebookRequestDto, path);
         rulebookRepository.save(rulebook);
         return mapToRulebookResponseDto(rulebook);
+    }
+
+    public void deleteRulebook(long rulebookId) {
+        throw new NotYetImplementedException();
     }
 }

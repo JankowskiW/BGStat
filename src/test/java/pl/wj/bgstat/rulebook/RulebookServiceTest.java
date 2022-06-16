@@ -28,6 +28,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.verify;
 import static pl.wj.bgstat.exception.ExceptionHelper.createRequestEnumExceptionMessage;
 import static pl.wj.bgstat.exception.ExceptionHelper.createResourceExistsExceptionMessage;
 import static pl.wj.bgstat.rulebook.model.RulebookMapper.mapToRulebook;
@@ -81,7 +82,7 @@ class RulebookServiceTest {
                 });
 
         // when
-        RulebookResponseDto rulebookResponseDto = rulebookService.addOrReplaceRulebook(rulebookRequestDto, multipartFile);
+        RulebookResponseDto rulebookResponseDto = rulebookService.addRulebook(rulebookRequestDto, multipartFile);
 
         // then
         assertThat(rulebookResponseDto)
@@ -99,7 +100,7 @@ class RulebookServiceTest {
         given(boardGameRepository.existsById(anyLong())).willReturn(true);
 
         // when
-        assertThatThrownBy(() -> rulebookService.addOrReplaceRulebook(rulebookRequestDto, multipartFile))
+        assertThatThrownBy(() -> rulebookService.addRulebook(rulebookRequestDto, multipartFile))
                 .isInstanceOf(RequestEnumException.class)
                 .hasMessage(createRequestEnumExceptionMessage("languageIso",
                         Arrays.stream(LanguageISO.values()).map(Enum::toString).collect(Collectors.toList())));
@@ -113,9 +114,25 @@ class RulebookServiceTest {
         RulebookRequestDto rulebookRequestDto = new RulebookRequestDto(boardGameId, LanguageISO.EN);
         given(boardGameRepository.existsById(anyLong())).willReturn(true);
         given(rulebookRepository.existsByBoardGameIdAndLanguageIso(anyLong(), any(LanguageISO.class))).willReturn(true);
+
         // when
-        assertThatThrownBy(() -> rulebookService.addOrReplaceRulebook(rulebookRequestDto, multipartFile))
+        assertThatThrownBy(() -> rulebookService.addRulebook(rulebookRequestDto, multipartFile))
                 .isInstanceOf(ResourceExistsException.class)
                 .hasMessage(createResourceExistsExceptionMessage("Rulebook"));
+    }
+
+    @Test
+    @DisplayName("Should remove rulebook by id when exists")
+    void shouldRemoveRulebookByIdWhenExists() {
+        // given
+        long rulebookId = 1L;
+        given(rulebookRepository.existsById(anyLong())).willReturn(true);
+        willDoNothing().given(rulebookRepository).deleteById(anyLong());
+
+        // when
+        rulebookService.deleteRulebook(rulebookId);
+
+        // then
+        verify(rulebookRepository).deleteById(rulebookId);
     }
 }

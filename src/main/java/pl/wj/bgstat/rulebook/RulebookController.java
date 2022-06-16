@@ -22,6 +22,6 @@ public class RulebookController {
                                                     @RequestPart("rulebook") MultipartFile rulebook) {
         // TODO: 13.06.2022 Make enum validation (LanguageISO)
         System.out.println(rulebookRequestDto.getLanguageIso());
-        return rulebookService.addOrReplaceRulebook(rulebookRequestDto, rulebook);
+        return rulebookService.addRulebook(rulebookRequestDto, rulebook);
     }
 }
