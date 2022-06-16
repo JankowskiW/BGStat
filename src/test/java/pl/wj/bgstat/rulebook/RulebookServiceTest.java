@@ -20,6 +20,7 @@ import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -126,7 +127,14 @@ class RulebookServiceTest {
     void shouldRemoveRulebookByIdWhenExists() {
         // given
         long rulebookId = 1L;
-        given(rulebookRepository.existsById(anyLong())).willReturn(true);
+        long boardGameId = 2L;
+        LanguageISO languageISO = LanguageISO.EN;
+        Rulebook rulebook = new Rulebook();
+        rulebook.setId(rulebookId);
+        rulebook.setBoardGameId(boardGameId);
+        rulebook.setLanguageIso(languageISO);
+        rulebook.setPath(String.format("%s\\%d\\%d_%s.pdf", RULEBOOKS_PATH, boardGameId, boardGameId, languageISO));
+        given(rulebookRepository.findById(anyLong())).willReturn(Optional.of(rulebook));
         willDoNothing().given(rulebookRepository).deleteById(anyLong());
 
         // when

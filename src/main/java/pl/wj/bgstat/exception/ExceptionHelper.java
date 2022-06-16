@@ -33,6 +33,7 @@ public class ExceptionHelper {
     public static final String USER_RESOURCE_NAME = "User";
     public static final String STORE_RESOURCE_NAME = "Store";
     public static final String GAMEPLAY_RESOURCE_NAME = "Gameplay";
+    public static final String RULEBOOK_RESOURCE_NAME = "Rulebook";
 
     public static final String ID_FIELD = "id";
     public static final String NAME_FIELD = "name";
