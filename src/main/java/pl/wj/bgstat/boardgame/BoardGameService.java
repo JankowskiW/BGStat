@@ -5,7 +5,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import pl.wj.bgstat.attribute.AttributeRepository;
+import pl.wj.bgstat.attribute.AttributeService;
 import pl.wj.bgstat.boardgame.model.BoardGame;
 import pl.wj.bgstat.boardgame.model.BoardGameMapper;
 import pl.wj.bgstat.boardgame.model.dto.*;
@@ -37,6 +40,7 @@ public class BoardGameService {
 
     private final BoardGameRepository boardGameRepository;
     private final SystemObjectTypeRepository systemObjectTypeRepository;
+    private final AttributeRepository attributeRepository;
 
     private final RulebookService rulebookService;
 
@@ -100,14 +104,20 @@ public class BoardGameService {
         return boardGameThumbnailResponseDto;
     }
 
+    @Transactional
     public void deleteBoardGame(long id) {
+        // TODO: 16.06.2022 FIX Relations and cascade removing
         BoardGame boardGame = boardGameRepository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException(BOARD_GAME_RESOURCE_NAME, ID_FIELD, id));
-        if (boardGame.getThumbnailPath() != null) {
-            File file = new File(boardGame.getThumbnailPath());
-            file.delete();
-        }
-        rulebookService.deleteAllRulebooksByBoardGameId(id);
+//        if (boardGame.getThumbnailPath() != null) {
+//            File file = new File(boardGame.getThumbnailPath());
+//            file.delete();
+//        }
+        //rulebookService.deleteAllRulebooksByBoardGameId(id);
+
+        System.out.println("-----------------------------------");
+        attributeRepository.deleteByObjectIdAndObjectTypeId(id, boardGame.getObjectTypeId());
+        System.out.println("-----------------------------------");
         boardGameRepository.deleteById(id);
     }
 

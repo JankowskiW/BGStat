@@ -15,6 +15,7 @@ import pl.wj.bgstat.rulebook.model.Rulebook;
 import pl.wj.bgstat.rulebook.model.dto.RulebookRequestDto;
 import pl.wj.bgstat.rulebook.model.dto.RulebookResponseDto;
 
+import javax.transaction.Transactional;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -67,6 +68,7 @@ public class RulebookService {
         rulebookRepository.deleteById(id);
     }
 
+    @Transactional
     public void deleteAllRulebooksByBoardGameId(long boardGameId) {
         throwExceptionWhenNotExistsById(boardGameId, boardGameRepository);
         rulebookRepository.deleteByBoardGameId(boardGameId);
