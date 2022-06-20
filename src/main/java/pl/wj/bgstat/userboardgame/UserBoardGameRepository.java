@@ -3,8 +3,10 @@ package pl.wj.bgstat.userboardgame;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import pl.wj.bgstat.userboardgame.model.UserBoardGame;
 import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameDetailsDto;
 import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameHeaderDto;
@@ -37,5 +39,9 @@ public interface UserBoardGameRepository extends JpaRepository<UserBoardGame, Lo
             nativeQuery = true)
     Optional<UserBoardGameDetailsDto> getWithDetailsById(long id);
 
+    @Transactional
+    @Modifying
+    @Query("DELETE FROM UserBoardGame ubg WHERE ubg.boardGameId = :id")
+    void deleteByBoardGameId(long id);
 }
 

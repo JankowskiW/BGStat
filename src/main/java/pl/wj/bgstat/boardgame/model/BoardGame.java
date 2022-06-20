@@ -41,7 +41,7 @@ public class BoardGame implements Serializable {
     })
     private Set<Attribute> attributes = new HashSet<>();
 
-//    @OneToMany(cascade = {CascadeType.REMOVE})
-//    @JoinColumn(updatable=false, insertable=false, name="boardGameId", referencedColumnName="id")
-//    private Set<Gameplay> gameplays = new HashSet<>();
+    @OneToMany(mappedBy = "boardGame", cascade = {CascadeType.REMOVE})
+    //@JoinColumn(updatable=false, insertable=false, name="boardGameId", referencedColumnName="id")
+    private Set<Gameplay> gameplays = new HashSet<>();
 }

@@ -16,6 +16,7 @@ import pl.wj.bgstat.exception.*;
 import pl.wj.bgstat.rulebook.RulebookRepository;
 import pl.wj.bgstat.rulebook.RulebookService;
 import pl.wj.bgstat.systemobjecttype.SystemObjectTypeRepository;
+import pl.wj.bgstat.userboardgame.UserBoardGameRepository;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -41,6 +42,7 @@ public class BoardGameService {
     private final BoardGameRepository boardGameRepository;
     private final SystemObjectTypeRepository systemObjectTypeRepository;
     private final AttributeRepository attributeRepository;
+    private final UserBoardGameRepository userBoardGameRepository;
 
     private final RulebookService rulebookService;
 
@@ -118,6 +120,9 @@ public class BoardGameService {
         System.out.println("-----------------------------------");
         attributeRepository.deleteByObjectIdAndObjectTypeId(id, boardGame.getObjectTypeId());
         System.out.println("-----------------------------------");
+        userBoardGameRepository.deleteByBoardGameId(id);
+        System.out.println("-----------------------------------");
+
         boardGameRepository.deleteById(id);
     }
 

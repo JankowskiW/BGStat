@@ -1,5 +1,6 @@
 package pl.wj.bgstat.gameplay.model;
 
+import pl.wj.bgstat.boardgame.model.BoardGame;
 import pl.wj.bgstat.gameplay.model.dto.GameplayRequestDto;
 import pl.wj.bgstat.gameplay.model.dto.GameplayResponseDto;
 
@@ -15,7 +16,9 @@ public class GameplayMapper {
         Gameplay gameplay = new Gameplay();
         gameplay.setObjectTypeId(gameplayRequestDto.getObjectTypeId());
         gameplay.setUserId(gameplayRequestDto.getUserId());
-        gameplay.setBoardGameId(gameplayRequestDto.getBoardGameId());
+        //gameplay.setBoardGameId(gameplayRequestDto.getBoardGameId());
+        gameplay.setBoardGame(new BoardGame());
+        gameplay.getBoardGame().setId(gameplayRequestDto.getBoardGameId());
         gameplay.setUserBoardGameId(gameplayRequestDto.getUserBoardGameId());
         gameplay.setComment(gameplayRequestDto.getComment());
         gameplay.setStartTime(gameplayRequestDto.getStartTime());
@@ -29,7 +32,8 @@ public class GameplayMapper {
                 .id(gameplay.getId())
                 .objectTypeId(gameplay.getObjectTypeId())
                 .userId(gameplay.getUserId())
-                .boardGameId(gameplay.getBoardGameId())
+                //.boardGameId(gameplay.getBoardGameId())
+                .boardGameId(gameplay.getBoardGame().getId())
                 .userBoardGameId(gameplay.getUserBoardGameId())
                 .comment(gameplay.getComment())
                 .startTime(gameplay.getStartTime())
