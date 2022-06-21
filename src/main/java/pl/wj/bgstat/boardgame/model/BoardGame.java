@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.Setter;
 import pl.wj.bgstat.attribute.model.Attribute;
 import pl.wj.bgstat.boardgamedescription.model.BoardGameDescription;
-import pl.wj.bgstat.gameplay.model.Gameplay;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -41,7 +40,4 @@ public class BoardGame implements Serializable {
     })
     private Set<Attribute> attributes = new HashSet<>();
 
-    @OneToMany(mappedBy = "boardGame", cascade = {CascadeType.REMOVE})
-    //@JoinColumn(updatable=false, insertable=false, name="boardGameId", referencedColumnName="id")
-    private Set<Gameplay> gameplays = new HashSet<>();
 }

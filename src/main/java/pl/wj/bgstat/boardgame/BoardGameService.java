@@ -8,12 +8,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import pl.wj.bgstat.attribute.AttributeRepository;
-import pl.wj.bgstat.attribute.AttributeService;
 import pl.wj.bgstat.boardgame.model.BoardGame;
 import pl.wj.bgstat.boardgame.model.BoardGameMapper;
 import pl.wj.bgstat.boardgame.model.dto.*;
 import pl.wj.bgstat.exception.*;
-import pl.wj.bgstat.rulebook.RulebookRepository;
+import pl.wj.bgstat.gameplay.GameplayRepository;
 import pl.wj.bgstat.rulebook.RulebookService;
 import pl.wj.bgstat.systemobjecttype.SystemObjectTypeRepository;
 import pl.wj.bgstat.userboardgame.UserBoardGameRepository;
@@ -23,6 +22,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.SQLException;
 import java.util.UUID;
 
 import static pl.wj.bgstat.exception.ExceptionHelper.*;
@@ -43,6 +43,7 @@ public class BoardGameService {
     private final SystemObjectTypeRepository systemObjectTypeRepository;
     private final AttributeRepository attributeRepository;
     private final UserBoardGameRepository userBoardGameRepository;
+    private final GameplayRepository gameplayRepository;
 
     private final RulebookService rulebookService;
 
@@ -108,27 +109,25 @@ public class BoardGameService {
 
     @Transactional
     public void deleteBoardGame(long id) {
-        // TODO: 16.06.2022 FIX Relations and cascade removing
         BoardGame boardGame = boardGameRepository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException(BOARD_GAME_RESOURCE_NAME, ID_FIELD, id));
-//        if (boardGame.getThumbnailPath() != null) {
-//            File file = new File(boardGame.getThumbnailPath());
-//            file.delete();
-//        }
-        //rulebookService.deleteAllRulebooksByBoardGameId(id);
+        String thumbnailPath = boardGame.getThumbnailPath();
 
-        System.out.println("-----------------------------------");
+        // TODO: 21.06.2022 Fix problem with SQLServerException when db engine throw one 
         attributeRepository.deleteByObjectIdAndObjectTypeId(id, boardGame.getObjectTypeId());
-        System.out.println("-----------------------------------");
         userBoardGameRepository.deleteByBoardGameId(id);
-        System.out.println("-----------------------------------");
-
+        //gameplayRepository.deleteByBoardGameId(id);
         boardGameRepository.deleteById(id);
+
+        if (thumbnailPath != null) {
+            File file = new File(thumbnailPath);
+            file.delete();
+        }
+        rulebookService.deleteAllRulebooksByBoardGameId(id);
     }
 
 
     private String createThumbnail(MultipartFile thumbnailFile) {
-        // TODO: 11.06.2022 Check if ImageIO.write in tests create real file and if it is, then stub that method
         String thumbnailPath = null;
         if (thumbnailFile != null && !thumbnailFile.isEmpty() && thumbnailFile.getContentType() != null) {
             MediaType mediaType = MediaType.valueOf(thumbnailFile.getContentType());
