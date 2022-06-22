@@ -18,7 +18,11 @@ import pl.wj.bgstat.rulebook.model.dto.RulebookResponseDto;
 import javax.transaction.Transactional;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.stream.Collectors;
 
 import static pl.wj.bgstat.exception.ExceptionHelper.*;
@@ -68,11 +72,15 @@ public class RulebookService {
         rulebookRepository.deleteById(id);
     }
 
-    @Transactional
-    public void deleteAllRulebooksByBoardGameId(long boardGameId) {
+    @Transactional(rollbackOn={IOException.class})
+    public void deleteAllRulebooksByBoardGameId(long boardGameId) throws IOException {
         throwExceptionWhenNotExistsById(boardGameId, boardGameRepository);
         rulebookRepository.deleteByBoardGameId(boardGameId);
-        File file = new File(String.format("%s\\%d", RULEBOOKS_PATH, boardGameId));
-        file.delete();
+        Path path = Paths.get(String.format("%s\\%d\\", RULEBOOKS_PATH, boardGameId));
+        if(!path.toFile().exists()) return;
+        Files.walk(path)
+                .sorted(Comparator.reverseOrder())
+                .map(Path::toFile)
+                .forEach(File::delete);
     }
 }

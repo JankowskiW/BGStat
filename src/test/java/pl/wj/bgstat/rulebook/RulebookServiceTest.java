@@ -159,7 +159,7 @@ class RulebookServiceTest {
 
     @Test
     @DisplayName("Should delete all rulebooks by board game id")
-    void shouldDeleteAllRulebooksByBoardGameId() {
+    void shouldDeleteAllRulebooksByBoardGameId() throws IOException {
         // given
         long boardGameId = 1L;
         given(boardGameRepository.existsById(anyLong())).willReturn(true);

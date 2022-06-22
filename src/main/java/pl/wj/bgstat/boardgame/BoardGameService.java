@@ -113,17 +113,21 @@ public class BoardGameService {
                 () -> new ResourceNotFoundException(BOARD_GAME_RESOURCE_NAME, ID_FIELD, id));
         String thumbnailPath = boardGame.getThumbnailPath();
 
-        // TODO: 21.06.2022 Fix problem with SQLServerException when db engine throw one 
         attributeRepository.deleteByObjectIdAndObjectTypeId(id, boardGame.getObjectTypeId());
         userBoardGameRepository.deleteByBoardGameId(id);
-        //gameplayRepository.deleteByBoardGameId(id);
+        try {
+            rulebookService.deleteAllRulebooksByBoardGameId(id);
+        } catch (IOException e) {
+            throw new InternalError();
+        }
+        gameplayRepository.deleteByBoardGameId(id);
         boardGameRepository.deleteById(id);
+        if (boardGameRepository.existsById(id)) return;
 
         if (thumbnailPath != null) {
             File file = new File(thumbnailPath);
             file.delete();
         }
-        rulebookService.deleteAllRulebooksByBoardGameId(id);
     }
 
 
