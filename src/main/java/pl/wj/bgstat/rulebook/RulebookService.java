@@ -77,7 +77,7 @@ public class RulebookService {
         throwExceptionWhenNotExistsById(boardGameId, boardGameRepository);
         rulebookRepository.deleteByBoardGameId(boardGameId);
         Path path = Paths.get(String.format("%s\\%d\\", RULEBOOKS_PATH, boardGameId));
-        if(!path.toFile().exists()) return;
+        if(Files.notExists(path)) return;
         Files.walk(path)
                 .sorted(Comparator.reverseOrder())
                 .map(Path::toFile)

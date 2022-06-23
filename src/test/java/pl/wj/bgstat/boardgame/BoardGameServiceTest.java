@@ -12,12 +12,15 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
+import pl.wj.bgstat.attribute.AttributeRepository;
 import pl.wj.bgstat.boardgame.model.BoardGame;
 import pl.wj.bgstat.boardgame.model.BoardGameMapper;
 import pl.wj.bgstat.boardgame.model.dto.*;
 import pl.wj.bgstat.exception.*;
+import pl.wj.bgstat.gameplay.GameplayRepository;
 import pl.wj.bgstat.rulebook.RulebookService;
 import pl.wj.bgstat.systemobjecttype.SystemObjectTypeRepository;
+import pl.wj.bgstat.userboardgame.UserBoardGameRepository;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -33,8 +36,8 @@ import static java.lang.Math.floor;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.willDoNothing;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 import static pl.wj.bgstat.boardgame.BoardGameServiceTestHelper.*;
@@ -44,9 +47,15 @@ import static pl.wj.bgstat.exception.ExceptionHelper.*;
 class BoardGameServiceTest {
 
     @Mock
+    private AttributeRepository attributeRepository;
+    @Mock
+    private UserBoardGameRepository userBoardGameRepository;
+    @Mock
     private BoardGameRepository boardGameRepository;
     @Mock
     private SystemObjectTypeRepository systemObjectTypeRepository;
+    @Mock
+    private GameplayRepository gameplayRepository;
     @Mock
     private RulebookService rulebookService;
     @InjectMocks
@@ -540,16 +549,50 @@ class BoardGameServiceTest {
         long id = 3L;
         BoardGame boardGame = new BoardGame();
         boardGame.setId(id);
+        boardGame.setObjectTypeId(1L);
         boardGame.setThumbnailPath(String.format("%s\\%s.jpeg",THUMBNAILS_PATH, UUID.randomUUID()));
         given(boardGameRepository.findById(anyLong())).willReturn(Optional.of(boardGame));
-        willDoNothing().given(rulebookService).deleteAllRulebooksByBoardGameId(id);
+        willDoNothing().given(attributeRepository).deleteByObjectIdAndObjectTypeId(anyLong(), anyLong());
+        willDoNothing().given(userBoardGameRepository).deleteByBoardGameId(anyLong());
+        willDoNothing().given(rulebookService).deleteAllRulebooksByBoardGameId(anyLong());
+        willDoNothing().given(gameplayRepository).deleteByBoardGameId(anyLong());
         willDoNothing().given(boardGameRepository).deleteById(anyLong());
+        given(boardGameRepository.existsById(anyLong())).willReturn(false);
 
         // when
         boardGameService.deleteBoardGame(id);
 
         // then
+        verify(attributeRepository).deleteByObjectIdAndObjectTypeId(id, boardGame.getObjectTypeId());
+        verify(userBoardGameRepository).deleteByBoardGameId(id);
+        verify(rulebookService).deleteAllRulebooksByBoardGameId(id);
+        verify(gameplayRepository).deleteByBoardGameId(id);
         verify(boardGameRepository).deleteById(id);
+    }
+
+    @Test
+    void test() throws IOException {
+        // given
+        long id = 3L;
+        BoardGame boardGame = new BoardGame();
+        boardGame.setId(id);
+        boardGame.setObjectTypeId(1L);
+        boardGame.setThumbnailPath(String.format("%s\\%s.jpeg",THUMBNAILS_PATH, UUID.randomUUID()));
+        given(boardGameRepository.findById(anyLong())).willReturn(Optional.of(boardGame));
+        willDoNothing().given(attributeRepository).deleteByObjectIdAndObjectTypeId(anyLong(), anyLong());
+        willDoNothing().given(userBoardGameRepository).deleteByBoardGameId(anyLong());
+        willThrow(IOException.class).given(rulebookService).deleteAllRulebooksByBoardGameId(anyLong());
+
+        // when
+        assertThatThrownBy(() -> boardGameService.deleteBoardGame(id))
+                .isInstanceOf(InternalError.class);
+
+        // then
+        verify(attributeRepository).deleteByObjectIdAndObjectTypeId(id, boardGame.getObjectTypeId());
+        verify(userBoardGameRepository).deleteByBoardGameId(id);
+        verify(rulebookService).deleteAllRulebooksByBoardGameId(id);
+        verify(gameplayRepository, never()).deleteByBoardGameId(id);
+        verify(boardGameRepository, never()).deleteById(id);
     }
 
     @Test

@@ -109,18 +109,20 @@ public class BoardGameService {
 
     @Transactional
     public void deleteBoardGame(long id) {
+        // TODO: 22.06.2022 Fix tests for that method 
         BoardGame boardGame = boardGameRepository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException(BOARD_GAME_RESOURCE_NAME, ID_FIELD, id));
         String thumbnailPath = boardGame.getThumbnailPath();
 
         attributeRepository.deleteByObjectIdAndObjectTypeId(id, boardGame.getObjectTypeId());
         userBoardGameRepository.deleteByBoardGameId(id);
+//        rulebookService.deleteAllRulebooksByBoardGameId(id);
         try {
             rulebookService.deleteAllRulebooksByBoardGameId(id);
         } catch (IOException e) {
             throw new InternalError();
         }
-        gameplayRepository.deleteByBoardGameId(id);
+       // gameplayRepository.deleteByBoardGameId(id);
         boardGameRepository.deleteById(id);
         if (boardGameRepository.existsById(id)) return;
 
