@@ -69,4 +69,14 @@ public class CustomExceptionHandler {
                 ZonedDateTime.now()
         );
     }
+
+    @ExceptionHandler(ForeignKeyConstraintViolationException.class)
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    public ExceptionBody handleForeignKeyConstraintViolation(ForeignKeyConstraintViolationException e) {
+        return new ExceptionBody(
+                e.getMessage(),
+                HttpStatus.BAD_REQUEST,
+                ZonedDateTime.now()
+        );
+    }
 }

@@ -40,6 +40,10 @@ public class ExceptionHelper {
     public static final String ID_FIELD = "id";
     public static final String NAME_FIELD = "name";
 
+    public static String createForeignKeyConstraintViolationExceptionMessage(String resource, long id) {
+        return String.format("%s resource with id %d does not exists in database");
+    }
+
     public static String createRequestEnumExceptionMessage(String fieldName, List<String> supportedValues) {
         return String.format("Unsupported %s value. Supported values: %s", fieldName, supportedValues.toString());
     }
