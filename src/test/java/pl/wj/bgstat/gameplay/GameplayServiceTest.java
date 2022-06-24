@@ -1,6 +1,5 @@
 package pl.wj.bgstat.gameplay;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,14 +12,9 @@ import pl.wj.bgstat.gameplay.model.Gameplay;
 import pl.wj.bgstat.gameplay.model.GameplayMapper;
 import pl.wj.bgstat.gameplay.model.dto.GameplayRequestDto;
 import pl.wj.bgstat.gameplay.model.dto.GameplayResponseDto;
-import pl.wj.bgstat.gameplay.model.dto.GameplaysStatsDto;
 import pl.wj.bgstat.systemobjecttype.SystemObjectTypeRepository;
 import pl.wj.bgstat.user.UserRepository;
 import pl.wj.bgstat.userboardgame.UserBoardGameRepository;
-
-import java.time.LocalDate;
-import java.time.Month;
-import java.util.ArrayList;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -30,7 +24,8 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.verify;
 import static pl.wj.bgstat.exception.ExceptionHelper.*;
-import static pl.wj.bgstat.gameplay.GameplayServiceTestHelper.*;
+import static pl.wj.bgstat.gameplay.GameplayServiceTestHelper.GAMEPLAY_DEFAULT_OBJECT_TYPE_ID;
+import static pl.wj.bgstat.gameplay.GameplayServiceTestHelper.createGameplayRequestDto;
 
 @ExtendWith(MockitoExtension.class)
 public class GameplayServiceTest {
@@ -47,15 +42,6 @@ public class GameplayServiceTest {
     private SystemObjectTypeRepository systemObjectTypeRepository;
     @InjectMocks
     private GameplayService gameplayService;
-
-    private LocalDate fromDate;
-    private LocalDate toDate;
-
-    @BeforeEach
-    void setUp() {
-        fromDate = LocalDate.of(2021, Month.JANUARY, 1);
-        toDate = LocalDate.of(2021, Month.DECEMBER,31);
-    }
 
     @Test
     @DisplayName("Should return created gameplay")

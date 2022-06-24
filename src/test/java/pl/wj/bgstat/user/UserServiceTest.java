@@ -13,24 +13,21 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import pl.wj.bgstat.exception.ResourceNotFoundException;
 import pl.wj.bgstat.gameplay.GameplayRepository;
-import pl.wj.bgstat.gameplay.GameplayService;
 import pl.wj.bgstat.gameplay.model.dto.GameplayHeaderDto;
-import pl.wj.bgstat.gameplay.model.dto.GameplaysStatsDto;
 import pl.wj.bgstat.userboardgame.UserBoardGameRepository;
 import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameHeaderDto;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.Math.ceil;
 import static java.lang.Math.floor;
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static pl.wj.bgstat.exception.ExceptionHelper.*;
-import static pl.wj.bgstat.gameplay.GameplayServiceTestHelper.createGameplaysStatsDto;
 import static pl.wj.bgstat.user.UserServiceTestHelper.populateUserBoardGameHeaderList;
 import static pl.wj.bgstat.user.UserServiceTestHelper.populateUserGameplayHeaderList;
 
@@ -42,8 +39,6 @@ class UserServiceTest {
     private UserBoardGameRepository userBoardGameRepository;
     @Mock
     private GameplayRepository gameplayRepository;
-    @Mock
-    private GameplayService gameplayService;
     @InjectMocks
     private UserService userService;
 
@@ -65,7 +60,7 @@ class UserServiceTest {
         // given
         long userId = 1L;
         int pageNumber = 1;
-        int fromIndex = (pageNumber - 1) * PAGE_SIZE;
+        int fromIndex = 0;
         int toIndex = fromIndex + PAGE_SIZE;
         Page<UserBoardGameHeaderDto> expectedResponse = new PageImpl<>(userBoardGameHeaderList.subList(fromIndex,toIndex));
         given(userRepository.existsById(anyLong())).willReturn(true);
@@ -93,8 +88,7 @@ class UserServiceTest {
         int lastPageSize = (NUMBER_OF_ELEMENTS - (int) floor(NUMBER_OF_ELEMENTS / (double) PAGE_SIZE) * PAGE_SIZE);
         lastPageSize = lastPageSize == 0 ? PAGE_SIZE : lastPageSize;
         int fromIndex = NUMBER_OF_ELEMENTS - lastPageSize;
-        int toIndex = NUMBER_OF_ELEMENTS;
-        Page<UserBoardGameHeaderDto> expectedResponse = new PageImpl<>(userBoardGameHeaderList.subList(fromIndex,toIndex));
+        Page<UserBoardGameHeaderDto> expectedResponse = new PageImpl<>(userBoardGameHeaderList.subList(fromIndex,NUMBER_OF_ELEMENTS));
         given(userRepository.existsById(anyLong())).willReturn(true);
         given(userBoardGameRepository.findUserBoardGameHeaders(anyLong(), any(Pageable.class)))
                 .willReturn(expectedResponse);

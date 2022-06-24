@@ -571,7 +571,8 @@ class BoardGameServiceTest {
     }
 
     @Test
-    void test() throws IOException {
+    @DisplayName("Should throw FileException when cannot remove rulebooks file or directory")
+    void shouldThrowExceptionWhenCannotRemoveRulebooksFileOrDirectory() throws IOException {
         // given
         long id = 3L;
         BoardGame boardGame = new BoardGame();
@@ -585,7 +586,8 @@ class BoardGameServiceTest {
 
         // when
         assertThatThrownBy(() -> boardGameService.deleteBoardGame(id))
-                .isInstanceOf(InternalError.class);
+                .isInstanceOf(FileException.class)
+                .hasMessage("Cannot remove rulebooks file or directory");
 
         // then
         verify(attributeRepository).deleteByObjectIdAndObjectTypeId(id, boardGame.getObjectTypeId());

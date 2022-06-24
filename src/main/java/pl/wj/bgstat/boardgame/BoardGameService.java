@@ -22,7 +22,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.SQLException;
 import java.util.UUID;
 
 import static pl.wj.bgstat.exception.ExceptionHelper.*;
@@ -95,12 +94,8 @@ public class BoardGameService {
         throwExceptionWhenNotExistsById(boardGameId, boardGameRepository);
         BoardGameThumbnailResponseDto boardGameThumbnailResponseDto = boardGameRepository.findThumbnailPath(boardGameId);
         if (boardGameThumbnailResponseDto.getThumbnailPath() != null) {
-            try {
-                File file = new File(boardGameThumbnailResponseDto.getThumbnailPath());
-                file.delete();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            File file = new File(boardGameThumbnailResponseDto.getThumbnailPath());
+            file.delete();
         }
         boardGameThumbnailResponseDto.setThumbnailPath(createThumbnail(thumbnailFile));
         boardGameRepository.updateThumbnailPathById(boardGameThumbnailResponseDto.getId(), boardGameThumbnailResponseDto.getThumbnailPath());
@@ -109,20 +104,18 @@ public class BoardGameService {
 
     @Transactional
     public void deleteBoardGame(long id) {
-        // TODO: 22.06.2022 Fix tests for that method 
         BoardGame boardGame = boardGameRepository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException(BOARD_GAME_RESOURCE_NAME, ID_FIELD, id));
         String thumbnailPath = boardGame.getThumbnailPath();
 
         attributeRepository.deleteByObjectIdAndObjectTypeId(id, boardGame.getObjectTypeId());
         userBoardGameRepository.deleteByBoardGameId(id);
-//        rulebookService.deleteAllRulebooksByBoardGameId(id);
         try {
             rulebookService.deleteAllRulebooksByBoardGameId(id);
         } catch (IOException e) {
-            throw new InternalError();
+            throw new FileException("Cannot remove rulebooks file or directory");
         }
-       // gameplayRepository.deleteByBoardGameId(id);
+        gameplayRepository.deleteByBoardGameId(id);
         boardGameRepository.deleteById(id);
         if (boardGameRepository.existsById(id)) return;
 

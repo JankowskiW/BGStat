@@ -59,4 +59,14 @@ public class CustomExceptionHandler {
                 ZonedDateTime.now()
         );
     }
+
+    @ExceptionHandler(FileException.class)
+    @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
+    public ExceptionBody handleFileException(FileException e) {
+        return new ExceptionBody(
+                e.getMessage(),
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                ZonedDateTime.now()
+        );
+    }
 }
