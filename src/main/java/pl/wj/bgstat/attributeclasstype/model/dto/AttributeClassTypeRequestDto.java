@@ -14,10 +14,11 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AttributeClassTypeRequestDto {
-    @NotBlank @Length(max = 50)
+    @NotBlank(message = "Attribute class type name cannot be blank")
+    @Length(max = 50, message = "Attribute class type name cannot be longer than 50 characters")
     private String name;
-    @NotNull
+    @NotNull(message = "Attribute class type description cannot be null")
+    @Length(max = 255, message = "Attribute class type name cannot be longer than 255 characters")
     private String description;
-    @NotNull
     private boolean archived;
 }
