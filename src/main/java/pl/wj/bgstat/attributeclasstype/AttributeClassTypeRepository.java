@@ -20,4 +20,7 @@ public interface AttributeClassTypeRepository extends JpaRepository<AttributeCla
 
     boolean existsByName(String name);
     boolean existsByNameAndIdNot(String name, long id);
+
+    @Query("SELECT act.name FROM AttributeClassType act WHERE act.id = :id")
+    String getNameById(long id);
 }

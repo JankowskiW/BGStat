@@ -47,6 +47,8 @@ public class AttributeClassService {
                 attributeClassRequestDto.getAttributeClassTypeId(), attributeClassTypeRepository);
         AttributeClass attributeClass = AttributeClassMapper.mapToAttributeClass(attributeClassRequestDto);
         attributeClassRepository.save(attributeClass);
+        String attributeClassTypeName = attributeClassTypeRepository.getNameById(attributeClassRequestDto.getAttributeClassTypeId());
+        attributeClass.getAttributeClassType().setName(attributeClassTypeName);
         return AttributeClassMapper.mapToAttributeClassResponseDto(attributeClass);
     }
 
@@ -57,6 +59,8 @@ public class AttributeClassService {
                 attributeClassRequestDto.getAttributeClassTypeId(), attributeClassTypeRepository);
         AttributeClass attributeClass = AttributeClassMapper.mapToAttributeClass(id, attributeClassRequestDto);
         attributeClassRepository.save(attributeClass);
+        String attributeClassTypeName = attributeClassTypeRepository.getNameById(attributeClassRequestDto.getAttributeClassTypeId());
+        attributeClass.getAttributeClassType().setName(attributeClassTypeName);
         return AttributeClassMapper.mapToAttributeClassResponseDto(attributeClass);
     }
 
