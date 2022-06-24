@@ -22,6 +22,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Optional;
 import java.util.UUID;
 
 import static pl.wj.bgstat.exception.ExceptionHelper.*;
@@ -155,12 +156,12 @@ public class BoardGameService {
 
     private void throwExceptionWhenExistsByName(String name) {
         if (boardGameRepository.existsByName(name))
-            throw new ResourceExistsException(BOARD_GAME_RESOURCE_NAME, NAME_FIELD);
+            throw new ResourceExistsException(BOARD_GAME_RESOURCE_NAME, Optional.of(NAME_FIELD));
     }
 
     private void throwExceptionWhenExistsByNameAndNotId(long id, String name) {
         if (boardGameRepository.existsByNameAndIdNot(name, id))
-            throw new ResourceExistsException(BOARD_GAME_RESOURCE_NAME, NAME_FIELD);
+            throw new ResourceExistsException(BOARD_GAME_RESOURCE_NAME, Optional.of(NAME_FIELD));
     }
 
     private long validateSystemObjectTypeId(long id) {

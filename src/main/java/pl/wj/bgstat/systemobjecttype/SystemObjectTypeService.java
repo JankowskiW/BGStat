@@ -14,6 +14,7 @@ import pl.wj.bgstat.systemobjecttype.model.dto.SystemObjectTypeRequestDto;
 import pl.wj.bgstat.systemobjecttype.model.dto.SystemObjectTypeResponseDto;
 
 import java.util.List;
+import java.util.Optional;
 
 import static pl.wj.bgstat.exception.ExceptionHelper.*;
 
@@ -66,16 +67,16 @@ public class SystemObjectTypeService {
 
     private void throwExceptionWhenExistsByName(String name) {
         if (systemObjectTypeRepository.existsByName(name))
-            throw new ResourceExistsException(SYSTEM_OBJECT_TYPE_RESOURCE_NAME, NAME_FIELD);
+            throw new ResourceExistsException(SYSTEM_OBJECT_TYPE_RESOURCE_NAME, Optional.of(NAME_FIELD));
     }
 
     private void throwExceptionWhenExistsByNameAndNotId(long id, String name) {
         if (systemObjectTypeRepository.existsByNameAndIdNot(name, id))
-            throw new ResourceExistsException(SYSTEM_OBJECT_TYPE_RESOURCE_NAME, NAME_FIELD);
+            throw new ResourceExistsException(SYSTEM_OBJECT_TYPE_RESOURCE_NAME, Optional.of(NAME_FIELD));
     }
 
     private void throwExceptionWhenSystemObjectTypeHasAssignedAttributeClass(long id) {
         if(systemObjectAttributeClassRepository.existsBySystemObjectTypeId(id))
-            throw new ResourceExistsException(SYSTEM_OBJECT_ATTRIBUTE_CLASS_RESOURCE_NAME, ID_FIELD);
+            throw new ResourceExistsException(SYSTEM_OBJECT_ATTRIBUTE_CLASS_RESOURCE_NAME, Optional.of(ID_FIELD));
     }
 }

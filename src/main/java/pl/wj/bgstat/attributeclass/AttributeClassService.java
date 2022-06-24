@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import pl.wj.bgstat.attribute.AttributeRepository;
 import pl.wj.bgstat.attributeclass.model.AttributeClass;
 import pl.wj.bgstat.attributeclass.model.AttributeClassMapper;
 import pl.wj.bgstat.attributeclass.model.dto.AttributeClassHeaderDto;
@@ -15,6 +16,7 @@ import pl.wj.bgstat.systemobjectattributeclass.SystemObjectAttributeClassReposit
 import pl.wj.bgstat.systemobjectattributeclass.model.dto.SystemObjectAttributeClassResponseDto;
 
 import java.util.List;
+import java.util.Optional;
 
 import static pl.wj.bgstat.exception.ExceptionHelper.*;
 
@@ -22,6 +24,7 @@ import static pl.wj.bgstat.exception.ExceptionHelper.*;
 @RequiredArgsConstructor
 public class AttributeClassService {
 
+    private final AttributeRepository attributeRepository;
     private final AttributeClassRepository attributeClassRepository;
     private final SystemObjectAttributeClassRepository systemObjectAttributeClassRepository;
 
@@ -52,7 +55,8 @@ public class AttributeClassService {
 
     public void deleteAttributeClass(long id) {
         throwExceptionWhenNotExistsById(id, attributeClassRepository);
-        throwExceptionWhenExistsByAttributeClassId(id);
+        throwExceptionWhenRelatedSystemObjectAttributeClassExists(id);
+        throwExceptionWhenRelatedAttributeExists(id);
         attributeClassRepository.deleteById(id);
     }
 
@@ -63,16 +67,21 @@ public class AttributeClassService {
 
     private void throwExceptionWhenExistsByName(String name) {
         if (attributeClassRepository.existsByName(name))
-            throw new ResourceExistsException(ATTRIBUTE_CLASS_RESOURCE_NAME, NAME_FIELD);
+            throw new ResourceExistsException(ATTRIBUTE_CLASS_RESOURCE_NAME, Optional.of(NAME_FIELD));
     }
 
     private void throwExceptionWhenExistsByNameAndNotId(long id, String name) {
         if(attributeClassRepository.existsByNameAndIdNot(name, id))
-            throw new ResourceExistsException(ATTRIBUTE_CLASS_RESOURCE_NAME, NAME_FIELD);
+            throw new ResourceExistsException(ATTRIBUTE_CLASS_RESOURCE_NAME, Optional.of(NAME_FIELD));
     }
 
-    private void throwExceptionWhenExistsByAttributeClassId(long id) {
+    private void throwExceptionWhenRelatedSystemObjectAttributeClassExists(long id) {
         if(systemObjectAttributeClassRepository.existsByAttributeClassId(id))
-            throw new ResourceExistsException(SYSTEM_OBJECT_ATTRIBUTE_CLASS_RESOURCE_NAME, ID_FIELD);
+            throw new ResourceExistsException(ATTRIBUTE_CLASS_RESOURCE_NAME, SYSTEM_OBJECT_ATTRIBUTE_CLASS_RESOURCE_NAME);
+    }
+
+    private void throwExceptionWhenRelatedAttributeExists(long id) {
+        if (attributeRepository.existsByAttributeClassId(id))
+            throw new ResourceExistsException(ATTRIBUTE_CLASS_RESOURCE_NAME, ATTRIBUTE_RESOURCE_NAME);
     }
 }

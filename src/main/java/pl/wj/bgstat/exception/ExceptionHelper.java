@@ -17,6 +17,7 @@ import pl.wj.bgstat.userboardgame.UserBoardGameRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class ExceptionHelper {
 
@@ -57,8 +58,16 @@ public class ExceptionHelper {
                 fileTypeName, minHeight, maxHeight, minWidth, maxWidth, maxSize);
     }
 
-    public static String createResourceExistsExceptionMessage(String resource, String field) {
-        return String.format("%s with specified %s already exists in database", resource, field);
+    public static String createResourceExistsExceptionMessage(String resource, Optional<String> field) {
+        if (field.isPresent()) {
+            return String.format("%s with specified %s already exists in database", resource, field.get());
+        } else {
+            return String.format("%s already exists in database", resource);
+        }
+    }
+
+    public static String createResourceExistsExceptionMessage(String resource, String fkResource) {
+        return String.format("%s has related %s records", resource, fkResource);
     }
 
     public static String createResourceExistsExceptionMessage(String resource) {
@@ -101,4 +110,5 @@ public class ExceptionHelper {
             throw new ResourceNotFoundException(resourceName, ID_FIELD, id);
         }
     }
+
 }

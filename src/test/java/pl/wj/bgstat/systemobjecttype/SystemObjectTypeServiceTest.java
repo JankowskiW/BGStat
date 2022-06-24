@@ -209,7 +209,7 @@ class SystemObjectTypeServiceTest {
         // when
         assertThatThrownBy(() -> systemObjectTypeService.addSystemObjectType(systemObjectTypeRequestDto))
                 .isInstanceOf(ResourceExistsException.class)
-                .hasMessage(createResourceExistsExceptionMessage(SYSTEM_OBJECT_TYPE_RESOURCE_NAME, NAME_FIELD));
+                .hasMessage(createResourceExistsExceptionMessage(SYSTEM_OBJECT_TYPE_RESOURCE_NAME, Optional.of(NAME_FIELD)));
     }
 
     @Test
@@ -274,7 +274,7 @@ class SystemObjectTypeServiceTest {
         // when
         assertThatThrownBy(() -> systemObjectTypeService.editSystemObjectType(id, systemObjectTypeRequestDto))
                 .isInstanceOf(ResourceExistsException.class)
-                .hasMessage(createResourceExistsExceptionMessage(SYSTEM_OBJECT_TYPE_RESOURCE_NAME, NAME_FIELD));
+                .hasMessage(createResourceExistsExceptionMessage(SYSTEM_OBJECT_TYPE_RESOURCE_NAME, Optional.of(NAME_FIELD)));
     }
 
     @Test
@@ -320,7 +320,7 @@ class SystemObjectTypeServiceTest {
         //when
         assertThatThrownBy(() -> systemObjectTypeService.deleteSystemObjectType(id))
                 .isInstanceOf(ResourceExistsException.class)
-                .hasMessage(createResourceExistsExceptionMessage(SYSTEM_OBJECT_ATTRIBUTE_CLASS_RESOURCE_NAME, ID_FIELD));
+                .hasMessage(createResourceExistsExceptionMessage(SYSTEM_OBJECT_ATTRIBUTE_CLASS_RESOURCE_NAME, Optional.of(ID_FIELD)));
     }
 
     @Test

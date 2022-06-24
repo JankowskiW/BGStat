@@ -21,6 +21,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static pl.wj.bgstat.exception.ExceptionHelper.*;
@@ -41,7 +42,7 @@ public class RulebookService {
             throw new RequestEnumException("languageIso", Arrays.stream(LanguageISO.values()).map(Enum::toString).collect(Collectors.toList()));
         }
         if (rulebookRepository.existsByBoardGameIdAndLanguageIso(rulebookRequestDto.getBoardGameId(), rulebookRequestDto.getLanguageIso())) {
-            throw new ResourceExistsException("Rulebook");
+            throw new ResourceExistsException(RULEBOOK_RESOURCE_NAME, Optional.empty());
         }
         String path = String.format("%s\\%d\\%d_%s.pdf", RULEBOOKS_PATH, rulebookRequestDto.getBoardGameId(),
                 rulebookRequestDto.getBoardGameId(), rulebookRequestDto.getLanguageIso());

@@ -128,7 +128,7 @@ class RulebookServiceTest {
         // when
         assertThatThrownBy(() -> rulebookService.addRulebook(rulebookRequestDto, multipartFile))
                 .isInstanceOf(ResourceExistsException.class)
-                .hasMessage(createResourceExistsExceptionMessage("Rulebook"));
+                .hasMessage(createResourceExistsExceptionMessage(RULEBOOK_RESOURCE_NAME, Optional.empty()));
     }
 
     @Test

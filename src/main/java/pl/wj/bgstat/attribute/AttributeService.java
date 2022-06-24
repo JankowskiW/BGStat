@@ -9,6 +9,8 @@ import pl.wj.bgstat.attribute.model.dto.AttributeResponseDto;
 import pl.wj.bgstat.exception.ResourceExistsException;
 import pl.wj.bgstat.exception.ResourceNotFoundException;
 
+import java.util.Optional;
+
 import static pl.wj.bgstat.exception.ExceptionHelper.ATTRIBUTE_RESOURCE_NAME;
 import static pl.wj.bgstat.exception.ExceptionHelper.ID_FIELD;
 
@@ -29,12 +31,12 @@ public class AttributeService {
             if (attributeRepository.existsByObjectIdAndObjectTypeIdAndAttributeClassIdAndValueNot(
                     attributeRequestDto.getObjectId(), attributeRequestDto.getObjectTypeId(),
                     attributeRequestDto.getAttributeClassId(), attributeRequestDto.getValue()))
-                throw new ResourceExistsException(ATTRIBUTE_RESOURCE_NAME);
+                throw new ResourceExistsException(ATTRIBUTE_RESOURCE_NAME, Optional.empty());
         } else {
             if (attributeRepository.existsByObjectIdAndObjectTypeIdAndAttributeClassId(
                     attributeRequestDto.getObjectId(), attributeRequestDto.getObjectTypeId(),
                     attributeRequestDto.getAttributeClassId()))
-                throw new ResourceExistsException(ATTRIBUTE_RESOURCE_NAME);
+                throw new ResourceExistsException(ATTRIBUTE_RESOURCE_NAME, Optional.empty());
         }
 
         Attribute attribute = AttributeMapper.mapToAttribute(attributeRequestDto);
@@ -47,7 +49,7 @@ public class AttributeService {
             if (!attributeRepository.existsByObjectIdAndObjectTypeIdAndAttributeClassIdAndValueAndIdNot(
                     attributeRequestDto.getObjectId(), attributeRequestDto.getObjectTypeId(),
                     attributeRequestDto.getAttributeClassId(), attributeRequestDto.getValue(), id))
-                throw new ResourceExistsException(ATTRIBUTE_RESOURCE_NAME);
+                throw new ResourceExistsException(ATTRIBUTE_RESOURCE_NAME, Optional.empty());
         }
         if (!attributeRepository.existsById(id)) throw new ResourceNotFoundException(ATTRIBUTE_RESOURCE_NAME, ID_FIELD, id);
         Attribute attribute = AttributeMapper.mapToAttribute(id, attributeRequestDto);

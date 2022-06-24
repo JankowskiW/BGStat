@@ -203,7 +203,7 @@ class AttributeClassServiceTest {
         // when
         assertThatThrownBy(() -> attributeClassService.addAttributeClass(attributeClassRequestDto))
                 .isInstanceOf(ResourceExistsException.class)
-                .hasMessage(createResourceExistsExceptionMessage(ATTRIBUTE_CLASS_RESOURCE_NAME, NAME_FIELD));
+                .hasMessage(createResourceExistsExceptionMessage(ATTRIBUTE_CLASS_RESOURCE_NAME, Optional.of(NAME_FIELD)));
     }
 
     @Test
@@ -268,7 +268,7 @@ class AttributeClassServiceTest {
         // when
         assertThatThrownBy(() -> attributeClassService.editAttributeClass(id, attributeClassRequestDto))
                 .isInstanceOf(ResourceExistsException.class)
-                .hasMessage(createResourceExistsExceptionMessage(ATTRIBUTE_CLASS_RESOURCE_NAME, NAME_FIELD));
+                .hasMessage(createResourceExistsExceptionMessage(ATTRIBUTE_CLASS_RESOURCE_NAME, Optional.of(NAME_FIELD)));
     }
 
     @Test

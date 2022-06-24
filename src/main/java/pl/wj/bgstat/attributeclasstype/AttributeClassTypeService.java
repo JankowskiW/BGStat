@@ -11,6 +11,7 @@ import pl.wj.bgstat.exception.ResourceExistsException;
 import pl.wj.bgstat.exception.ResourceNotFoundException;
 
 import java.util.List;
+import java.util.Optional;
 
 import static pl.wj.bgstat.exception.ExceptionHelper.*;
 
@@ -55,11 +56,11 @@ public class AttributeClassTypeService {
 
     private void throwExceptionWhenExistsByName(String name) {
         if (attributeClassTypeRepository.existsByName(name))
-            throw new ResourceExistsException(ATTRIBUTE_CLASS_TYPE_RESOURCE_NAME, NAME_FIELD);
+            throw new ResourceExistsException(ATTRIBUTE_CLASS_TYPE_RESOURCE_NAME, Optional.of(NAME_FIELD));
     }
 
     private void throwExceptionWhenExistsByNameAndNotId(long id, String name) {
         if (attributeClassTypeRepository.existsByNameAndIdNot(name, id))
-            throw new ResourceExistsException(ATTRIBUTE_CLASS_TYPE_RESOURCE_NAME, NAME_FIELD);
+            throw new ResourceExistsException(ATTRIBUTE_CLASS_TYPE_RESOURCE_NAME, Optional.of(NAME_FIELD));
     }
 }

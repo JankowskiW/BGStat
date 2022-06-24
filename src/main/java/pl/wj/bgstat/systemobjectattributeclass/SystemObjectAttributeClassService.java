@@ -12,6 +12,8 @@ import pl.wj.bgstat.systemobjectattributeclass.model.dto.SystemObjectAttributeCl
 import pl.wj.bgstat.systemobjectattributeclass.model.dto.SystemObjectAttributeClassResponseDto;
 import pl.wj.bgstat.systemobjecttype.SystemObjectTypeRepository;
 
+import java.util.Optional;
+
 import static pl.wj.bgstat.exception.ExceptionHelper.*;
 
 @Service
@@ -55,7 +57,7 @@ public class SystemObjectAttributeClassService {
         if (shouldExists && !systemObjectAttributeClassRepository.existsById(id))
             throw new ResourceNotFoundException(SYSTEM_OBJECT_ATTRIBUTE_CLASS_RESOURCE_NAME, ID_FIELD, id);
         else if (!shouldExists && systemObjectAttributeClassRepository.existsById(id))
-            throw new ResourceExistsException(SYSTEM_OBJECT_ATTRIBUTE_CLASS_RESOURCE_NAME, ID_FIELD);
+            throw new ResourceExistsException(SYSTEM_OBJECT_ATTRIBUTE_CLASS_RESOURCE_NAME, Optional.of(ID_FIELD));
     }
 
     private void throwExceptionWhenSystemObjectTypeNotExistsById(long id) {

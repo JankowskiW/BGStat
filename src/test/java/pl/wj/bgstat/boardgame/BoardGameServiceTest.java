@@ -305,7 +305,7 @@ class BoardGameServiceTest {
         // when
         assertThatThrownBy(() -> boardGameService.addBoardGame(boardGameRequestDto, file))
                 .isInstanceOf(ResourceExistsException.class)
-                .hasMessage(createResourceExistsExceptionMessage(BOARD_GAME_RESOURCE_NAME, NAME_FIELD));
+                .hasMessage(createResourceExistsExceptionMessage(BOARD_GAME_RESOURCE_NAME, Optional.of(NAME_FIELD)));
     }
 
     @Test
@@ -425,7 +425,7 @@ class BoardGameServiceTest {
         // when
         assertThatThrownBy(() -> boardGameService.editBoardGame(id, boardGameRequestDto))
                 .isInstanceOf(ResourceExistsException.class)
-                .hasMessage(createResourceExistsExceptionMessage(BOARD_GAME_RESOURCE_NAME, NAME_FIELD));
+                .hasMessage(createResourceExistsExceptionMessage(BOARD_GAME_RESOURCE_NAME, Optional.of(NAME_FIELD)));
     }
 
     @Test

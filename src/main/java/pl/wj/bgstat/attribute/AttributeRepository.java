@@ -15,9 +15,11 @@ public interface AttributeRepository extends JpaRepository<Attribute, Long> {
             long objectId, long objectTypeId, long attributeClassId, String value);
     boolean existsByObjectIdAndObjectTypeIdAndAttributeClassIdAndValueAndIdNot(
             long objectId, long objectTypeId, long attributeClassId, String value, long id);
+    boolean existsByAttributeClassId(long attributeClassId);
 
     @Transactional
     @Modifying
     @Query("DELETE FROM Attribute a WHERE a.objectId=:id AND a.objectTypeId=:objectTypeId")
     void deleteByObjectIdAndObjectTypeId(long id, long objectTypeId);
+
 }

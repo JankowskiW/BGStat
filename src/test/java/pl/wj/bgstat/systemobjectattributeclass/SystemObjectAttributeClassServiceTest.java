@@ -20,6 +20,7 @@ import pl.wj.bgstat.systemobjecttype.SystemObjectTypeRepository;
 import pl.wj.bgstat.systemobjecttype.model.SystemObjectType;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -141,7 +142,7 @@ class SystemObjectAttributeClassServiceTest {
         assertThatThrownBy(() -> systemObjectAttributeClassService.addSystemObjectAttributeClass(
                 systemObjectAttributeClassRequestDto))
                     .isInstanceOf(ResourceExistsException.class)
-                    .hasMessage(createResourceExistsExceptionMessage(SYSTEM_OBJECT_ATTRIBUTE_CLASS_RESOURCE_NAME, ID_FIELD));
+                    .hasMessage(createResourceExistsExceptionMessage(SYSTEM_OBJECT_ATTRIBUTE_CLASS_RESOURCE_NAME, Optional.of(ID_FIELD)));
     }
 
     @Test
