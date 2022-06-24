@@ -199,8 +199,9 @@ class AttributeClassServiceTest {
     }
 
     @Test
-    @DisplayName("Should throw ForeignKeyConstraintViolationException when given attribute class type id does not exist in database")
-    void shouldThrowExceptionWhenAttributeClassTypeDoesNotExist() {
+    @DisplayName("Should throw ForeignKeyConstraintViolationException when trying to add attribute class and given " +
+            "attribute class type id does not exist in database")
+    void shouldThrowExceptionWhenTryingToAddAttributeClassAndGivenAttributeClassTypeDoesNotExist() {
         // given
         AttributeClassRequestDto attributeClassRequestDto = AttributeClassServiceTestHelper.createAttributeClassRequestDto(NUMBER_OF_ELEMENTS);
         given(attributeClassRepository.existsByName(anyString())).willReturn(
@@ -212,7 +213,6 @@ class AttributeClassServiceTest {
                 .isInstanceOf(ForeignKeyConstraintViolationException.class)
                 .hasMessage(createForeignKeyConstraintViolationExceptionMessage(
                         ATTRIBUTE_CLASS_TYPE_RESOURCE_NAME, attributeClassRequestDto.getAttributeClassTypeId()));
-
     }
 
     @Test
@@ -246,6 +246,7 @@ class AttributeClassServiceTest {
         given(attributeClassRepository.existsByNameAndIdNot(anyString(), anyLong())).willReturn(
                 attributeClassList.stream().anyMatch(ac -> ac.getId() != id &&
                         ac.getName().equals(attributeClassRequestDto.getName())));
+        given(attributeClassTypeRepository.existsById(anyLong())).willReturn(true);
         given(attributeClassRepository.save(any(AttributeClass.class))).willAnswer(
                 i -> {
                     AttributeClass ac = i.getArgument(0, AttributeClass.class);
@@ -261,6 +262,23 @@ class AttributeClassServiceTest {
         assertThat(attributeClassResponseDto).isNotNull();
         assertThat(attributeClassResponseDto.getId()).isEqualTo(id);
         assertThat(attributeClassResponseDto.getDescription()).isEqualTo(attributeClassRequestDto.getDescription());
+    }
+
+    @Test
+    @DisplayName("Should throw ForeignKeyConstraintViolationException when given attribute class type id does not exist in database")
+    void shouldThrowExceptionWhenAttributeClassTypeDoesNotExist() {
+        // given
+        AttributeClassRequestDto attributeClassRequestDto = AttributeClassServiceTestHelper.createAttributeClassRequestDto(NUMBER_OF_ELEMENTS);
+        given(attributeClassRepository.existsByName(anyString())).willReturn(
+                attributeClassList.stream().anyMatch(ac -> ac.getName().equals(attributeClassRequestDto.getName())));
+        given(attributeClassTypeRepository.existsById(anyLong())).willReturn(false);
+
+        // when
+        assertThatThrownBy(() -> attributeClassService.addAttributeClass(attributeClassRequestDto))
+                .isInstanceOf(ForeignKeyConstraintViolationException.class)
+                .hasMessage(createForeignKeyConstraintViolationExceptionMessage(
+                        ATTRIBUTE_CLASS_TYPE_RESOURCE_NAME, attributeClassRequestDto.getAttributeClassTypeId()));
+
     }
 
     @Test
