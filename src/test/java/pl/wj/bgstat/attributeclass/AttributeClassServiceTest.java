@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import pl.wj.bgstat.attribute.AttributeRepository;
 import pl.wj.bgstat.attributeclass.model.AttributeClass;
 import pl.wj.bgstat.attributeclass.model.AttributeClassMapper;
 import pl.wj.bgstat.attributeclass.model.dto.AttributeClassHeaderDto;
@@ -44,6 +45,8 @@ class AttributeClassServiceTest {
     private AttributeClassRepository attributeClassRepository;
     @Mock
     private SystemObjectAttributeClassRepository systemObjectAttributeClassRepository;
+    @Mock
+    private AttributeRepository attributeRepository;
     @InjectMocks
     private AttributeClassService attributeClassService;
 
@@ -278,6 +281,8 @@ class AttributeClassServiceTest {
         long id = 3L;
         given(attributeClassRepository.existsById(anyLong())).willReturn(
                 attributeClassList.stream().anyMatch(ac -> ac.getId() == id));
+        given(systemObjectAttributeClassRepository.existsByAttributeClassId(anyLong())).willReturn(false);
+        given(attributeRepository.existsByAttributeClassId(anyLong())).willReturn(false);
         willDoNothing().given(attributeClassRepository).deleteById(anyLong());
 
         // when
@@ -285,6 +290,37 @@ class AttributeClassServiceTest {
 
         // then
         verify(attributeClassRepository).deleteById(id);
+    }
+
+    @Test
+    @DisplayName("Should throw ResourceExistsException when related system object attribute class exists")
+    void shouldThrowExceptionWhenRelatedSystemObjectAttributeClassExists() {
+        // given
+        long id = 3L;
+        given(attributeClassRepository.existsById(anyLong())).willReturn(
+                attributeClassList.stream().anyMatch(ac -> ac.getId() == id));
+        given(systemObjectAttributeClassRepository.existsByAttributeClassId(anyLong())).willReturn(true);
+
+        // when
+        assertThatThrownBy(() -> attributeClassService.deleteAttributeClass(id))
+                .isInstanceOf(ResourceExistsException.class)
+                .hasMessage(createResourceExistsExceptionMessage(ATTRIBUTE_CLASS_RESOURCE_NAME, SYSTEM_OBJECT_ATTRIBUTE_CLASS_RESOURCE_NAME));
+    }
+
+    @Test
+    @DisplayName("Should throw ResourceExistsException when related attribute exists")
+    void shouldThrowExceptionWhenRelatedAttributeExists() {
+        // given
+        long id = 3L;
+        given(attributeClassRepository.existsById(anyLong())).willReturn(
+                attributeClassList.stream().anyMatch(ac -> ac.getId() == id));
+        given(systemObjectAttributeClassRepository.existsByAttributeClassId(anyLong())).willReturn(false);
+        given(attributeRepository.existsByAttributeClassId(anyLong())).willReturn(true);
+
+        // when
+        assertThatThrownBy(() -> attributeClassService.deleteAttributeClass(id))
+                .isInstanceOf(ResourceExistsException.class)
+                .hasMessage(createResourceExistsExceptionMessage(ATTRIBUTE_CLASS_RESOURCE_NAME, ATTRIBUTE_RESOURCE_NAME));
     }
 
     @Test
