@@ -11,6 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.multipart.MultipartFile;
 import pl.wj.bgstat.boardgame.BoardGameRepository;
 import pl.wj.bgstat.exception.RequestEnumException;
+import pl.wj.bgstat.exception.RequestFileException;
 import pl.wj.bgstat.exception.ResourceExistsException;
 import pl.wj.bgstat.exception.ResourceNotFoundException;
 import pl.wj.bgstat.rulebook.enumeration.LanguageISO;
@@ -28,8 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.willDoNothing;
+import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.verify;
 import static pl.wj.bgstat.exception.ExceptionHelper.*;
 import static pl.wj.bgstat.rulebook.model.RulebookMapper.mapToRulebook;
@@ -47,18 +47,6 @@ class RulebookServiceTest {
     private RulebookService rulebookService;
 
     private static final String RULEBOOKS_PATH = "\\\\localhost\\resources\\rulebooks";
-
-    //private static MockedStatic ms;
-
-    @BeforeAll
-    static void beforeAll() {
-        //ms = mockStatic(ImageIO.class);
-    }
-
-    @AfterAll
-    static void afterAll() {
-        //ms.close();
-    }
 
     @Test
     @DisplayName("Should add rulebook in given language when board game exists and rulebook does not exist")
@@ -90,6 +78,27 @@ class RulebookServiceTest {
                 .isNotNull()
                 .usingRecursiveComparison()
                 .isEqualTo(expectedResponse);
+    }
+
+    @Test
+    @DisplayName("Should throw RequestFileException when IOException was thrown")
+    void shouldThrowExceptionWhenIOExceptionWasThrown() throws IOException {
+        // given
+        long boardGameId = 1L;
+        LanguageISO language = LanguageISO.PL;
+        RulebookRequestDto rulebookRequestDto = new RulebookRequestDto(boardGameId, language);
+        given(boardGameRepository.existsById(anyLong())).willReturn(true);
+        given(rulebookRepository.existsByBoardGameIdAndLanguageIso(anyLong(), any(LanguageISO.class))).willReturn(false);
+        willThrow(IOException.class).given(multipartFile).transferTo(any(File.class));
+
+        // when
+        assertThatThrownBy(() -> rulebookService.addRulebook(rulebookRequestDto, multipartFile))
+                .isInstanceOf(RequestFileException.class)
+                .hasMessage(createRequestFileExceptionSaveFailedMessage(multipartFile.getName()));
+
+        // then
+        verify(boardGameRepository).existsById(boardGameId);
+        verify(rulebookRepository).existsByBoardGameIdAndLanguageIso(boardGameId, language);
     }
 
     @Test

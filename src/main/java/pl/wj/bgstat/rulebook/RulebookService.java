@@ -1,11 +1,9 @@
 package pl.wj.bgstat.rulebook;
 
 import lombok.RequiredArgsConstructor;
-import org.hibernate.cfg.NotYetImplementedException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import pl.wj.bgstat.boardgame.BoardGameRepository;
-import pl.wj.bgstat.boardgame.model.BoardGame;
 import pl.wj.bgstat.exception.RequestEnumException;
 import pl.wj.bgstat.exception.RequestFileException;
 import pl.wj.bgstat.exception.ResourceExistsException;
@@ -47,6 +45,7 @@ public class RulebookService {
         }
         String path = String.format("%s\\%d\\%d_%s.pdf", RULEBOOKS_PATH, rulebookRequestDto.getBoardGameId(),
                 rulebookRequestDto.getBoardGameId(), rulebookRequestDto.getLanguageIso());
+
         try {
             File boardGameDirectory = new File(String.format("%s\\%d", RULEBOOKS_PATH, rulebookRequestDto.getBoardGameId()));
             if (!boardGameDirectory.exists()) {
@@ -54,7 +53,6 @@ public class RulebookService {
             }
             rulebookFile.transferTo(new File(path));
         } catch (IOException e) {
-            e.printStackTrace();
             throw new RequestFileException(rulebookFile.getName());
         }
         Rulebook rulebook = mapToRulebook(rulebookRequestDto, path);
