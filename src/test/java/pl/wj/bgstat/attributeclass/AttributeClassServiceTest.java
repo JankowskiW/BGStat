@@ -174,10 +174,12 @@ class AttributeClassServiceTest {
     @DisplayName("Should create and return created attribute class type")
     void shouldReturnCreatedAttributeClass() {
         // given
+        String attrClassTypeName = "Example";
         AttributeClassRequestDto attributeClassRequestDto = AttributeClassServiceTestHelper.createAttributeClassRequestDto(NUMBER_OF_ELEMENTS);
         AttributeClass attributeClass = AttributeClassMapper.mapToAttributeClass(attributeClassRequestDto);
         attributeClass.setId(attributeClassList.size()+1);
         AttributeClassResponseDto expectedResponse = AttributeClassMapper.mapToAttributeClassResponseDto(attributeClass);
+        expectedResponse.setAttributeClassTypeName(attrClassTypeName);
         given(attributeClassRepository.existsByName(anyString())).willReturn(
                 attributeClassList.stream().anyMatch(ac -> ac.getName().equals(attributeClassRequestDto.getName())));
         given(attributeClassTypeRepository.existsById(anyLong())).willReturn(true);
@@ -187,11 +189,14 @@ class AttributeClassServiceTest {
                     ac.setId(attributeClass.getId());
                     return ac;
                 });
+        given(attributeClassTypeRepository.getNameById(anyLong())).willReturn(attrClassTypeName);
 
         // when
         AttributeClassResponseDto attributeClassResponseDto = attributeClassService.addAttributeClass(attributeClassRequestDto);
 
         // then
+        System.out.println("GIVEN RESPONSE: " + attributeClassResponseDto.getAttributeClassTypeName());
+        System.out.println("EXPECTED RESPONSE: " + expectedResponse.getAttributeClassTypeName());
         assertThat(attributeClassResponseDto)
                 .isNotNull()
                 .usingRecursiveComparison()
@@ -236,6 +241,7 @@ class AttributeClassServiceTest {
     void shouldEditAttributeClassWhenExists() {
         // given
         long id = 1L;
+        String attrClassTypeName = "Example";
         AttributeClass attributeClass = attributeClassList.stream().filter(ac -> ac.getId() == id).findFirst().orElseThrow();
         AttributeClassRequestDto attributeClassRequestDto = AttributeClassRequestDto.builder()
                 .name(attributeClass.getName())
@@ -245,7 +251,7 @@ class AttributeClassServiceTest {
                 attributeClassList.stream().anyMatch(ac -> ac.getId() == id));
         given(attributeClassRepository.existsByNameAndIdNot(anyString(), anyLong())).willReturn(
                 attributeClassList.stream().anyMatch(ac -> ac.getId() != id &&
-                        ac.getName().equals(attributeClassRequestDto.getName())));
+                        ac.getName().equals(attributeClass.getName())));
         given(attributeClassTypeRepository.existsById(anyLong())).willReturn(true);
         given(attributeClassRepository.save(any(AttributeClass.class))).willAnswer(
                 i -> {
@@ -253,6 +259,7 @@ class AttributeClassServiceTest {
                     ac.setId(id);
                     return ac;
                 });
+        given(attributeClassTypeRepository.getNameById(anyLong())).willReturn(attrClassTypeName);
 
         // when
         AttributeClassResponseDto attributeClassResponseDto =
@@ -262,6 +269,7 @@ class AttributeClassServiceTest {
         assertThat(attributeClassResponseDto).isNotNull();
         assertThat(attributeClassResponseDto.getId()).isEqualTo(id);
         assertThat(attributeClassResponseDto.getDescription()).isEqualTo(attributeClassRequestDto.getDescription());
+        assertThat(attributeClassResponseDto.getAttributeClassTypeName()).isEqualTo(attrClassTypeName);
     }
 
     @Test
