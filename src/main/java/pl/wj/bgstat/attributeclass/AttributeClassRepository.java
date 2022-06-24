@@ -21,4 +21,6 @@ public interface AttributeClassRepository extends JpaRepository<AttributeClass, 
 
     boolean existsByNameAndIdNot(String name, long id);
     boolean existsByName(String name);
+    boolean existsByAttributeClassTypeId(long attributeClassTypeId);
+
 }

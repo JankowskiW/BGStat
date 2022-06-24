@@ -2,6 +2,7 @@ package pl.wj.bgstat.attributeclasstype;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import pl.wj.bgstat.attributeclass.AttributeClassRepository;
 import pl.wj.bgstat.attributeclasstype.model.AttributeClassType;
 import pl.wj.bgstat.attributeclasstype.model.AttributeClassTypeArchivedStatus;
 import pl.wj.bgstat.attributeclasstype.model.AttributeClassTypeMapper;
@@ -20,6 +21,7 @@ import static pl.wj.bgstat.exception.ExceptionHelper.*;
 public class AttributeClassTypeService {
 
     private final AttributeClassTypeRepository attributeClassTypeRepository;
+    private final AttributeClassRepository attributeClassRepository;
 
     public List<AttributeClassTypeHeaderDto> getAttributeClassTypeHeaders(AttributeClassTypeArchivedStatus archivedStatus) {
         if (archivedStatus.equals(AttributeClassTypeArchivedStatus.ALL)) {
@@ -51,6 +53,7 @@ public class AttributeClassTypeService {
 
     public void deleteAttributeClassType(long id) {
         throwExceptionWhenNotExistsById(id, attributeClassTypeRepository);
+        throwExceptionWhenAttributeClassTypeHasRelatedAttributeClass(id);
         attributeClassTypeRepository.deleteById(id);
     }
 
@@ -62,5 +65,11 @@ public class AttributeClassTypeService {
     private void throwExceptionWhenExistsByNameAndNotId(long id, String name) {
         if (attributeClassTypeRepository.existsByNameAndIdNot(name, id))
             throw new ResourceExistsException(ATTRIBUTE_CLASS_TYPE_RESOURCE_NAME, Optional.of(NAME_FIELD));
+    }
+
+    private void throwExceptionWhenAttributeClassTypeHasRelatedAttributeClass(long id) {
+        if (attributeClassRepository.existsByAttributeClassTypeId(id)) {
+            throw new ResourceExistsException(ATTRIBUTE_CLASS_TYPE_RESOURCE_NAME, ATTRIBUTE_CLASS_RESOURCE_NAME);
+        }
     }
 }
