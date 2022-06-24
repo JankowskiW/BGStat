@@ -7,6 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import pl.wj.bgstat.attributeclass.AttributeClassRepository;
 import pl.wj.bgstat.attributeclasstype.model.AttributeClassType;
 import pl.wj.bgstat.attributeclasstype.model.AttributeClassTypeArchivedStatus;
 import pl.wj.bgstat.attributeclasstype.model.AttributeClassTypeMapper;
@@ -15,6 +16,7 @@ import pl.wj.bgstat.attributeclasstype.model.dto.AttributeClassTypeRequestDto;
 import pl.wj.bgstat.exception.ResourceExistsException;
 import pl.wj.bgstat.exception.ResourceNotFoundException;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -33,6 +35,8 @@ class AttributeClassTypeServiceTest {
 
     @Mock
     private AttributeClassTypeRepository attributeClassTypeRepository;
+    @Mock
+    private AttributeClassRepository attributeClassRepository;
     @InjectMocks
     private AttributeClassTypeService attributeClassTypeService;
 
@@ -275,6 +279,7 @@ class AttributeClassTypeServiceTest {
         long id = 1L;
         given(attributeClassTypeRepository.existsById(anyLong())).willReturn(
                 attributeClassTypeList.stream().anyMatch(act -> act.getId() == id));
+        given(attributeClassRepository.existsByAttributeClassTypeId(anyLong())).willReturn(false);
         willDoNothing().given(attributeClassTypeRepository).deleteById(anyLong());
 
         // when
@@ -282,6 +287,21 @@ class AttributeClassTypeServiceTest {
 
         // then
         verify(attributeClassTypeRepository).deleteById(id);
+    }
+
+    @Test
+    @DisplayName("Should throw ResourceExistsException when related attribute class exists")
+    void shouldThrowExceptionWhenRelatedAttributeClassExists() {
+        // given
+        long id = 1L;
+        given(attributeClassTypeRepository.existsById(anyLong())).willReturn(
+                attributeClassTypeList.stream().anyMatch(act -> act.getId() == id));
+        given(attributeClassRepository.existsByAttributeClassTypeId(anyLong())).willReturn(true);
+
+        // when
+        assertThatThrownBy(() -> attributeClassTypeService.deleteAttributeClassType(id))
+                .isInstanceOf(ResourceExistsException.class)
+                .hasMessage(createResourceExistsExceptionMessage(ATTRIBUTE_CLASS_TYPE_RESOURCE_NAME, ATTRIBUTE_CLASS_RESOURCE_NAME));
     }
 
     @Test
