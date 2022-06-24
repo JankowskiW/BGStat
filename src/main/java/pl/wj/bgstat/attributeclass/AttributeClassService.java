@@ -10,6 +10,8 @@ import pl.wj.bgstat.attributeclass.model.AttributeClassMapper;
 import pl.wj.bgstat.attributeclass.model.dto.AttributeClassHeaderDto;
 import pl.wj.bgstat.attributeclass.model.dto.AttributeClassRequestDto;
 import pl.wj.bgstat.attributeclass.model.dto.AttributeClassResponseDto;
+import pl.wj.bgstat.attributeclasstype.AttributeClassTypeRepository;
+import pl.wj.bgstat.attributeclasstype.model.dto.AttributeClassTypeRequestDto;
 import pl.wj.bgstat.exception.ResourceExistsException;
 import pl.wj.bgstat.exception.ResourceNotFoundException;
 import pl.wj.bgstat.systemobjectattributeclass.SystemObjectAttributeClassRepository;
@@ -26,6 +28,7 @@ public class AttributeClassService {
 
     private final AttributeRepository attributeRepository;
     private final AttributeClassRepository attributeClassRepository;
+    private final AttributeClassTypeRepository attributeClassTypeRepository;
     private final SystemObjectAttributeClassRepository systemObjectAttributeClassRepository;
 
     public Page<AttributeClassHeaderDto> getAttributeClassHeaders(Pageable pageable) {
@@ -40,6 +43,8 @@ public class AttributeClassService {
 
     public AttributeClassResponseDto addAttributeClass(AttributeClassRequestDto attributeClassRequestDto) {
         throwExceptionWhenExistsByName(attributeClassRequestDto.getName());
+        throwExceptionWhenForeignKeyConstraintViolationOccur(
+                attributeClassRequestDto.getAttributeClassTypeId(), attributeClassTypeRepository);
         AttributeClass attributeClass = AttributeClassMapper.mapToAttributeClass(attributeClassRequestDto);
         attributeClassRepository.save(attributeClass);
         return AttributeClassMapper.mapToAttributeClassResponseDto(attributeClass);
@@ -48,6 +53,8 @@ public class AttributeClassService {
     public AttributeClassResponseDto editAttributeClass(long id, AttributeClassRequestDto attributeClassRequestDto) {
         throwExceptionWhenNotExistsById(id, attributeClassRepository);
         throwExceptionWhenExistsByNameAndNotId(id, attributeClassRequestDto.getName());
+        throwExceptionWhenForeignKeyConstraintViolationOccur(
+                attributeClassRequestDto.getAttributeClassTypeId(), attributeClassTypeRepository);
         AttributeClass attributeClass = AttributeClassMapper.mapToAttributeClass(id, attributeClassRequestDto);
         attributeClassRepository.save(attributeClass);
         return AttributeClassMapper.mapToAttributeClassResponseDto(attributeClass);

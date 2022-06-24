@@ -41,7 +41,7 @@ public class ExceptionHelper {
     public static final String NAME_FIELD = "name";
 
     public static String createForeignKeyConstraintViolationExceptionMessage(String resource, long id) {
-        return String.format("%s resource with id %d does not exists in database");
+        return String.format("%s with id %d does not exist in database", resource, id);
     }
 
     public static String createRequestEnumExceptionMessage(String fieldName, List<String> supportedValues) {
@@ -82,36 +82,49 @@ public class ExceptionHelper {
         return String.format("No such %s with %s: '%s'", resource, field, value);
     }
 
+    public static void throwExceptionWhenForeignKeyConstraintViolationOccur(long id, JpaRepository repository) {
+        if (repository == null) return;
+        if (!repository.existsById(id)) {
+            String resourceName = getResourceName(repository);
+            throw new ForeignKeyConstraintViolationException(resourceName, id);
+        }
+    }
+
     public static void throwExceptionWhenNotExistsById(long id, JpaRepository repository) {
         if (repository == null) return;
         if (!repository.existsById(id)) {
-            String resourceName = "";
-            if (repository instanceof AttributeRepository) {
-                resourceName = ATTRIBUTE_RESOURCE_NAME;
-            } else if (repository instanceof AttributeClassRepository) {
-                resourceName = ATTRIBUTE_CLASS_RESOURCE_NAME;
-            } else if (repository instanceof AttributeClassTypeRepository) {
-                resourceName = ATTRIBUTE_CLASS_TYPE_RESOURCE_NAME;
-            }else if (repository instanceof BoardGameRepository) {
-                resourceName = BOARD_GAME_RESOURCE_NAME;
-            } else if (repository instanceof BoardGameDescriptionRepository) {
-                resourceName = BOARD_GAME_DESCRIPTION_RESOURCE_NAME;
-            } else if (repository instanceof GameplayRepository) {
-                resourceName = GAMEPLAY_RESOURCE_NAME;
-            } else if (repository instanceof StoreRepository) {
-                resourceName = STORE_RESOURCE_NAME;
-            } else if (repository instanceof SystemObjectAttributeClassRepository) {
-                resourceName = SYSTEM_OBJECT_ATTRIBUTE_CLASS_RESOURCE_NAME;
-            } else if (repository instanceof SystemObjectTypeRepository) {
-                resourceName = SYSTEM_OBJECT_TYPE_RESOURCE_NAME;
-            } else if (repository instanceof UserBoardGameRepository) {
-                resourceName = USER_BOARD_GAME_RESOURCE_NAME;
-            }else if (repository instanceof UserRepository) {
-                resourceName = USER_RESOURCE_NAME;
-            }else if (repository instanceof RulebookRepository) {
-                resourceName = RULEBOOK_RESOURCE_NAME;
-            }
+            String resourceName = getResourceName(repository);
             throw new ResourceNotFoundException(resourceName, ID_FIELD, id);
+        }
+    }
+
+    private static String getResourceName(JpaRepository repository) {
+        if (repository instanceof AttributeRepository) {
+            return ATTRIBUTE_RESOURCE_NAME;
+        } else if (repository instanceof AttributeClassRepository) {
+            return ATTRIBUTE_CLASS_RESOURCE_NAME;
+        } else if (repository instanceof AttributeClassTypeRepository) {
+            return ATTRIBUTE_CLASS_TYPE_RESOURCE_NAME;
+        }else if (repository instanceof BoardGameRepository) {
+            return BOARD_GAME_RESOURCE_NAME;
+        } else if (repository instanceof BoardGameDescriptionRepository) {
+            return BOARD_GAME_DESCRIPTION_RESOURCE_NAME;
+        } else if (repository instanceof GameplayRepository) {
+            return GAMEPLAY_RESOURCE_NAME;
+        } else if (repository instanceof StoreRepository) {
+            return STORE_RESOURCE_NAME;
+        } else if (repository instanceof SystemObjectAttributeClassRepository) {
+            return SYSTEM_OBJECT_ATTRIBUTE_CLASS_RESOURCE_NAME;
+        } else if (repository instanceof SystemObjectTypeRepository) {
+            return SYSTEM_OBJECT_TYPE_RESOURCE_NAME;
+        } else if (repository instanceof UserBoardGameRepository) {
+            return USER_BOARD_GAME_RESOURCE_NAME;
+        }else if (repository instanceof UserRepository) {
+            return USER_RESOURCE_NAME;
+        }else if (repository instanceof RulebookRepository) {
+            return RULEBOOK_RESOURCE_NAME;
+        } else {
+            return "";
         }
     }
 

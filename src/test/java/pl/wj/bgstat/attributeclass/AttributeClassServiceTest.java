@@ -17,7 +17,9 @@ import pl.wj.bgstat.attributeclass.model.AttributeClassMapper;
 import pl.wj.bgstat.attributeclass.model.dto.AttributeClassHeaderDto;
 import pl.wj.bgstat.attributeclass.model.dto.AttributeClassRequestDto;
 import pl.wj.bgstat.attributeclass.model.dto.AttributeClassResponseDto;
+import pl.wj.bgstat.attributeclasstype.AttributeClassTypeRepository;
 import pl.wj.bgstat.exception.ExceptionHelper;
+import pl.wj.bgstat.exception.ForeignKeyConstraintViolationException;
 import pl.wj.bgstat.exception.ResourceExistsException;
 import pl.wj.bgstat.exception.ResourceNotFoundException;
 import pl.wj.bgstat.systemobjectattributeclass.SystemObjectAttributeClassRepository;
@@ -47,6 +49,8 @@ class AttributeClassServiceTest {
     private SystemObjectAttributeClassRepository systemObjectAttributeClassRepository;
     @Mock
     private AttributeRepository attributeRepository;
+    @Mock
+    private AttributeClassTypeRepository attributeClassTypeRepository;
     @InjectMocks
     private AttributeClassService attributeClassService;
 
@@ -176,6 +180,7 @@ class AttributeClassServiceTest {
         AttributeClassResponseDto expectedResponse = AttributeClassMapper.mapToAttributeClassResponseDto(attributeClass);
         given(attributeClassRepository.existsByName(anyString())).willReturn(
                 attributeClassList.stream().anyMatch(ac -> ac.getName().equals(attributeClassRequestDto.getName())));
+        given(attributeClassTypeRepository.existsById(anyLong())).willReturn(true);
         given(attributeClassRepository.save(any(AttributeClass.class))).willAnswer(
                 i -> {
                     AttributeClass ac = i.getArgument(0, AttributeClass.class);
@@ -191,6 +196,23 @@ class AttributeClassServiceTest {
                 .isNotNull()
                 .usingRecursiveComparison()
                 .isEqualTo(expectedResponse);
+    }
+
+    @Test
+    @DisplayName("Should throw ForeignKeyConstraintViolationException when given attribute class type id does not exist in database")
+    void shouldThrowExceptionWhenAttributeClassTypeDoesNotExist() {
+        // given
+        AttributeClassRequestDto attributeClassRequestDto = AttributeClassServiceTestHelper.createAttributeClassRequestDto(NUMBER_OF_ELEMENTS);
+        given(attributeClassRepository.existsByName(anyString())).willReturn(
+                attributeClassList.stream().anyMatch(ac -> ac.getName().equals(attributeClassRequestDto.getName())));
+        given(attributeClassTypeRepository.existsById(anyLong())).willReturn(false);
+
+        // when
+        assertThatThrownBy(() -> attributeClassService.addAttributeClass(attributeClassRequestDto))
+                .isInstanceOf(ForeignKeyConstraintViolationException.class)
+                .hasMessage(createForeignKeyConstraintViolationExceptionMessage(
+                        ATTRIBUTE_CLASS_TYPE_RESOURCE_NAME, attributeClassRequestDto.getAttributeClassTypeId()));
+
     }
 
     @Test
