@@ -11,10 +11,12 @@ import pl.wj.bgstat.boardgame.BoardGameRepository;
 import pl.wj.bgstat.boardgamedescription.BoardGameDescriptionRepository;
 import pl.wj.bgstat.exception.ResourceExistsException;
 import pl.wj.bgstat.exception.ResourceNotFoundException;
+import pl.wj.bgstat.exception.SystemObjectTypeIncompatibilityException;
 import pl.wj.bgstat.systemobjecttype.SystemObjectTypeRepository;
 import pl.wj.bgstat.systemobjecttype.enumeration.ObjectType;
 import pl.wj.bgstat.userboardgame.UserBoardGameRepository;
 
+import java.util.Arrays;
 import java.util.Optional;
 
 import static pl.wj.bgstat.exception.ExceptionHelper.*;
@@ -39,8 +41,8 @@ public class AttributeService {
     public AttributeResponseDto addAttribute(AttributeRequestDto attributeRequestDto) {
         throwExceptionWhenForeignKeyConstraintViolationOccur(attributeRequestDto.getAttributeClassId(), attributeClassRepository);
         throwExceptionWhenForeignKeyConstraintViolationOccur(attributeRequestDto.getObjectTypeId(), systemObjectTypeRepository);
-        ObjectType objectType = ObjectType.values()[(int) attributeRequestDto.getObjectTypeId()];
-        checkSystemObjectForeignKeyViolation(attributeRequestDto.getObjectId(), objectType);
+
+        checkSystemObjectForeignKeyViolation(attributeRequestDto.getObjectId(), attributeRequestDto.getObjectTypeId());
 
         if (attributeRequestDto.isMultivaluedAttributeClassType()) {
             if (attributeRepository.existsByObjectIdAndObjectTypeIdAndAttributeClassIdAndValueNot(
@@ -77,7 +79,9 @@ public class AttributeService {
          attributeRepository.deleteById(id);
     }
 
-    private void checkSystemObjectForeignKeyViolation(long objectId, ObjectType objectType) {
+    private void checkSystemObjectForeignKeyViolation(long objectId, long objectTypeId) {
+        ObjectType objectType = Arrays.stream(ObjectType.values()).filter(ot -> ot.getId() == objectTypeId).findFirst()
+                .orElseThrow(() -> new SystemObjectTypeIncompatibilityException(objectTypeId));
         if (objectType.equals(ObjectType.BOARD_GAME)) {
             throwExceptionWhenForeignKeyConstraintViolationOccur(objectId, boardGameRepository);
         } else if (objectType.equals(ObjectType.BOARD_GAME_DESCRIPTION)) {
@@ -86,7 +90,8 @@ public class AttributeService {
             throwExceptionWhenForeignKeyConstraintViolationOccur(objectId, userBoardGameRepository);
         } else {
             // if objectType exists in database but there is no checking for FK Constraint violation
-            // InternalServerError response code should be returned
+            // then InternalServerError response code should be returned
+            throw new SystemObjectTypeIncompatibilityException(objectType.getId());
         }
     }
 }

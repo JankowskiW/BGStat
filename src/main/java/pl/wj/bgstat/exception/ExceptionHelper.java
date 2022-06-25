@@ -40,6 +40,10 @@ public class ExceptionHelper {
     public static final String ID_FIELD = "id";
     public static final String NAME_FIELD = "name";
 
+    public static String createSystemObjectTypeIncompatibilityExceptionMessage(long objectTypeId) {
+        return String.format("System object type with id '%d' is incompatible with any of API System object types", objectTypeId);
+    }
+
     public static String createForeignKeyConstraintViolationExceptionMessage(String resource, long id) {
         return String.format("%s with id %d does not exist in database", resource, id);
     }

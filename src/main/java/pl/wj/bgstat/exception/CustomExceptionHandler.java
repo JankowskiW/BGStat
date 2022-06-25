@@ -79,4 +79,16 @@ public class CustomExceptionHandler {
                 ZonedDateTime.now()
         );
     }
+
+    @ExceptionHandler(SystemObjectTypeIncompatibilityException.class)
+    @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
+    public ExceptionBody handleForeignKeyConstraintViolation(SystemObjectTypeIncompatibilityException e) {
+        return new ExceptionBody(
+                e.getMessage(),
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                ZonedDateTime.now()
+        );
+    }
+
+
 }
