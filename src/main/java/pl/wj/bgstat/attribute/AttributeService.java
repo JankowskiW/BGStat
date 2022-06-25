@@ -48,11 +48,17 @@ public class AttributeService {
         boolean multivalued = attributeClassTypeRepository
                 .getMultivaluedStatusByAttributeClassId(attributeRequestDto.getAttributeClassId());
         if (multivalued) {
-            if (attributeRepository.existsByObjectIdAndObjectTypeIdAndAttributeClassIdAndValueNot(
+            // Jeśli wielowartościowy
+            // Jeśli istnieje atrybut o takim objectId, objectTypeId, attributeClassId, value
+            // to wyjątek że taki atrybut już  istnieje
+            if (attributeRepository.existsByObjectIdAndObjectTypeIdAndAttributeClassIdAndValue(
                     attributeRequestDto.getObjectId(), attributeRequestDto.getObjectTypeId(),
                     attributeRequestDto.getAttributeClassId(), attributeRequestDto.getValue()))
                 throw new ResourceExistsException(ATTRIBUTE_RESOURCE_NAME, Optional.empty());
         } else {
+            // Jeśli nie wielowartościowy
+            // Jeśli istnieje atrybut o takim objectId, objectTypeId, attributeClassId
+            // to wyjątek, że taki atrybut już istnieje
             if (attributeRepository.existsByObjectIdAndObjectTypeIdAndAttributeClassId(
                     attributeRequestDto.getObjectId(), attributeRequestDto.getObjectTypeId(),
                     attributeRequestDto.getAttributeClassId()))
@@ -72,9 +78,17 @@ public class AttributeService {
         boolean multivalued = attributeClassTypeRepository
                 .getMultivaluedStatusByAttributeClassId(attributeRequestDto.getAttributeClassId());
         if (multivalued) {
+            // Jeśli wielowartościowy
+            // Jeśli istnieje taki atrybut o tym samym objectId, objectTypeId, attributeClassId, value ale o innym id
+            // to rzuć wyjątkiem
             if (attributeRepository.existsByObjectIdAndObjectTypeIdAndAttributeClassIdAndValueAndIdNot(
                     attributeRequestDto.getObjectId(), attributeRequestDto.getObjectTypeId(),
                     attributeRequestDto.getAttributeClassId(), attributeRequestDto.getValue(), id))
+                throw new ResourceExistsException(ATTRIBUTE_RESOURCE_NAME, Optional.empty());
+        } else {
+            if (attributeRepository.existsByObjectIdAndObjectTypeIdAndAttributeClassIdAndIdNot(
+                    attributeRequestDto.getObjectId(), attributeRequestDto.getObjectTypeId(),
+                    attributeRequestDto.getAttributeClassId(), id))
                 throw new ResourceExistsException(ATTRIBUTE_RESOURCE_NAME, Optional.empty());
         }
         Attribute attribute = AttributeMapper.mapToAttribute(id, attributeRequestDto);

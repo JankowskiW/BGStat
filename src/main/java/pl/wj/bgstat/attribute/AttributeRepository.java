@@ -15,7 +15,12 @@ public interface AttributeRepository extends JpaRepository<Attribute, Long> {
             long objectId, long objectTypeId, long attributeClassId, String value);
     boolean existsByObjectIdAndObjectTypeIdAndAttributeClassIdAndValueAndIdNot(
             long objectId, long objectTypeId, long attributeClassId, String value, long id);
+    boolean existsByObjectIdAndObjectTypeIdAndAttributeClassIdAndValue(
+            long objectId, long objectTypeId, long attributeClassId, String value);
     boolean existsByAttributeClassId(long attributeClassId);
+    boolean existsByObjectIdAndObjectTypeIdAndAttributeClassIdAndIdNot(
+            long objectId, long objectTypeId, long attributeClassId, long id);
+
 
     @Transactional
     @Modifying
