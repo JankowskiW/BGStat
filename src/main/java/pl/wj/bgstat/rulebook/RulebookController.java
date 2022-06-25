@@ -24,4 +24,9 @@ public class RulebookController {
     public RulebookResponseDto editRulebook(@PathVariable long id, @RequestBody MultipartFile rulebook) {
         return rulebookService.editRulebook(id, rulebook);
     }
+
+    @DeleteMapping("/{id}")
+    public void deleteRulebook(@PathVariable long id) {
+        rulebookService.deleteRulebook(id);
+    }
 }
