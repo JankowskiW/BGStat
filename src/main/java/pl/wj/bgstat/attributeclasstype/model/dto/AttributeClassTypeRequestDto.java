@@ -21,4 +21,5 @@ public class AttributeClassTypeRequestDto {
     @Length(max = 255, message = "Attribute class type name cannot be longer than 255 characters")
     private String description;
     private boolean archived;
+    private boolean multivalued;
 }

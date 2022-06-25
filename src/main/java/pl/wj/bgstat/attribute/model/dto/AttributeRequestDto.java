@@ -23,5 +23,4 @@ public class AttributeRequestDto {
     @NotBlank(message = "Attribute value cannot be blank")
     @Length(max = 255, message = "Attribute value cannot be longer than 255 characters")
     private String value;
-    private boolean multivaluedAttributeClassType;
 }

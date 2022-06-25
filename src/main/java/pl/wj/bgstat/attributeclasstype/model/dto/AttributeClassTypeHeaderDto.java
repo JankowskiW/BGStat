@@ -11,4 +11,5 @@ public class AttributeClassTypeHeaderDto {
     private long id;
     private String name;
     private boolean archived;
+    private boolean multivalued;
 }

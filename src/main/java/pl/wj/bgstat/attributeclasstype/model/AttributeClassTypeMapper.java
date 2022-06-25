@@ -18,6 +18,7 @@ public class AttributeClassTypeMapper {
         attributeClassType.setName(attributeClassTypeRequestDto.getName());
         attributeClassType.setDescription(attributeClassTypeRequestDto.getDescription());
         attributeClassType.setArchived(attributeClassTypeRequestDto.isArchived());
+        attributeClassType.setMultivalued(attributeClassType.isMultivalued());
         return attributeClassType;
     }
 }

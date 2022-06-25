@@ -11,10 +11,12 @@ import java.util.List;
 @Repository
 public interface AttributeClassTypeRepository extends JpaRepository<AttributeClassType, Long> {
 
-    @Query("SELECT new pl.wj.bgstat.attributeclasstype.model.dto.AttributeClassTypeHeaderDto(act.id, act.name, act.archived) " +
+    @Query("SELECT new pl.wj.bgstat.attributeclasstype.model.dto.AttributeClassTypeHeaderDto(" +
+            "act.id, act.name, act.archived, act.multivalued) " +
            "FROM AttributeClassType act")
     List<AttributeClassTypeHeaderDto> findAttributeClassTypeHeaders();
-    @Query("SELECT new pl.wj.bgstat.attributeclasstype.model.dto.AttributeClassTypeHeaderDto(act.id, act.name, act.archived) " +
+    @Query("SELECT new pl.wj.bgstat.attributeclasstype.model.dto.AttributeClassTypeHeaderDto(" +
+            "act.id, act.name, act.archived, act.multivalued) " +
             "FROM AttributeClassType act WHERE act.archived = :archived")
     List<AttributeClassTypeHeaderDto> findAttributeClassTypeHeaders(boolean archived);
 
@@ -23,4 +25,10 @@ public interface AttributeClassTypeRepository extends JpaRepository<AttributeCla
 
     @Query("SELECT act.name FROM AttributeClassType act WHERE act.id = :id")
     String getNameById(long id);
+
+    @Query("SELECT act.multivalued " +
+            "FROM AttributeClass ac " +
+            "LEFT JOIN ac.attributeClassType act " +
+            "WHERE ac.id = :attributeClassId")
+    boolean getMultivaluedStatusByAttributeClassId(long attributeClassId);
 }

@@ -80,7 +80,7 @@ class RulebookServiceTest {
         // when
         RulebookResponseDto rulebookResponseDto = rulebookService.addRulebook(rulebookRequestDto, multipartFile);
 
-        // TODO: 25.06.2022 Find out how to test file creation without create it in real environment
+        // TODO: 25.06.2022 Find out how to test file creation without create it in real environment (try ReflectionTestUtils)
         Path tmpPath = Paths.get(String.format("%s/%d", RULEBOOKS_PATH, boardGameId));
         if(Files.exists(tmpPath)) {
             Files.walk(tmpPath)
@@ -166,8 +166,7 @@ class RulebookServiceTest {
         // when
         RulebookResponseDto rulebookResponseDto = rulebookService.editRulebook(rulebookId, multipartFile);
 
-
-        // TODO: 25.06.2022 Find out how to test file creation without create it in real environment
+        // TODO: 25.06.2022 Find out how to test file creation without create it in real environment (try ReflectionTestUtils)
         Path tmpPath = Paths.get(String.format("%s/%d", RULEBOOKS_PATH, boardGameId));
         if(Files.exists(tmpPath)) {
             Files.walk(tmpPath)

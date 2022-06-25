@@ -18,4 +18,6 @@ public class AttributeClassType {
     private String description;
     @ColumnDefault("false")
     private boolean archived;
+    @ColumnDefault("false")
+    private boolean multivalued;
 }
