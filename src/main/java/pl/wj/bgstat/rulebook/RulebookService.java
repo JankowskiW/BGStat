@@ -4,10 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import pl.wj.bgstat.boardgame.BoardGameRepository;
-import pl.wj.bgstat.exception.RequestEnumException;
-import pl.wj.bgstat.exception.RequestFileException;
-import pl.wj.bgstat.exception.ResourceExistsException;
-import pl.wj.bgstat.exception.ResourceNotFoundException;
+import pl.wj.bgstat.exception.*;
 import pl.wj.bgstat.rulebook.enumeration.LanguageISO;
 import pl.wj.bgstat.rulebook.model.Rulebook;
 import pl.wj.bgstat.rulebook.model.dto.RulebookRequestDto;
@@ -58,6 +55,21 @@ public class RulebookService {
         }
         Rulebook rulebook = mapToRulebook(rulebookRequestDto, path);
         rulebookRepository.save(rulebook);
+        return mapToRulebookResponseDto(rulebook);
+    }
+
+    public RulebookResponseDto editRulebook(long id, MultipartFile rulebookFile) {
+        Rulebook rulebook = rulebookRepository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundException(RULEBOOK_RESOURCE_NAME, ID_FIELD, id));
+        try {
+            File boardGameDirectory = new File(String.format("%s\\%d", RULEBOOKS_PATH, id));
+            if (!boardGameDirectory.exists()) {
+                boardGameDirectory.mkdirs();
+            }
+            rulebookFile.transferTo(new File(rulebook.getPath()));
+        } catch (IOException e) {
+            throw new RequestFileException(rulebookFile.getName());
+        }
         return mapToRulebookResponseDto(rulebook);
     }
 

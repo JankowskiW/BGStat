@@ -1,10 +1,7 @@
 package pl.wj.bgstat.rulebook;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import pl.wj.bgstat.rulebook.model.dto.RulebookRequestDto;
 import pl.wj.bgstat.rulebook.model.dto.RulebookResponseDto;
@@ -18,10 +15,13 @@ public class RulebookController {
     private final RulebookService rulebookService;
 
     @PostMapping("")
-    public RulebookResponseDto addOrReplaceRulebook(@RequestPart @Valid RulebookRequestDto rulebookRequestDto,
-                                                    @RequestPart("rulebook") MultipartFile rulebook) {
-        // TODO: 13.06.2022 Make enum validation (LanguageISO)
-        System.out.println(rulebookRequestDto.getLanguageIso());
+    public RulebookResponseDto addRulebook(@RequestPart @Valid RulebookRequestDto rulebookRequestDto,
+                                           @RequestPart("rulebook") MultipartFile rulebook) {
         return rulebookService.addRulebook(rulebookRequestDto, rulebook);
+    }
+
+    @PutMapping("/{id}")
+    public RulebookResponseDto editRulebook(@PathVariable long id, @RequestBody MultipartFile rulebook) {
+        return rulebookService.editRulebook(id, rulebook);
     }
 }
