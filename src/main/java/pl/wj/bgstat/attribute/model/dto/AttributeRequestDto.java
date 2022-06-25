@@ -16,9 +16,9 @@ import javax.validation.constraints.NotBlank;
 public class AttributeRequestDto {
     @Min(value = 1, message = "Attribute object type id should be positive integer number")
     private long objectTypeId;
-    @Min(value = 1, message = "Attribute object type id should be positive integer number")
+    @Min(value = 1, message = "Attribute object id should be positive integer number")
     private long objectId;
-    @Min(value = 1, message = "Attribute object type id should be positive integer number")
+    @Min(value = 1, message = "Attribute class id should be positive integer number")
     private long attributeClassId;
     @NotBlank(message = "Attribute value cannot be blank")
     @Length(max = 255, message = "Attribute value cannot be longer than 255 characters")
