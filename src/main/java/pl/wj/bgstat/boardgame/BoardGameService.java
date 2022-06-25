@@ -138,7 +138,7 @@ public class BoardGameService {
             try {
                 InputStream is = thumbnailFile.getInputStream();
                 BufferedImage biThumbnail = ImageIO.read(is);
-                if (!(biThumbnail.getHeight() >= MIN_THUMBNAIL_HEIGHT && biThumbnail.getHeight() <= MAX_THUMBNAIL_HEIGHT &&
+                if (biThumbnail == null || !(biThumbnail.getHeight() >= MIN_THUMBNAIL_HEIGHT && biThumbnail.getHeight() <= MAX_THUMBNAIL_HEIGHT &&
                         biThumbnail.getWidth() >= MIN_THUMBNAIL_WIDTH && biThumbnail.getWidth() <= MAX_THUMBNAIL_WIDTH &&
                         thumbnailFile.getSize() <= MAX_THUMBNAIL_SIZE))
                     throw new RequestFileException(
