@@ -14,12 +14,14 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SystemObjectAttributeClassRequestDto {
-    @NotNull @Min(1)
+    @NotNull(message = "Attribute class id cannot be null")
+    @Min(value=1, message = "Attribute class id should be positive integer number")
     private long attributeClassId;
-    @NotNull @Min(1)
+    @NotNull(message = "System object type id cannot be null")
+    @Min(value=1, message = "System object type id should be positive integer number")
     private long systemObjectTypeId;
-    @NotNull
+    @NotNull(message = "Required field cannot be null")
     private boolean required;
-    @Length(max = 150)
+    @Length(max = 150, message = "Class default value cannot be longer than 150 characters")
     private String classDefaultValue;
 }

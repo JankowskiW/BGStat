@@ -26,6 +26,7 @@ import static pl.wj.bgstat.exception.ExceptionHelper.*;
 @Service
 @RequiredArgsConstructor
 public class AttributeService {
+    // TODO: 25.06.2022 Fix unit tests for AttributeService, AttributeClassService and AttributeClassTypeService after changes 
     // TODO: 25.06.2022 Do manual tests for rest of services (AttributeClassService and AttributeClassTypeService were tested)
     private final BoardGameRepository boardGameRepository;
     private final BoardGameDescriptionRepository boardGameDescriptionRepository;
@@ -48,17 +49,11 @@ public class AttributeService {
         boolean multivalued = attributeClassTypeRepository
                 .getMultivaluedStatusByAttributeClassId(attributeRequestDto.getAttributeClassId());
         if (multivalued) {
-            // Jeśli wielowartościowy
-            // Jeśli istnieje atrybut o takim objectId, objectTypeId, attributeClassId, value
-            // to wyjątek że taki atrybut już  istnieje
             if (attributeRepository.existsByObjectIdAndObjectTypeIdAndAttributeClassIdAndValue(
                     attributeRequestDto.getObjectId(), attributeRequestDto.getObjectTypeId(),
                     attributeRequestDto.getAttributeClassId(), attributeRequestDto.getValue()))
                 throw new ResourceExistsException(ATTRIBUTE_RESOURCE_NAME, Optional.empty());
         } else {
-            // Jeśli nie wielowartościowy
-            // Jeśli istnieje atrybut o takim objectId, objectTypeId, attributeClassId
-            // to wyjątek, że taki atrybut już istnieje
             if (attributeRepository.existsByObjectIdAndObjectTypeIdAndAttributeClassId(
                     attributeRequestDto.getObjectId(), attributeRequestDto.getObjectTypeId(),
                     attributeRequestDto.getAttributeClassId()))
@@ -78,9 +73,6 @@ public class AttributeService {
         boolean multivalued = attributeClassTypeRepository
                 .getMultivaluedStatusByAttributeClassId(attributeRequestDto.getAttributeClassId());
         if (multivalued) {
-            // Jeśli wielowartościowy
-            // Jeśli istnieje taki atrybut o tym samym objectId, objectTypeId, attributeClassId, value ale o innym id
-            // to rzuć wyjątkiem
             if (attributeRepository.existsByObjectIdAndObjectTypeIdAndAttributeClassIdAndValueAndIdNot(
                     attributeRequestDto.getObjectId(), attributeRequestDto.getObjectTypeId(),
                     attributeRequestDto.getAttributeClassId(), attributeRequestDto.getValue(), id))
