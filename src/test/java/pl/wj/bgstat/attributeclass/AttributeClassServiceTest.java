@@ -195,8 +195,6 @@ class AttributeClassServiceTest {
         AttributeClassResponseDto attributeClassResponseDto = attributeClassService.addAttributeClass(attributeClassRequestDto);
 
         // then
-        System.out.println("GIVEN RESPONSE: " + attributeClassResponseDto.getAttributeClassTypeName());
-        System.out.println("EXPECTED RESPONSE: " + expectedResponse.getAttributeClassTypeName());
         assertThat(attributeClassResponseDto)
                 .isNotNull()
                 .usingRecursiveComparison()

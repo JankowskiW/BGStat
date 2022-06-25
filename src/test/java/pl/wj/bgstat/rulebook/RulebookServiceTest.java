@@ -6,6 +6,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.web.multipart.MultipartFile;
 import pl.wj.bgstat.boardgame.BoardGameRepository;
 import pl.wj.bgstat.exception.RequestEnumException;
@@ -19,7 +22,11 @@ import pl.wj.bgstat.rulebook.model.dto.RulebookResponseDto;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -35,6 +42,9 @@ import static pl.wj.bgstat.rulebook.model.RulebookMapper.mapToRulebookResponseDt
 
 @ExtendWith(MockitoExtension.class)
 class RulebookServiceTest {
+
+    private static final String RULEBOOKS_PATH = "//localhost/resources/rulebooks";
+
     @Mock
     private MultipartFile multipartFile;
     @Mock
@@ -44,7 +54,6 @@ class RulebookServiceTest {
     @InjectMocks
     private RulebookService rulebookService;
 
-    private static final String RULEBOOKS_PATH = "\\\\localhost\\resources\\rulebooks";
 
     @Test
     @DisplayName("Should add rulebook in given language when board game exists and rulebook does not exist")
@@ -54,7 +63,7 @@ class RulebookServiceTest {
         long rulebookId = 2L;
         LanguageISO language = LanguageISO.PL;
         RulebookRequestDto rulebookRequestDto = new RulebookRequestDto(boardGameId, language);
-        String path = RULEBOOKS_PATH + String.format("\\%d\\%d_%s.pdf", boardGameId, boardGameId, language);
+        String path = String.format("%s/%d/%d_%s.pdf", RULEBOOKS_PATH, boardGameId, boardGameId, language);
         Rulebook rulebook = mapToRulebook(rulebookRequestDto, path);
         rulebook.setId(rulebookId);
         RulebookResponseDto expectedResponse = mapToRulebookResponseDto(rulebook);
@@ -71,6 +80,15 @@ class RulebookServiceTest {
         // when
         RulebookResponseDto rulebookResponseDto = rulebookService.addRulebook(rulebookRequestDto, multipartFile);
 
+        // TODO: 25.06.2022 Find out how to test file creation without create it in real environment
+        Path tmpPath = Paths.get(String.format("%s/%d", RULEBOOKS_PATH, boardGameId));
+        if(Files.exists(tmpPath)) {
+            Files.walk(tmpPath)
+                    .sorted(Comparator.reverseOrder())
+                    .map(Path::toFile)
+                    .forEach(File::delete);
+        }
+
         // then
         assertThat(rulebookResponseDto)
                 .isNotNull()
@@ -79,8 +97,8 @@ class RulebookServiceTest {
     }
 
     @Test
-    @DisplayName("Should throw RequestFileException when IOException was thrown")
-    void shouldThrowExceptionWhenIOExceptionWasThrown() throws IOException {
+    @DisplayName("Should throw RequestFileException when IOException was thrown in addRulebook method")
+    void shouldThrowExceptionWhenIOExceptionWasThrownInAddRulebookMethod() throws IOException {
         // given
         long boardGameId = 1L;
         LanguageISO language = LanguageISO.PL;
@@ -130,6 +148,62 @@ class RulebookServiceTest {
     }
 
     @Test
+    @DisplayName("Should replace rulebook file when rulebook exists")
+    void shouldReplaceRulebookFileWhenRulebookExists() throws IOException {
+        // given
+        long rulebookId = 1L;
+        long boardGameId = 2L;
+        LanguageISO language = LanguageISO.PL;
+        Rulebook rulebook = new Rulebook();
+        rulebook.setId(rulebookId);
+        rulebook.setBoardGameId(boardGameId);
+        rulebook.setLanguageIso(language);
+        rulebook.setPath(String.format("%s/%d/%d_%s.pdf", RULEBOOKS_PATH, boardGameId, boardGameId, language));
+        RulebookResponseDto expectedResponse = mapToRulebookResponseDto(rulebook);
+        given(rulebookRepository.findById(anyLong())).willReturn(Optional.of(rulebook));
+        willDoNothing().given(multipartFile).transferTo(any(File.class));
+
+        // when
+        RulebookResponseDto rulebookResponseDto = rulebookService.editRulebook(rulebookId, multipartFile);
+
+
+        // TODO: 25.06.2022 Find out how to test file creation without create it in real environment
+        Path tmpPath = Paths.get(String.format("%s/%d", RULEBOOKS_PATH, boardGameId));
+        if(Files.exists(tmpPath)) {
+            Files.walk(tmpPath)
+                    .sorted(Comparator.reverseOrder())
+                    .map(Path::toFile)
+                    .forEach(File::delete);
+        }
+
+        // then
+        verify(multipartFile).transferTo(any(File.class));
+        assertThat(rulebookResponseDto)
+                .isNotNull()
+                .usingRecursiveComparison()
+                .isEqualTo(expectedResponse);
+    }
+
+    @Test
+    @DisplayName("Should throw RequestFileException when IOException was thrown in editRulebook method")
+    void shouldThrowExceptionWhenIOExceptionWasThrownInEditRulebookMethod() throws IOException {
+        // given
+        long rulebookId = 1L;
+        long boardGameId = 2L;
+        LanguageISO language = LanguageISO.PL;
+        Rulebook rulebook = new Rulebook();
+        rulebook.setPath(RULEBOOKS_PATH + String.format("/%d/%d_%s.pdf", boardGameId, boardGameId, language));
+        given(rulebookRepository.findById(anyLong())).willReturn(Optional.of(rulebook));
+        willThrow(IOException.class).given(multipartFile).transferTo(any(File.class));
+
+        // when
+        assertThatThrownBy(() -> rulebookService.editRulebook(rulebookId, multipartFile))
+                .isInstanceOf(RequestFileException.class)
+                .hasMessage(createRequestFileExceptionSaveFailedMessage(multipartFile.getName()));
+
+    }
+
+    @Test
     @DisplayName("Should remove rulebook by id when exists")
     void shouldRemoveRulebookByIdWhenExists() {
         // given
@@ -140,7 +214,7 @@ class RulebookServiceTest {
         rulebook.setId(rulebookId);
         rulebook.setBoardGameId(boardGameId);
         rulebook.setLanguageIso(languageISO);
-        rulebook.setPath(String.format("%s\\%d\\%d_%s.pdf", RULEBOOKS_PATH, boardGameId, boardGameId, languageISO));
+        rulebook.setPath(String.format("%s/%d/%d_%s.pdf", RULEBOOKS_PATH, boardGameId, boardGameId, languageISO));
         given(rulebookRepository.findById(anyLong())).willReturn(Optional.of(rulebook));
         willDoNothing().given(rulebookRepository).deleteById(anyLong());
 

@@ -36,7 +36,6 @@ public enum LanguageISO {
     public static LanguageISO getLanguageISO(String value) {
         LanguageISO languageISO =
                 Arrays.stream(LanguageISO.values()).filter(v -> v.toString().equals(value)).findFirst().orElse(null);
-        System.out.println(languageISO);
         return languageISO;
     }
 }

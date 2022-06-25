@@ -1,6 +1,7 @@
 package pl.wj.bgstat.rulebook;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import pl.wj.bgstat.boardgame.BoardGameRepository;
@@ -28,10 +29,11 @@ import static pl.wj.bgstat.rulebook.model.RulebookMapper.mapToRulebookResponseDt
 @Service
 @RequiredArgsConstructor
 public class RulebookService {
-    private static final String RULEBOOKS_PATH = "\\\\localhost\\resources\\rulebooks";
 
     private final BoardGameRepository boardGameRepository;
     private final RulebookRepository rulebookRepository;
+
+    private final static String RULEBOOKS_PATH = "//localhost/resources/rulebooks";
 
     public RulebookResponseDto addRulebook(RulebookRequestDto rulebookRequestDto, MultipartFile rulebookFile) {
         throwExceptionWhenNotExistsById(rulebookRequestDto.getBoardGameId(), boardGameRepository);
@@ -41,11 +43,11 @@ public class RulebookService {
         if (rulebookRepository.existsByBoardGameIdAndLanguageIso(rulebookRequestDto.getBoardGameId(), rulebookRequestDto.getLanguageIso())) {
             throw new ResourceExistsException(RULEBOOK_RESOURCE_NAME, Optional.empty());
         }
-        String path = String.format("%s\\%d\\%d_%s.pdf", RULEBOOKS_PATH, rulebookRequestDto.getBoardGameId(),
+        String path = String.format("%s/%d/%d_%s.pdf", RULEBOOKS_PATH, rulebookRequestDto.getBoardGameId(),
                 rulebookRequestDto.getBoardGameId(), rulebookRequestDto.getLanguageIso());
 
         try {
-            File boardGameDirectory = new File(String.format("%s\\%d", RULEBOOKS_PATH, rulebookRequestDto.getBoardGameId()));
+            File boardGameDirectory = new File(String.format("%s/%d", RULEBOOKS_PATH, rulebookRequestDto.getBoardGameId()));
             if (!boardGameDirectory.exists()) {
                 boardGameDirectory.mkdirs();
             }
@@ -62,7 +64,7 @@ public class RulebookService {
         Rulebook rulebook = rulebookRepository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException(RULEBOOK_RESOURCE_NAME, ID_FIELD, id));
         try {
-            File boardGameDirectory = new File(String.format("%s\\%d", RULEBOOKS_PATH, id));
+            File boardGameDirectory = new File(String.format("%s/%d", RULEBOOKS_PATH, id));
             if (!boardGameDirectory.exists()) {
                 boardGameDirectory.mkdirs();
             }
@@ -87,7 +89,7 @@ public class RulebookService {
     public void deleteAllRulebooksByBoardGameId(long boardGameId) throws IOException {
         throwExceptionWhenNotExistsById(boardGameId, boardGameRepository);
         rulebookRepository.deleteByBoardGameId(boardGameId);
-        Path path = Paths.get(String.format("%s\\%d\\", RULEBOOKS_PATH, boardGameId));
+        Path path = Paths.get(String.format("%s/%d/", RULEBOOKS_PATH, boardGameId));
         if(Files.notExists(path)) return;
         Files.walk(path)
                 .sorted(Comparator.reverseOrder())
