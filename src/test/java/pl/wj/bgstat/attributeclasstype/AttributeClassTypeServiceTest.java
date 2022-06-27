@@ -33,6 +33,7 @@ import static pl.wj.bgstat.exception.ExceptionHelper.*;
 @ExtendWith(MockitoExtension.class)
 class AttributeClassTypeServiceTest {
 
+    // TODO: 27.06.2022 Fix unit tests for AttributeClassTypeService after changes
     @Mock
     private AttributeClassTypeRepository attributeClassTypeRepository;
     @Mock
