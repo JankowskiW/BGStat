@@ -211,13 +211,27 @@ class AttributeServiceTest {
         // given
         long attributeClassId = 99L;
         AttributeRequestDto attributeRequestDto = new AttributeRequestDto(1, 1, attributeClassId, "");
-
         given(attributeClassRepository.existsById(anyLong())).willReturn(false);
 
         // when
         assertThatThrownBy(() -> attributeService.addAttribute(attributeRequestDto))
                 .isInstanceOf(ForeignKeyConstraintViolationException.class)
                 .hasMessage(createForeignKeyConstraintViolationExceptionMessage(ATTRIBUTE_CLASS_RESOURCE_NAME, attributeClassId));
+    }
+
+    @Test
+    @DisplayName("Should throw ForeignKeyConstraintViolationException when SystemObjectType Foreign Key Constraint Violation occur")
+    void shouldThrowExceptionWhenSystemObjectTypeFKConstraintViolationOccur() {
+        // given
+        long systemObjectTypeId = 99L;
+        AttributeRequestDto attributeRequestDto = new AttributeRequestDto(systemObjectTypeId, 2, 3, "");
+        given(attributeClassRepository.existsById(anyLong())).willReturn(true);
+        given(systemObjectTypeRepository.existsById(anyLong())).willReturn(false);
+
+        // when
+        assertThatThrownBy(() -> attributeService.addAttribute(attributeRequestDto))
+                .isInstanceOf(ForeignKeyConstraintViolationException.class)
+                .hasMessage(createForeignKeyConstraintViolationExceptionMessage(SYSTEM_OBJECT_TYPE_RESOURCE_NAME, systemObjectTypeId));
     }
 
     @Test
