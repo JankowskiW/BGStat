@@ -8,7 +8,6 @@ import pl.wj.bgstat.attribute.model.dto.AttributeRequestDto;
 import pl.wj.bgstat.attribute.model.dto.AttributeResponseDto;
 import pl.wj.bgstat.attributeclass.AttributeClassRepository;
 import pl.wj.bgstat.attributeclasstype.AttributeClassTypeRepository;
-import pl.wj.bgstat.attributeclasstype.model.AttributeClassType;
 import pl.wj.bgstat.boardgame.BoardGameRepository;
 import pl.wj.bgstat.boardgamedescription.BoardGameDescriptionRepository;
 import pl.wj.bgstat.exception.ResourceExistsException;
@@ -102,10 +101,6 @@ public class AttributeService {
             throwExceptionWhenForeignKeyConstraintViolationOccur(objectId, boardGameDescriptionRepository);
         } else if (objectType.equals(ObjectType.USER_BOARD_GAME)) {
             throwExceptionWhenForeignKeyConstraintViolationOccur(objectId, userBoardGameRepository);
-        } else {
-            // if objectType exists in database but there is no checking for FK Constraint violation
-            // then InternalServerError response code should be returned
-            throw new SystemObjectTypeIncompatibilityException(objectType.getId());
         }
     }
 }

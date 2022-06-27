@@ -18,7 +18,9 @@ import pl.wj.bgstat.boardgamedescription.BoardGameDescriptionRepository;
 import pl.wj.bgstat.exception.ForeignKeyConstraintViolationException;
 import pl.wj.bgstat.exception.ResourceExistsException;
 import pl.wj.bgstat.exception.ResourceNotFoundException;
+import pl.wj.bgstat.exception.SystemObjectTypeIncompatibilityException;
 import pl.wj.bgstat.systemobjecttype.SystemObjectTypeRepository;
+import pl.wj.bgstat.systemobjecttype.enumeration.ObjectType;
 import pl.wj.bgstat.userboardgame.UserBoardGameRepository;
 
 import java.util.List;
@@ -232,6 +234,73 @@ class AttributeServiceTest {
         assertThatThrownBy(() -> attributeService.addAttribute(attributeRequestDto))
                 .isInstanceOf(ForeignKeyConstraintViolationException.class)
                 .hasMessage(createForeignKeyConstraintViolationExceptionMessage(SYSTEM_OBJECT_TYPE_RESOURCE_NAME, systemObjectTypeId));
+    }
+
+    @Test
+    @DisplayName("Should throw ForeignKeyConstraintViolationException when BoardGame object type does not exist in db by id")
+    void shouldThrowExceptionWhenBoardGameObjectTypeDoesNotExistById() {
+        // given
+        long objectId = 1L;
+        long systemObjectTypeId = ObjectType.BOARD_GAME.getId();
+        AttributeRequestDto attributeRequestDto = new AttributeRequestDto(systemObjectTypeId, objectId, 3, "");
+        given(attributeClassRepository.existsById(anyLong())).willReturn(true);
+        given(systemObjectTypeRepository.existsById(anyLong())).willReturn(true);
+        given(boardGameRepository.existsById(anyLong())).willReturn(false);
+
+        // when
+        assertThatThrownBy(() -> attributeService.addAttribute(attributeRequestDto))
+                .isInstanceOf(ForeignKeyConstraintViolationException.class)
+                .hasMessage(createForeignKeyConstraintViolationExceptionMessage(BOARD_GAME_RESOURCE_NAME, objectId));
+    }
+
+    @Test
+    @DisplayName("Should throw ForeignKeyConstraintViolationException when BoardGameDescription object type does not exist in db by id")
+    void shouldThrowExceptionWhenBoardGameDescriptionObjectTypeDoesNotExistById() {
+        // given
+        long objectId = 1L;
+        long systemObjectTypeId = ObjectType.BOARD_GAME_DESCRIPTION.getId();
+        AttributeRequestDto attributeRequestDto = new AttributeRequestDto(systemObjectTypeId, objectId, 3, "");
+        given(attributeClassRepository.existsById(anyLong())).willReturn(true);
+        given(systemObjectTypeRepository.existsById(anyLong())).willReturn(true);
+        given(boardGameDescriptionRepository.existsById(anyLong())).willReturn(false);
+
+        // when
+        assertThatThrownBy(() -> attributeService.addAttribute(attributeRequestDto))
+                .isInstanceOf(ForeignKeyConstraintViolationException.class)
+                .hasMessage(createForeignKeyConstraintViolationExceptionMessage(BOARD_GAME_DESCRIPTION_RESOURCE_NAME, objectId));
+    }
+
+    @Test
+    @DisplayName("Should throw ForeignKeyConstraintViolationException when UserBoardGame object type does not exist in db by id")
+    void shouldThrowExceptionWhenUserBoardGameObjectTypeDoesNotExistById() {
+        // given
+        long objectId = 1L;
+        long systemObjectTypeId = ObjectType.USER_BOARD_GAME.getId();
+        AttributeRequestDto attributeRequestDto = new AttributeRequestDto(systemObjectTypeId, objectId, 3, "");
+        given(attributeClassRepository.existsById(anyLong())).willReturn(true);
+        given(systemObjectTypeRepository.existsById(anyLong())).willReturn(true);
+        given(userBoardGameRepository.existsById(anyLong())).willReturn(false);
+
+        // when
+        assertThatThrownBy(() -> attributeService.addAttribute(attributeRequestDto))
+                .isInstanceOf(ForeignKeyConstraintViolationException.class)
+                .hasMessage(createForeignKeyConstraintViolationExceptionMessage(USER_BOARD_GAME_RESOURCE_NAME, objectId));
+    }
+
+    @Test
+    @DisplayName("Should throw SystemObjectTypeIncompatibilityException when system object type id is not handled")
+    void shouldThrowExceptionWhenSystemObjectTypeIdIsNotHandled() {
+        // given
+        long objectId = 1L;
+        long notHandledId = 4L;
+        AttributeRequestDto attributeRequestDto = new AttributeRequestDto(notHandledId, objectId, 3, "");
+        given(attributeClassRepository.existsById(anyLong())).willReturn(true);
+        given(systemObjectTypeRepository.existsById(anyLong())).willReturn(true);
+
+        // when
+        assertThatThrownBy(() -> attributeService.addAttribute(attributeRequestDto))
+                .isInstanceOf(SystemObjectTypeIncompatibilityException.class)
+                .hasMessage(createSystemObjectTypeIncompatibilityExceptionMessage(notHandledId));
     }
 
     @Test
