@@ -11,8 +11,14 @@ import pl.wj.bgstat.attribute.model.Attribute;
 import pl.wj.bgstat.attribute.model.AttributeMapper;
 import pl.wj.bgstat.attribute.model.dto.AttributeRequestDto;
 import pl.wj.bgstat.attribute.model.dto.AttributeResponseDto;
+import pl.wj.bgstat.attributeclass.AttributeClassRepository;
+import pl.wj.bgstat.attributeclasstype.AttributeClassTypeRepository;
+import pl.wj.bgstat.boardgame.BoardGameRepository;
+import pl.wj.bgstat.boardgamedescription.BoardGameDescriptionRepository;
 import pl.wj.bgstat.exception.ResourceExistsException;
 import pl.wj.bgstat.exception.ResourceNotFoundException;
+import pl.wj.bgstat.systemobjecttype.SystemObjectTypeRepository;
+import pl.wj.bgstat.userboardgame.UserBoardGameRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,26 +35,34 @@ import static pl.wj.bgstat.exception.ExceptionHelper.*;
 class AttributeServiceTest {
 
     @Mock
+    private BoardGameRepository boardGameRepository;
+    @Mock
+    private BoardGameDescriptionRepository boardGameDescriptionRepository;
+    @Mock
+    private UserBoardGameRepository userBoardGameRepository;
+    @Mock
+    private SystemObjectTypeRepository systemObjectTypeRepository;
+    @Mock
+    private AttributeClassRepository attributeClassRepository;
+    @Mock
+    private AttributeClassTypeRepository attributeClassTypeRepository;
+    @Mock
     private AttributeRepository attributeRepository;
     @InjectMocks
     private AttributeService attributeService;
-
-
-    private List<Attribute> attributeList;
-
-    @BeforeEach
-    void setUp() {
-        attributeList = AttributeServiceTestHelper.populateAttributeList();
-    }
 
     @Test
     @DisplayName("Should return attribute by id when exists in database")
     void shouldReturnAttributeByIdWhenExists() {
         // given
         long id = 1L;
-        Optional<Attribute> returnedAttribute = attributeList.stream()
-                .filter(a -> a.getId() == id)
-                .findAny();
+        Attribute attribute = new Attribute();
+        attribute.setId(id);
+        attribute.setAttributeClassId(1);
+        attribute.setObjectTypeId(1);
+        attribute.setObjectId(1);
+        attribute.setValue("VALUE");
+        Optional<Attribute> returnedAttribute = Optional.of(attribute);
         AttributeResponseDto expectedResponse = AttributeMapper.mapToAttributeResponseDto(
                 returnedAttribute.orElseThrow());
         given(attributeRepository.findById(anyLong())).willReturn(returnedAttribute);
@@ -68,8 +82,7 @@ class AttributeServiceTest {
     void shouldThrowExceptionWhenCannotFindAttributeById() {
         // given
         long id = 100L;
-        given(attributeRepository.findById(anyLong())).willReturn(
-                attributeList.stream().filter(a -> a.getId() == id).findAny());
+        given(attributeRepository.findById(anyLong())).willReturn(Optional.empty());
 
         // when
         assertThatThrownBy(() -> attributeService.getSingleAttribute(id))
@@ -79,22 +92,23 @@ class AttributeServiceTest {
     }
 
     @Test
-    @DisplayName("Should create and return created attribute of not multivalued attribute type")
-    void shouldReturnCreatedAttribute() {
+    @DisplayName("Should create and return created attribute when attribute has single valued type")
+    void shouldReturnCreatedAttributeWhenAttributeHasSingleValuedType() {
         // given
-        long objectId = attributeList.size()+1;
+        long objectId = 10L;
         long objectTypeId = 1L;
         long attributeClassId = 1L;
         AttributeRequestDto attributeRequestDto = new AttributeRequestDto(
-                objectId, objectTypeId, attributeClassId, "VAL NO. " + (attributeList.size() + 1), false);
+                objectTypeId, objectId, attributeClassId, "VAL NO. " + objectId);
         Attribute attribute = AttributeMapper.mapToAttribute(attributeRequestDto);
-        attribute.setId(attributeList.size()+1);
+        attribute.setId(objectId);
         AttributeResponseDto expectedResponse = AttributeMapper.mapToAttributeResponseDto(attribute);
-        given(attributeRepository.existsByObjectIdAndObjectTypeIdAndAttributeClassId(anyLong(), anyLong(), anyLong())).willReturn(
-                attributeList.stream().anyMatch(a ->
-                        a.getObjectTypeId() == objectTypeId &&
-                        a.getObjectId() == objectId &&
-                        a.getAttributeClassId() == attributeClassId));
+        given(attributeClassRepository.existsById(anyLong())).willReturn(true);
+        given(systemObjectTypeRepository.existsById(anyLong())).willReturn(true);
+        given(boardGameRepository.existsById(anyLong())).willReturn(true);
+        given(attributeClassTypeRepository.getMultivaluedStatusByAttributeClassId(anyLong())).willReturn(false);
+        given(attributeRepository.existsByObjectIdAndObjectTypeIdAndAttributeClassId(
+                anyLong(), anyLong(), anyLong())).willReturn(false);
         given(attributeRepository.save(any(Attribute.class))).willAnswer(
                 i -> {
                     Attribute a = i.getArgument(0, Attribute.class);
@@ -116,22 +130,19 @@ class AttributeServiceTest {
     @DisplayName("Should create and return created attribute when attribute has multivalued type")
     void shouldReturnCreatedAttributeWhenAttributeHasMultivaluedType() {
         // given
-        long objectId = attributeList.size();
+        long objectId = 10L;
         long objectTypeId = 1L;
         long attributeClassId = 3L;
-        String value = "VAL No. " + (attributeList.size() + 1);
+        String value = "VAL No. " + objectId;
         AttributeRequestDto attributeRequestDto = new AttributeRequestDto(
-                objectId, objectTypeId, attributeClassId, value, true);
+                objectTypeId,objectId, attributeClassId, value);
         Attribute attribute = AttributeMapper.mapToAttribute(attributeRequestDto);
-        attribute.setId(attributeList.size()+1);
+        attribute.setId(objectId);
         AttributeResponseDto expectedResponse = AttributeMapper.mapToAttributeResponseDto(attribute);
-        given(attributeRepository.existsByObjectIdAndObjectTypeIdAndAttributeClassIdAndValueNot(
-                anyLong(), anyLong(), anyLong(), anyString())).willReturn(
-                attributeList.stream().anyMatch(a ->
-                        a.getObjectTypeId() == objectTypeId &&
-                        a.getObjectId() == objectId &&
-                        a.getAttributeClassId() == attributeClassId &&
-                        a.getValue().equals(value)));
+        given(attributeClassRepository.existsById(anyLong())).willReturn(true);
+        given(systemObjectTypeRepository.existsById(anyLong())).willReturn(true);
+        given(boardGameRepository.existsById(anyLong())).willReturn(true);
+        given(attributeClassTypeRepository.getMultivaluedStatusByAttributeClassId(anyLong())).willReturn(true);
         given(attributeRepository.save(any(Attribute.class))).willAnswer(
                 i -> {
                     Attribute a = i.getArgument(0, Attribute.class);
@@ -153,16 +164,17 @@ class AttributeServiceTest {
     @DisplayName("Should throw ResourceExistsException when cannot add attribute of single valued type to object")
     void shouldThrowExceptionWhenCannotAddAttributeOfSingleValuedType() {
         // given
-        long objectId = 1L;
+        long objectId = 10L;
         long objectTypeId = 1L;
         long attributeClassId = 1L;
         AttributeRequestDto attributeRequestDto = new AttributeRequestDto(
-                objectId, objectTypeId, attributeClassId, "VAL NO. " + (attributeList.size() + 1), false);
-        given(attributeRepository.existsByObjectIdAndObjectTypeIdAndAttributeClassId(anyLong(), anyLong(), anyLong())).willReturn(
-                attributeList.stream().anyMatch(a ->
-                        a.getObjectTypeId() == objectTypeId &&
-                                a.getObjectId() == objectId &&
-                                a.getAttributeClassId() == attributeClassId));
+                objectTypeId, objectId, attributeClassId, "VAL NO. " + objectId);
+        Attribute attribute = AttributeMapper.mapToAttribute(attributeRequestDto);
+        given(attributeClassRepository.existsById(anyLong())).willReturn(true);
+        given(systemObjectTypeRepository.existsById(anyLong())).willReturn(true);
+        given(boardGameRepository.existsById(anyLong())).willReturn(true);
+        given(attributeRepository.existsByObjectIdAndObjectTypeIdAndAttributeClassId(
+                anyLong(), anyLong(), anyLong())).willReturn(true);
 
         // when
         assertThatThrownBy(() -> attributeService.addAttribute(attributeRequestDto))
@@ -174,19 +186,18 @@ class AttributeServiceTest {
     @DisplayName("Should throw ResourceExistsException when cannot add attribute of multivalued type to object")
     void shouldThrowExceptionWhenCannotAddAttributeOfMultivaluedType() {
         // given
-        long objectId = attributeList.size();
+        long objectId = 10L;
         long objectTypeId = 1L;
         long attributeClassId = 3L;
-        String value = "VAL NO. " + attributeList.size();
+        String value = "VAL NO. " + objectId;
         AttributeRequestDto attributeRequestDto = new AttributeRequestDto(
-                objectId, objectTypeId, attributeClassId, value, true);
-        given(attributeRepository.existsByObjectIdAndObjectTypeIdAndAttributeClassIdAndValueNot(
-                anyLong(), anyLong(), anyLong(), anyString())).willReturn(
-                attributeList.stream().anyMatch(a ->
-                        a.getObjectTypeId() == objectTypeId &&
-                                a.getObjectId() == objectId &&
-                                a.getAttributeClassId() == attributeClassId &&
-                                !a.getValue().equals(value)));
+                objectTypeId, objectId, attributeClassId, value);
+        given(attributeClassRepository.existsById(anyLong())).willReturn(true);
+        given(systemObjectTypeRepository.existsById(anyLong())).willReturn(true);
+        given(boardGameRepository.existsById(anyLong())).willReturn(true);
+        given(attributeClassTypeRepository.getMultivaluedStatusByAttributeClassId(anyLong())).willReturn(true);
+        given(attributeRepository.existsByObjectIdAndObjectTypeIdAndAttributeClassIdAndValue(
+                anyLong(), anyLong(), anyLong(), anyString())).willReturn(true);
 
         // when
         assertThatThrownBy(() -> attributeService.addAttribute(attributeRequestDto))
@@ -205,10 +216,13 @@ class AttributeServiceTest {
         long attributeClassId = 1L;
         String value = "NEW VAL";
         AttributeRequestDto attributeRequestDto = new AttributeRequestDto(
-                objectId, objectTypeId, attributeClassId, value, false);
+                objectTypeId, objectId, attributeClassId, value);
         AttributeResponseDto expectedResponse = AttributeMapper.mapToAttributeResponseDto(attributeRequestDto, id);
-        given(attributeRepository.existsById(anyLong())).willReturn(attributeList.stream().anyMatch(a -> a.getId() == id));
-
+        given(attributeRepository.existsById(anyLong())).willReturn(true);
+        given(attributeClassRepository.existsById(anyLong())).willReturn(true);
+        given(systemObjectTypeRepository.existsById(anyLong())).willReturn(true);
+        given(boardGameRepository.existsById(anyLong())).willReturn(true);
+        given(attributeClassTypeRepository.getMultivaluedStatusByAttributeClassId(anyLong())).willReturn(false);
         // when
         AttributeResponseDto attributeResponseDto = attributeService.editAttribute(id, attributeRequestDto);
 
@@ -220,13 +234,37 @@ class AttributeServiceTest {
     }
 
     @Test
+    @DisplayName("Should throw ResourceExistsException when single valued attribute already exists")
+    void shouldThrowExceptionWhenSingleValuedAttributeAlreadyExists() {
+        // given
+        long id = 1L;
+        long objectId = 1L;
+        long objectTypeId = 1L;
+        long attributeClassId = 1L;
+        String value = "NEW VAL";
+        AttributeRequestDto attributeRequestDto = new AttributeRequestDto(
+                objectTypeId, objectId, attributeClassId, value);
+        given(attributeRepository.existsById(anyLong())).willReturn(true);
+        given(attributeClassRepository.existsById(anyLong())).willReturn(true);
+        given(systemObjectTypeRepository.existsById(anyLong())).willReturn(true);
+        given(boardGameRepository.existsById(anyLong())).willReturn(true);
+        given(attributeClassTypeRepository.getMultivaluedStatusByAttributeClassId(anyLong())).willReturn(false);
+        given(attributeRepository.existsByObjectIdAndObjectTypeIdAndAttributeClassIdAndIdNot(
+                anyLong(), anyLong(), anyLong(), anyLong())).willReturn(true);
+
+        // when
+        assertThatThrownBy(() -> attributeService.editAttribute(id, attributeRequestDto))
+                .isInstanceOf(ResourceExistsException.class)
+                .hasMessage(createResourceExistsExceptionMessage(ATTRIBUTE_RESOURCE_NAME, Optional.empty()));
+
+    }
+
+    @Test
     @DisplayName("Should throw ResourceNotFoundException when trying to edit not existing attribute")
     void shouldThrowExceptionWhenTryingToEditNotExistingAttribute() {
         // given
         long id = 100L;
-
-        given(attributeRepository.existsById(anyLong())).willReturn(
-                attributeList.stream().anyMatch(a -> a.getId() == id));
+        given(attributeRepository.existsById(anyLong())).willReturn(false);
 
         // when
         assertThatThrownBy(() -> attributeService.editAttribute(id, new AttributeRequestDto()))
@@ -238,20 +276,19 @@ class AttributeServiceTest {
     @DisplayName("Should throw ResourceExistsException when object has attribute of given class with new value")
     void shouldThrowExceptionWhenObjectHasAttributeOfGivenClassWithNewValue() {
         // given
-        long id = attributeList.size();
-        long objectId = attributeList.size();
+        long id = 10L;
+        long objectId = 10L;
         long objectTypeId = 1L;
         long attributeClassId = 3L;
-        String value = "VAL NO. " + attributeList.size();
-        AttributeRequestDto attributeRequestDto = new AttributeRequestDto(objectId, objectTypeId, attributeClassId, value, true);
+        String value = "VAL NO. " + id;
+        AttributeRequestDto attributeRequestDto = new AttributeRequestDto(objectTypeId, objectId, attributeClassId, value);
+        given(attributeRepository.existsById(anyLong())).willReturn(true);
+        given(attributeClassRepository.existsById(anyLong())).willReturn(true);
+        given(systemObjectTypeRepository.existsById(anyLong())).willReturn(true);
+        given(boardGameRepository.existsById(anyLong())).willReturn(true);
+        given(attributeClassTypeRepository.getMultivaluedStatusByAttributeClassId(anyLong())).willReturn(true);
         given(attributeRepository.existsByObjectIdAndObjectTypeIdAndAttributeClassIdAndValueAndIdNot(
-                anyLong(), anyLong(), anyLong(), anyString(), anyLong())).willReturn(
-                        attributeList.stream().anyMatch(a ->
-                                a.getObjectId() == objectId &&
-                                a.getObjectTypeId() == objectTypeId &&
-                                a.getAttributeClassId() == attributeClassId &&
-                                a.getValue().equals(value) &&
-                                a.getId() != id));
+                anyLong(), anyLong(), anyLong(), anyString(), anyLong())).willReturn(true);
 
         // when
         assertThatThrownBy(() -> attributeService.editAttribute(id, attributeRequestDto))
@@ -264,8 +301,7 @@ class AttributeServiceTest {
     void shouldRemoveAttributeWhenIdExists() {
         // given
         long id = 1L;
-        given(attributeRepository.existsById(id)).willReturn(
-                attributeList.stream().anyMatch(a -> a.getId() == id));
+        given(attributeRepository.existsById(id)).willReturn(true);
         willDoNothing().given(attributeRepository).deleteById(anyLong());
 
         // when
@@ -281,8 +317,7 @@ class AttributeServiceTest {
     void shouldThrowExceptionWhenTryingToRemoveNotExistingAttribute() {
         // given
         long id = 100L;
-        given(attributeRepository.existsById(id)).willReturn(
-                attributeList.stream().anyMatch(a -> a.getId() == id));
+        given(attributeRepository.existsById(id)).willReturn(false);
 
         // then
         assertThatThrownBy(() -> attributeService.deleteAttribute(id))

@@ -27,7 +27,8 @@ public class AttributeClassTypeServiceTestHelper {
         List<AttributeClassTypeHeaderDto> attributeClassTypeHeaderDtoList = new ArrayList<>();
         for(AttributeClassType attributeClassType : attributeClassTypeList) {
             attributeClassTypeHeaderDtoList.add(new AttributeClassTypeHeaderDto(
-                    attributeClassType.getId(), attributeClassType.getName(), attributeClassType.isArchived()));
+                    attributeClassType.getId(), attributeClassType.getName(),
+                    attributeClassType.isArchived(), attributeClassType.isMultivalued()));
         }
         return attributeClassTypeHeaderDtoList;
     }
@@ -36,6 +37,7 @@ public class AttributeClassTypeServiceTestHelper {
         return new AttributeClassTypeRequestDto(
                 "Name No. " + (currentSize + 1),
                 "DESCRIPTION OF Name No. " + (currentSize + 1),
-                false);
+                false,
+                true);
     }
 }

@@ -195,7 +195,7 @@ class AttributeClassTypeServiceTest {
         // given
         String attributeClassTypeName = "Name No. 1";
         AttributeClassTypeRequestDto attributeClassTypeRequestDto = new AttributeClassTypeRequestDto(
-                attributeClassTypeName, "DESCRIPTION", false);
+                attributeClassTypeName, "DESCRIPTION", false, true);
         given(attributeClassTypeRepository.existsByName(anyString()))
                 .willReturn(attributeClassTypeList.stream().anyMatch(act -> act.getName().equals(attributeClassTypeName)));
 
@@ -258,7 +258,7 @@ class AttributeClassTypeServiceTest {
         long id = 1L;
         AttributeClassType attributeClassType = attributeClassTypeList.stream().filter(act -> act.getId() == id).findFirst().orElseThrow();
         AttributeClassTypeRequestDto attributeClassTypeRequestDto = new AttributeClassTypeRequestDto(
-                attributeClassTypeList.get(1).getName(), attributeClassType.getDescription(), attributeClassType.isArchived());
+                attributeClassTypeList.get(1).getName(), attributeClassType.getDescription(), attributeClassType.isArchived(), attributeClassType.isMultivalued());
         given(attributeClassTypeRepository.existsById(anyLong()))
                 .willReturn(attributeClassTypeList.stream().anyMatch(act -> act.getId() == id));
         given(attributeClassTypeRepository.existsByNameAndIdNot(anyString(), anyLong()))
