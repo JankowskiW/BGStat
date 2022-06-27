@@ -15,6 +15,7 @@ import pl.wj.bgstat.attributeclass.AttributeClassRepository;
 import pl.wj.bgstat.attributeclasstype.AttributeClassTypeRepository;
 import pl.wj.bgstat.boardgame.BoardGameRepository;
 import pl.wj.bgstat.boardgamedescription.BoardGameDescriptionRepository;
+import pl.wj.bgstat.exception.ForeignKeyConstraintViolationException;
 import pl.wj.bgstat.exception.ResourceExistsException;
 import pl.wj.bgstat.exception.ResourceNotFoundException;
 import pl.wj.bgstat.systemobjecttype.SystemObjectTypeRepository;
@@ -169,7 +170,6 @@ class AttributeServiceTest {
         long attributeClassId = 1L;
         AttributeRequestDto attributeRequestDto = new AttributeRequestDto(
                 objectTypeId, objectId, attributeClassId, "VAL NO. " + objectId);
-        Attribute attribute = AttributeMapper.mapToAttribute(attributeRequestDto);
         given(attributeClassRepository.existsById(anyLong())).willReturn(true);
         given(systemObjectTypeRepository.existsById(anyLong())).willReturn(true);
         given(boardGameRepository.existsById(anyLong())).willReturn(true);
@@ -203,7 +203,21 @@ class AttributeServiceTest {
         assertThatThrownBy(() -> attributeService.addAttribute(attributeRequestDto))
                 .isInstanceOf(ResourceExistsException.class)
                 .hasMessage(createResourceExistsExceptionMessage(ATTRIBUTE_RESOURCE_NAME, Optional.empty()));
+    }
 
+    @Test
+    @DisplayName("Should throw ForeignKeyConstraintViolationException when AtribtueClass Foreign Key Constraint Violation occur")
+    void shouldThrowExceptionWhenAttributeClassFKConstraintViolationOccur() {
+        // given
+        long attributeClassId = 99L;
+        AttributeRequestDto attributeRequestDto = new AttributeRequestDto(1, 1, attributeClassId, "");
+
+        given(attributeClassRepository.existsById(anyLong())).willReturn(false);
+
+        // when
+        assertThatThrownBy(() -> attributeService.addAttribute(attributeRequestDto))
+                .isInstanceOf(ForeignKeyConstraintViolationException.class)
+                .hasMessage(createForeignKeyConstraintViolationExceptionMessage(ATTRIBUTE_CLASS_RESOURCE_NAME, attributeClassId));
     }
 
     @Test
