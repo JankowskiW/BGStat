@@ -1,6 +1,5 @@
 package pl.wj.bgstat.attribute;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,7 +22,6 @@ import pl.wj.bgstat.systemobjecttype.SystemObjectTypeRepository;
 import pl.wj.bgstat.systemobjecttype.enumeration.ObjectType;
 import pl.wj.bgstat.userboardgame.UserBoardGameRepository;
 
-import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -146,6 +144,8 @@ class AttributeServiceTest {
         given(systemObjectTypeRepository.existsById(anyLong())).willReturn(true);
         given(boardGameRepository.existsById(anyLong())).willReturn(true);
         given(attributeClassTypeRepository.getMultivaluedStatusByAttributeClassId(anyLong())).willReturn(true);
+        given(attributeRepository.existsByObjectIdAndObjectTypeIdAndAttributeClassIdAndValue(
+                anyLong(), anyLong(), anyLong(), anyString())).willReturn(false);
         given(attributeRepository.save(any(Attribute.class))).willAnswer(
                 i -> {
                     Attribute a = i.getArgument(0, Attribute.class);

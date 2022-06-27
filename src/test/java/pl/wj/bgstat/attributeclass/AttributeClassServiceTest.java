@@ -180,8 +180,7 @@ class AttributeClassServiceTest {
         attributeClass.setId(attributeClassList.size()+1);
         AttributeClassResponseDto expectedResponse = AttributeClassMapper.mapToAttributeClassResponseDto(attributeClass);
         expectedResponse.setAttributeClassTypeName(attrClassTypeName);
-        given(attributeClassRepository.existsByName(anyString())).willReturn(
-                attributeClassList.stream().anyMatch(ac -> ac.getName().equals(attributeClassRequestDto.getName())));
+        given(attributeClassRepository.existsByName(anyString())).willReturn(false);
         given(attributeClassTypeRepository.existsById(anyLong())).willReturn(true);
         given(attributeClassRepository.save(any(AttributeClass.class))).willAnswer(
                 i -> {
@@ -202,13 +201,27 @@ class AttributeClassServiceTest {
     }
 
     @Test
+    @DisplayName("Should throw ResourceExistsException when attribute class already exists in database")
+    void shouldThrowExceptionWhenAttributeClassExists() {
+        // given
+        String attributeClassName = "Name No. 1";
+        AttributeClassRequestDto attributeClassRequestDto = new AttributeClassRequestDto(
+                attributeClassName, "New description", 1);
+        given(attributeClassRepository.existsByName(anyString())).willReturn(true);
+
+        // when
+        assertThatThrownBy(() -> attributeClassService.addAttributeClass(attributeClassRequestDto))
+                .isInstanceOf(ResourceExistsException.class)
+                .hasMessage(createResourceExistsExceptionMessage(ATTRIBUTE_CLASS_RESOURCE_NAME, Optional.of(NAME_FIELD)));
+    }
+
+    @Test
     @DisplayName("Should throw ForeignKeyConstraintViolationException when trying to add attribute class and given " +
             "attribute class type id does not exist in database")
     void shouldThrowExceptionWhenTryingToAddAttributeClassAndGivenAttributeClassTypeDoesNotExist() {
         // given
         AttributeClassRequestDto attributeClassRequestDto = AttributeClassServiceTestHelper.createAttributeClassRequestDto(NUMBER_OF_ELEMENTS);
-        given(attributeClassRepository.existsByName(anyString())).willReturn(
-                attributeClassList.stream().anyMatch(ac -> ac.getName().equals(attributeClassRequestDto.getName())));
+        given(attributeClassRepository.existsByName(anyString())).willReturn(false);
         given(attributeClassTypeRepository.existsById(anyLong())).willReturn(false);
 
         // when
@@ -216,22 +229,6 @@ class AttributeClassServiceTest {
                 .isInstanceOf(ForeignKeyConstraintViolationException.class)
                 .hasMessage(createForeignKeyConstraintViolationExceptionMessage(
                         ATTRIBUTE_CLASS_TYPE_RESOURCE_NAME, attributeClassRequestDto.getAttributeClassTypeId()));
-    }
-
-    @Test
-    @DisplayName("Should throw ResourceExistsException when attribute class already exists in database")
-    void shouldThrowExceptionWhenAttributeClassExists() {
-        // given
-        String attributeClassName = "Name No. 1";
-        AttributeClassRequestDto attributeClassRequestDto = new AttributeClassRequestDto(
-                attributeClassName, "New description", 1);
-        given(attributeClassRepository.existsByName(anyString()))
-                .willReturn(attributeClassList.stream().anyMatch(ac -> ac.getName().equals(attributeClassName)));
-
-        // when
-        assertThatThrownBy(() -> attributeClassService.addAttributeClass(attributeClassRequestDto))
-                .isInstanceOf(ResourceExistsException.class)
-                .hasMessage(createResourceExistsExceptionMessage(ATTRIBUTE_CLASS_RESOURCE_NAME, Optional.of(NAME_FIELD)));
     }
 
     @Test
@@ -245,11 +242,8 @@ class AttributeClassServiceTest {
                 .name(attributeClass.getName())
                 .description("NEW DESCRIPTION")
                 .build();
-        given(attributeClassRepository.existsById(anyLong())).willReturn(
-                attributeClassList.stream().anyMatch(ac -> ac.getId() == id));
-        given(attributeClassRepository.existsByNameAndIdNot(anyString(), anyLong())).willReturn(
-                attributeClassList.stream().anyMatch(ac -> ac.getId() != id &&
-                        ac.getName().equals(attributeClass.getName())));
+        given(attributeClassRepository.existsById(anyLong())).willReturn(true);
+        given(attributeClassRepository.existsByNameAndIdNot(anyString(), anyLong())).willReturn(false);
         given(attributeClassTypeRepository.existsById(anyLong())).willReturn(true);
         given(attributeClassRepository.save(any(AttributeClass.class))).willAnswer(
                 i -> {
@@ -271,29 +265,11 @@ class AttributeClassServiceTest {
     }
 
     @Test
-    @DisplayName("Should throw ForeignKeyConstraintViolationException when given attribute class type id does not exist in database")
-    void shouldThrowExceptionWhenAttributeClassTypeDoesNotExist() {
-        // given
-        AttributeClassRequestDto attributeClassRequestDto = AttributeClassServiceTestHelper.createAttributeClassRequestDto(NUMBER_OF_ELEMENTS);
-        given(attributeClassRepository.existsByName(anyString())).willReturn(
-                attributeClassList.stream().anyMatch(ac -> ac.getName().equals(attributeClassRequestDto.getName())));
-        given(attributeClassTypeRepository.existsById(anyLong())).willReturn(false);
-
-        // when
-        assertThatThrownBy(() -> attributeClassService.addAttributeClass(attributeClassRequestDto))
-                .isInstanceOf(ForeignKeyConstraintViolationException.class)
-                .hasMessage(createForeignKeyConstraintViolationExceptionMessage(
-                        ATTRIBUTE_CLASS_TYPE_RESOURCE_NAME, attributeClassRequestDto.getAttributeClassTypeId()));
-
-    }
-
-    @Test
     @DisplayName("Should throw ResourceNotFoundException when trying to edit not existing attribute class")
     void shouldThrowExceptionWhenTryingToEditNotExistingAttributeClass() {
         // given
         long id = 100L;
-        given(attributeClassRepository.existsById(anyLong()))
-                .willReturn(attributeClassList.stream().anyMatch(ac -> ac.getId() == id));
+        given(attributeClassRepository.existsById(anyLong())) .willReturn(false);
 
         // when
         assertThatThrownBy(() -> attributeClassService.editAttributeClass(id, new AttributeClassRequestDto()))
@@ -309,15 +285,32 @@ class AttributeClassServiceTest {
         AttributeClass attributeClass = attributeClassList.stream().filter(ac -> ac.getId() == id).findFirst().orElseThrow();
         AttributeClassRequestDto attributeClassRequestDto = new AttributeClassRequestDto(
           attributeClassList.get(1).getName(), attributeClass.getDescription(), attributeClass.getAttributeClassType().getId());
-        given(attributeClassRepository.existsById(anyLong())).willReturn(
-                attributeClassList.stream().anyMatch(ac -> ac.getId() == id));
-        given(attributeClassRepository.existsByNameAndIdNot(anyString(), anyLong())).willReturn(
-                attributeClassList.stream().anyMatch(ac -> ac.getId() == id && ac.getName().equals(attributeClass.getName())));
+        given(attributeClassRepository.existsById(anyLong())).willReturn(true);
+        given(attributeClassRepository.existsByNameAndIdNot(anyString(), anyLong())).willReturn(true);
 
         // when
         assertThatThrownBy(() -> attributeClassService.editAttributeClass(id, attributeClassRequestDto))
                 .isInstanceOf(ResourceExistsException.class)
                 .hasMessage(createResourceExistsExceptionMessage(ATTRIBUTE_CLASS_RESOURCE_NAME, Optional.of(NAME_FIELD)));
+    }
+
+    @Test
+    @DisplayName("Should throw ForeignKeyConstraintViolationException when trying to set Attribute Class Type that does not exist")
+    void shouldThrowExceptionWhenTryingToSetAttributeClassTypeThatDoesNotExist() {
+        // given
+        long id = 1L;
+        AttributeClass attributeClass = attributeClassList.stream().filter(ac -> ac.getId() == id).findFirst().orElseThrow();
+        AttributeClassRequestDto attributeClassRequestDto = new AttributeClassRequestDto(
+                attributeClassList.get(1).getName(), attributeClass.getDescription(), attributeClass.getAttributeClassType().getId());
+        given(attributeClassRepository.existsById(anyLong())).willReturn(true);
+        given(attributeClassRepository.existsByNameAndIdNot(anyString(), anyLong())).willReturn(false);
+        given(attributeClassTypeRepository.existsById(anyLong())).willReturn(false);
+
+        // when
+        assertThatThrownBy(() -> attributeClassService.editAttributeClass(id, attributeClassRequestDto))
+                .isInstanceOf(ForeignKeyConstraintViolationException.class)
+                .hasMessage(createForeignKeyConstraintViolationExceptionMessage(
+                        ATTRIBUTE_CLASS_TYPE_RESOURCE_NAME, attributeClassRequestDto.getAttributeClassTypeId()));
     }
 
     @Test
