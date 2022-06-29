@@ -13,7 +13,7 @@ import javax.validation.constraints.Min;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BoardGamePartialRequestDto {
-    @Length(min = 1, max = 255, message = "Name cannot by empty and should not be longer than 255 characters")
+    @Length(min = 1, max = 255, message = "Name cannot by empty and cannot be longer than 255 characters")
     private String name;
     @Min(value = 1, message = "Recommended age cannot be 0")
     private Integer recommendedAge;
