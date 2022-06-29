@@ -6,7 +6,8 @@ import lombok.Getter;
 public enum ObjectType {
     BOARD_GAME(1),
     BOARD_GAME_DESCRIPTION(2),
-    USER_BOARD_GAME(3);
+    USER_BOARD_GAME(3),
+    GAMEPLAY(4);
 
     long id;
 

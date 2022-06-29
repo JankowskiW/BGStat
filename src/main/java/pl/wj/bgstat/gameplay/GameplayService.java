@@ -10,6 +10,7 @@ import pl.wj.bgstat.gameplay.model.dto.GameplayRequestDto;
 import pl.wj.bgstat.gameplay.model.dto.GameplayResponseDto;
 import pl.wj.bgstat.gameplay.model.dto.GameplaysStatsDto;
 import pl.wj.bgstat.systemobjecttype.SystemObjectTypeRepository;
+import pl.wj.bgstat.systemobjecttype.enumeration.ObjectType;
 import pl.wj.bgstat.user.UserRepository;
 import pl.wj.bgstat.userboardgame.UserBoardGameRepository;
 
@@ -23,7 +24,6 @@ import static pl.wj.bgstat.exception.ExceptionHelper.throwExceptionWhenNotExists
 @RequiredArgsConstructor
 public class GameplayService {
 
-    private static final long GAMEPLAY_DEFAULT_OBJECT_TYPE_ID = 4L;
 
     private final GameplayRepository gameplayRepository;
     private final BoardGameRepository boardGameRepository;
@@ -61,6 +61,6 @@ public class GameplayService {
     }
 
     private long validateSystemObjectTypeId(long id) {
-        return id == 0 ? GAMEPLAY_DEFAULT_OBJECT_TYPE_ID : id;
+        return id == 0 ? ObjectType.GAMEPLAY.getId() : id;
     }
 }
