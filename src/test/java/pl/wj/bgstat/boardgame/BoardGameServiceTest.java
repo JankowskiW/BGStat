@@ -76,7 +76,6 @@ class BoardGameServiceTest {
     private static MultipartFile notOkFileMT;
     private static MultipartFile notOkFileRes;
     private static BufferedImage okBi;
-    private static BufferedImage notOkBiMT;
     private static BufferedImage notOkBiRes;
     private static String okMediaType = "image/png";
     private static String notOkMediaType = "image/txt";
@@ -96,7 +95,6 @@ class BoardGameServiceTest {
         notOkFileMT = createMultipartFile(notOkMediaType, true);
         notOkFileRes = createMultipartFile(okMediaType, false);
         okBi = ImageIO.read(okFile.getInputStream());
-        notOkBiMT = ImageIO.read(notOkFileMT.getInputStream());
         notOkBiRes = ImageIO.read(notOkFileRes.getInputStream());
         ms = mockStatic(ImageIO.class);
     }
@@ -333,7 +331,7 @@ class BoardGameServiceTest {
                 });
 
         // when
-        BoardGameResponseDto boardGameResponseDto = boardGameService.editBoardGame(id, boardGameRequestDto);
+        BoardGameResponseDto boardGameResponseDto = boardGameService.editBoardGame(id, boardGameRequestDto, okFile);
 
         // then
         assertThat(boardGameResponseDto).isNotNull();
@@ -365,7 +363,7 @@ class BoardGameServiceTest {
                 });
 
         // when
-        BoardGameResponseDto boardGameResponseDto = boardGameService.editBoardGame(id, boardGameRequestDto);
+        BoardGameResponseDto boardGameResponseDto = boardGameService.editBoardGame(id, boardGameRequestDto, okFile);
 
         // then
         assertThat(boardGameResponseDto).isNotNull();
@@ -387,7 +385,7 @@ class BoardGameServiceTest {
         given(systemObjectTypeRepository.existsById(anyLong())).willReturn(false);
 
         // when
-        assertThatThrownBy(() -> boardGameService.editBoardGame(id, boardGameRequestDto))
+        assertThatThrownBy(() -> boardGameService.editBoardGame(id, boardGameRequestDto, okFile))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessage(createResourceNotFoundExceptionMessage(SYSTEM_OBJECT_TYPE_RESOURCE_NAME, ID_FIELD, objectTypeId));
 
@@ -402,7 +400,7 @@ class BoardGameServiceTest {
                 .willReturn(boardGameList.stream().anyMatch(bg -> bg.getId() == id));
 
         // when
-        assertThatThrownBy(() -> boardGameService.editBoardGame(id, new BoardGameRequestDto()))
+        assertThatThrownBy(() -> boardGameService.editBoardGame(id, new BoardGameRequestDto(), okFile))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessage(createResourceNotFoundExceptionMessage(BOARD_GAME_RESOURCE_NAME, ID_FIELD, id));
     }
@@ -423,7 +421,7 @@ class BoardGameServiceTest {
                 .willReturn(boardGameList.stream().anyMatch(bg -> bg.getId() != id && bg.getName().equals(boardGameRequestDto.getName())));
 
         // when
-        assertThatThrownBy(() -> boardGameService.editBoardGame(id, boardGameRequestDto))
+        assertThatThrownBy(() -> boardGameService.editBoardGame(id, boardGameRequestDto, okFile))
                 .isInstanceOf(ResourceExistsException.class)
                 .hasMessage(createResourceExistsExceptionMessage(BOARD_GAME_RESOURCE_NAME, Optional.of(NAME_FIELD)));
     }
