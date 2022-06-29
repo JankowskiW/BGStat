@@ -24,6 +24,7 @@ public class BoardGameController {
 
     @GetMapping("")
     public Page<BoardGameHeaderDto> getBoardGameHeaders(Pageable pageable) {
+        // TODO: 29.06.2022 implement sorting by boardgame name and default sorting by id
         return boardGameService.getBoardGameHeaders(pageable);
     }
 
@@ -39,8 +40,10 @@ public class BoardGameController {
     }
 
     @PutMapping("/{id}")
-    public BoardGameResponseDto editBoardGame(@PathVariable long id, @RequestBody @Valid BoardGameRequestDto boardGameRequestDto) {
-        return boardGameService.editBoardGame(id, boardGameRequestDto);
+    public BoardGameResponseDto editBoardGame(@PathVariable long id,
+                                              @RequestPart @Valid BoardGameRequestDto boardGameRequestDto,
+                                              @RequestPart("thumbnail") MultipartFile thumbnail) {
+        return boardGameService.editBoardGame(id, boardGameRequestDto, thumbnail);
     }
 
     @PostMapping("/{id}/thumbnail")

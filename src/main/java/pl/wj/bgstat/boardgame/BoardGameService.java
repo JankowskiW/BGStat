@@ -68,13 +68,14 @@ public class BoardGameService {
         return BoardGameMapper.mapToBoardGameResponseDto(boardGame);
     }
 
-    public BoardGameResponseDto editBoardGame(long id, BoardGameRequestDto boardGameRequestDto) {
+    public BoardGameResponseDto editBoardGame(long id, BoardGameRequestDto boardGameRequestDto, MultipartFile thumbnailFile) {
         boardGameRequestDto.setObjectTypeId(validateSystemObjectTypeId(boardGameRequestDto.getObjectTypeId()));
         throwExceptionWhenNotExistsById(id, boardGameRepository);
         throwExceptionWhenExistsByNameAndNotId(id, boardGameRequestDto.getName());
         throwExceptionWhenNotExistsById(boardGameRequestDto.getObjectTypeId(), systemObjectTypeRepository);
-
         BoardGame boardGame = BoardGameMapper.mapToBoardGame(id, boardGameRequestDto);
+        String thumbnailPath = createThumbnail(thumbnailFile);
+        boardGame.setThumbnailPath(thumbnailPath);
         boardGameRepository.save(boardGame);
         return BoardGameMapper.mapToBoardGameResponseDto(boardGame);
     }
