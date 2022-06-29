@@ -3,6 +3,7 @@ package pl.wj.bgstat.boardgame;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import pl.wj.bgstat.boardgame.model.BoardGame;
@@ -29,6 +30,7 @@ public interface BoardGameRepository extends JpaRepository<BoardGame, Long> {
             "FROM BoardGame bg WHERE bg.id = :id")
     BoardGameThumbnailResponseDto findThumbnailPath(long id);
 
+    @Modifying
     @Query("UPDATE BoardGame bg SET bg.thumbnailPath = :thumbnailPath WHERE bg.id = :boardGameId")
     void updateThumbnailPathById(long boardGameId, String thumbnailPath);
 }
