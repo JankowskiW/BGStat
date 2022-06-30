@@ -6,9 +6,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.web.multipart.MultipartFile;
 import pl.wj.bgstat.boardgame.BoardGameRepository;
 import pl.wj.bgstat.exception.RequestEnumException;
@@ -199,7 +196,18 @@ class RulebookServiceTest {
         assertThatThrownBy(() -> rulebookService.editRulebook(rulebookId, multipartFile))
                 .isInstanceOf(RequestFileException.class)
                 .hasMessage(createRequestFileExceptionSaveFailedMessage(multipartFile.getName()));
+    }
 
+    @Test
+    @DisplayName("Should throw ResourceNotFoundException when rulebook does not exist in database")
+    void shouldThrowExceptionWhenRulebookDoesNotExists() {
+        // given
+        long rulebookId = 100L;
+
+        // when
+        assertThatThrownBy(() -> rulebookService.editRulebook(rulebookId, multipartFile))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage(createResourceNotFoundExceptionMessage(RULEBOOK_RESOURCE_NAME, ID_FIELD, rulebookId));
     }
 
     @Test
