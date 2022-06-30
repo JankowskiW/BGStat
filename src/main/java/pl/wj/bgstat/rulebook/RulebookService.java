@@ -64,7 +64,7 @@ public class RulebookService {
         Rulebook rulebook = rulebookRepository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException(RULEBOOK_RESOURCE_NAME, ID_FIELD, id));
         try {
-            File boardGameDirectory = new File(String.format("%s/%d", RULEBOOKS_PATH, id));
+            File boardGameDirectory = new File(String.format("%s/%d", RULEBOOKS_PATH, rulebook.getBoardGameId()));
             if (!boardGameDirectory.exists()) {
                 boardGameDirectory.mkdirs();
             }

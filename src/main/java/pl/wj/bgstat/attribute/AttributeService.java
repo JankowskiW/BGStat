@@ -25,7 +25,6 @@ import static pl.wj.bgstat.exception.ExceptionHelper.*;
 @Service
 @RequiredArgsConstructor
 public class AttributeService {
-    // TODO: 25.06.2022 Do manual tests for the rest of services (AttributeClassService and AttributeClassTypeService were tested)
     private final BoardGameRepository boardGameRepository;
     private final BoardGameDescriptionRepository boardGameDescriptionRepository;
     private final UserBoardGameRepository userBoardGameRepository;

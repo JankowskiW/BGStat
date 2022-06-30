@@ -4,9 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.validator.constraints.Length;
 import pl.wj.bgstat.rulebook.enumeration.LanguageISO;
 
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Setter
@@ -14,7 +16,9 @@ import javax.validation.constraints.NotNull;
 @Builder
 @AllArgsConstructor
 public class RulebookRequestDto {
-    @NotNull @Min(1)
+    @NotNull(message = "Board game id cannot be null")
+    @Min(value = 1, message = "Board game id should be positive integer number")
     private long boardGameId;
+    @NotNull(message = "Language ISO code cannot be null")
     private LanguageISO languageIso;
 }

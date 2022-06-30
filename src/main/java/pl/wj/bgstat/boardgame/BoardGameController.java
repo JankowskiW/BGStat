@@ -24,7 +24,6 @@ public class BoardGameController {
 
     @GetMapping("")
     public Page<BoardGameHeaderDto> getBoardGameHeaders(Pageable pageable) {
-        // TODO: 29.06.2022 implement sorting by boardgame name and default sorting by id
         return boardGameService.getBoardGameHeaders(pageable);
     }
 
