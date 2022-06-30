@@ -1,6 +1,7 @@
 package pl.wj.bgstat.user;
 
 import lombok.RequiredArgsConstructor;
+import org.hibernate.cfg.NotYetImplementedException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -16,9 +17,6 @@ import java.time.LocalDate;
 @RequestMapping("/users")
 public class UserController {
 
-    private static final String MIN_DATE = "1990-01-01";
-    private static final String MAX_DATE = "2999-12-31";
-
     private final UserService userService;
 
     @GetMapping("/{id}/user-board-games")
@@ -28,7 +26,7 @@ public class UserController {
 
     @GetMapping("/{id}/gameplays")
     public Page<GameplayHeaderDto> getUserGameplayHeaders(@PathVariable long id, Pageable pageable) {
-        return null;
+        return userService.getUserGameplayHeaders(id, pageable);
     }
 
 }
