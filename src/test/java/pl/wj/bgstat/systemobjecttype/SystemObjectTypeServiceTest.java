@@ -7,6 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import pl.wj.bgstat.exception.ForeignKeyConstraintViolationException;
 import pl.wj.bgstat.exception.ResourceExistsException;
 import pl.wj.bgstat.exception.ResourceNotFoundException;
 import pl.wj.bgstat.systemobjectattributeclass.SystemObjectAttributeClassRepository;
@@ -319,8 +320,9 @@ class SystemObjectTypeServiceTest {
 
         //when
         assertThatThrownBy(() -> systemObjectTypeService.deleteSystemObjectType(id))
-                .isInstanceOf(ResourceExistsException.class)
-                .hasMessage(createResourceExistsExceptionMessage(SYSTEM_OBJECT_ATTRIBUTE_CLASS_RESOURCE_NAME, Optional.of(ID_FIELD)));
+                .isInstanceOf(ForeignKeyConstraintViolationException.class)
+                .hasMessage(createForeignKeyConstraintViolationExceptionMessage(
+                        SYSTEM_OBJECT_ATTRIBUTE_CLASS_RESOURCE_NAME, ATTRIBUTE_CLASS_RESOURCE_NAME, id));
     }
 
     @Test
