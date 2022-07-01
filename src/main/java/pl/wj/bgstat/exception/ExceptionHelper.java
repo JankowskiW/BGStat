@@ -48,6 +48,11 @@ public class ExceptionHelper {
         return String.format("%s with id %d does not exist in database", resource, id);
     }
 
+    public static String createForeignKeyConstraintViolationExceptionMessage(
+            String primaryResource, String foreignResource, long primaryId) {
+        return String.format("%s with id %d has already assigned %s records", primaryResource, primaryId, foreignResource);
+    }
+
     public static String createRequestEnumExceptionMessage(String fieldName, List<String> supportedValues) {
         return String.format("Unsupported %s value. Supported values: %s", fieldName, supportedValues.toString());
     }

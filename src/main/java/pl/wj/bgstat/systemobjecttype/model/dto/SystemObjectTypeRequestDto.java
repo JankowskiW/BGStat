@@ -14,10 +14,11 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SystemObjectTypeRequestDto {
-    @NotBlank @Length(max = 100)
+    @NotBlank(message = "System object type name cannot be blank")
+    @Length(max = 100, message = "System object type name cannot be longer than 100 characters")
     private String name;
-    @NotBlank
+    @NotBlank(message = "System object type description cannot be blank")
+    @Length(max = 500, message = "System object type description cannot be longer than 500 characters")
     private String description;
-    @NotNull
     private boolean archived;
 }

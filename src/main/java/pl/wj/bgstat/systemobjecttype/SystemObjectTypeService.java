@@ -2,6 +2,7 @@ package pl.wj.bgstat.systemobjecttype;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import pl.wj.bgstat.exception.ForeignKeyConstraintViolationException;
 import pl.wj.bgstat.exception.ResourceExistsException;
 import pl.wj.bgstat.exception.ResourceNotFoundException;
 import pl.wj.bgstat.systemobjectattributeclass.SystemObjectAttributeClassRepository;
@@ -77,6 +78,7 @@ public class SystemObjectTypeService {
 
     private void throwExceptionWhenSystemObjectTypeHasAssignedAttributeClass(long id) {
         if(systemObjectAttributeClassRepository.existsBySystemObjectTypeId(id))
-            throw new ResourceExistsException(SYSTEM_OBJECT_ATTRIBUTE_CLASS_RESOURCE_NAME, Optional.of(ID_FIELD));
+            throw new ForeignKeyConstraintViolationException(SYSTEM_OBJECT_ATTRIBUTE_CLASS_RESOURCE_NAME,
+                    ATTRIBUTE_CLASS_RESOURCE_NAME, id);
     }
 }
