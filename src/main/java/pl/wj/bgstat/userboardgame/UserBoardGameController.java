@@ -27,7 +27,7 @@ public class UserBoardGameController {
 
     @PutMapping("/{id}")
     public UserBoardGameResponseDto editUserBoardGame(
-            @PathVariable long id, UserBoardGameRequestDto userBoardGameRequestDto) {
+            @PathVariable long id, @RequestBody @Valid UserBoardGameRequestDto userBoardGameRequestDto) {
         return userBoardGameService.editUserBoardGame(id, userBoardGameRequestDto);
     }
 

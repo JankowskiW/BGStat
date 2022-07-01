@@ -4,6 +4,12 @@ import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameRequestDto;
 import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameResponseDto;
 
 public class UserBoardGameMapper {
+    public static UserBoardGame mapToUserBoardGame(long id, UserBoardGameRequestDto userBoardGameRequestDto) {
+        UserBoardGame userBoardGame = mapToUserBoardGame(userBoardGameRequestDto);
+        userBoardGame.setId(id);
+        return userBoardGame;
+    }
+
     public static UserBoardGame mapToUserBoardGame(UserBoardGameRequestDto userBoardGameRequestDto) {
         UserBoardGame userBoardGame = new UserBoardGame();
         userBoardGame.setObjectTypeId(userBoardGameRequestDto.getObjectTypeId());

@@ -33,7 +33,9 @@ public class UserBoardGameService {
     public UserBoardGameResponseDto addUserBoardGame(UserBoardGameRequestDto userBoardGameRequestDto) {
         throwExceptionWhenNotExistsById(userBoardGameRequestDto.getBoardGameId(), boardGameRepository);
         throwExceptionWhenNotExistsById(userBoardGameRequestDto.getUserId(), userRepository);
-        throwExceptionWhenNotExistsById(userBoardGameRequestDto.getStoreId(), storeRepository);
+        if (userBoardGameRequestDto.getStoreId() != null) {
+            throwExceptionWhenNotExistsById(userBoardGameRequestDto.getStoreId(), storeRepository);
+        }
         UserBoardGame userBoardGame = UserBoardGameMapper.mapToUserBoardGame(userBoardGameRequestDto);
         userBoardGameRepository.save(userBoardGame);
         return UserBoardGameMapper.mapToUserBoardGameResponseDto(userBoardGame);
@@ -41,8 +43,11 @@ public class UserBoardGameService {
 
     public UserBoardGameResponseDto editUserBoardGame(long id, UserBoardGameRequestDto userBoardGameRequestDto) {
         throwExceptionWhenNotExistsById(id, userBoardGameRepository);
-        throwExceptionWhenNotExistsById(userBoardGameRequestDto.getStoreId(), storeRepository);
-        UserBoardGame userBoardGame = UserBoardGameMapper.mapToUserBoardGame(userBoardGameRequestDto);
+        if (userBoardGameRequestDto.getStoreId() != null) {
+            throwExceptionWhenNotExistsById(userBoardGameRequestDto.getStoreId(), storeRepository);
+        }
+        throwExceptionWhenForeignKeyConstraintViolationOccur(userBoardGameRequestDto.getUserId(), userRepository);
+        UserBoardGame userBoardGame = UserBoardGameMapper.mapToUserBoardGame(id, userBoardGameRequestDto);
         userBoardGameRepository.save(userBoardGame);
         return UserBoardGameMapper.mapToUserBoardGameResponseDto(userBoardGame);
     }

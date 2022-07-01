@@ -18,25 +18,25 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserBoardGameRequestDto {
-    @NotNull @Min(1)
+    @NotNull(message = "Object type id cannot be null")
+    @Min(value = 1, message = "Object type id should be positive integer number")
     private long objectTypeId;
-    @NotNull @Min(1)
+    @NotNull(message = "Board game id cannot be null")
+    @Min(value = 1, message = "Board game id should be positive integer number")
     private long boardGameId;
-    @NotNull @Min(1)
+    @NotNull(message = "User id cannot be null")
+    @Min(value = 1, message = "User id should be positive integer number")
     private long userId;
-    @NotNull @Min(1)
-    private long storeId;
-    @NotNull
+    private Long storeId;
+    @NotNull(message = "Sleeved flag cannot be null")
     private boolean sleeved;
-    @NotBlank @Length(max = 500)
+    @NotBlank(message = "Comment cannot be blank")
+    @Length(max = 500, message = "Comment cannot be longer than 500 characters")
     private String comment;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @NotNull(message = "Please provide a purchase date")
     private LocalDate purchaseDate;
-    @NotNull @Min(1)
     private BigDecimal purchasePrice;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate saleDate;
-    @Min(1)
     private BigDecimal salePrice;
 }

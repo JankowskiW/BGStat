@@ -19,7 +19,7 @@ public class UserBoardGame {
     private long objectTypeId;
     private long boardGameId;
     private long userId;
-    private long storeId;
+    private Long storeId;
     private boolean sleeved;
     private String comment;
     private LocalDate purchaseDate;
