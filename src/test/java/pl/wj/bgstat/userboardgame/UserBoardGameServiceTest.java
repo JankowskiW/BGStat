@@ -163,6 +163,7 @@ class  UserBoardGameServiceTest {
                 UserBoardGameRequestDto.builder().storeId(userBoardGame.getStoreId()+1).build();
         given(userBoardGameRepository.existsById(anyLong())).willReturn(true);
         given(storeRepository.existsById(anyLong())).willReturn(true);
+        given(userRepository.existsById(anyLong())).willReturn(true);
         given(userBoardGameRepository.save(any(UserBoardGame.class))).willAnswer(
                 i -> {
                     UserBoardGame ubg = i.getArgument(0, UserBoardGame.class);

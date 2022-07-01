@@ -99,7 +99,7 @@ public class UserBoardGameServiceTestHelper {
                 2,
                 1,
                 1,
-                1,
+                1L,
                 true,
                 "Comment",
                 LocalDate.of(1998,Month.MARCH,2),
