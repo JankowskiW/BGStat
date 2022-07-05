@@ -3,6 +3,7 @@ package pl.wj.bgstat.systemobjectattributeclass.model;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import pl.wj.bgstat.attributeclass.model.AttributeClass;
+import pl.wj.bgstat.systemobjectattributeclass.model.dto.SystemObjectAttributeClassEditRequestDto;
 import pl.wj.bgstat.systemobjectattributeclass.model.dto.SystemObjectAttributeClassRequestDto;
 import pl.wj.bgstat.systemobjectattributeclass.model.dto.SystemObjectAttributeClassResponseDto;
 import pl.wj.bgstat.systemobjecttype.model.SystemObjectType;
@@ -21,6 +22,21 @@ public class SystemObjectAttributeClassMapper {
         systemObjectAttributeClass.setSystemObjectType(new SystemObjectType());
         systemObjectAttributeClass.getSystemObjectType().setId(systemObjectAttributeClassRequestDto.getSystemObjectTypeId());
         systemObjectAttributeClass.setClassDefaultValue(systemObjectAttributeClassRequestDto.getClassDefaultValue());
+        return systemObjectAttributeClass;
+    }
+
+
+    public static SystemObjectAttributeClass mapToSystemObjectAttributeClass(
+            SystemObjectAttributeClassId id,
+            SystemObjectAttributeClassEditRequestDto systemObjectAttributeClassEditRequestDto) {
+        SystemObjectAttributeClass systemObjectAttributeClass = new SystemObjectAttributeClass();
+        systemObjectAttributeClass.setId(id);
+        systemObjectAttributeClass.setRequired(systemObjectAttributeClassEditRequestDto.isRequired());
+        systemObjectAttributeClass.setAttributeClass(new AttributeClass());
+        systemObjectAttributeClass.getAttributeClass().setId(id.getAttributeClassId());
+        systemObjectAttributeClass.setSystemObjectType(new SystemObjectType());
+        systemObjectAttributeClass.getSystemObjectType().setId(id.getSystemObjectTypeId());
+        systemObjectAttributeClass.setClassDefaultValue(systemObjectAttributeClassEditRequestDto.getClassDefaultValue());
         return systemObjectAttributeClass;
     }
 

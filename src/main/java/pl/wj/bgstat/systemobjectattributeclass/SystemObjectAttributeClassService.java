@@ -10,6 +10,7 @@ import pl.wj.bgstat.exception.ResourceNotFoundException;
 import pl.wj.bgstat.systemobjectattributeclass.model.SystemObjectAttributeClass;
 import pl.wj.bgstat.systemobjectattributeclass.model.SystemObjectAttributeClassId;
 import pl.wj.bgstat.systemobjectattributeclass.model.SystemObjectAttributeClassMapper;
+import pl.wj.bgstat.systemobjectattributeclass.model.dto.SystemObjectAttributeClassEditRequestDto;
 import pl.wj.bgstat.systemobjectattributeclass.model.dto.SystemObjectAttributeClassRequestDto;
 import pl.wj.bgstat.systemobjectattributeclass.model.dto.SystemObjectAttributeClassResponseDto;
 import pl.wj.bgstat.systemobjecttype.SystemObjectTypeRepository;
@@ -29,23 +30,20 @@ public class SystemObjectAttributeClassService {
 
     public SystemObjectAttributeClassResponseDto addSystemObjectAttributeClass(
             SystemObjectAttributeClassRequestDto systemObjectAttributeClassRequestDto) {
-
+        // TODO: 05.07.2022 Fix tests for addSystemObjectAttributeClass 
         SystemObjectType systemObjectType = systemObjectTypeRepository
                 .findById(systemObjectAttributeClassRequestDto.getSystemObjectTypeId())
                 .orElseThrow(() -> new ForeignKeyConstraintViolationException(
                         SYSTEM_OBJECT_TYPE_RESOURCE_NAME,
                         systemObjectAttributeClassRequestDto.getSystemObjectTypeId()));
-
         AttributeClass attributeClass = attributeClassRepository
                 .findById(systemObjectAttributeClassRequestDto.getAttributeClassId())
                 .orElseThrow(() -> new ForeignKeyConstraintViolationException(
                         ATTRIBUTE_CLASS_RESOURCE_NAME,
                         systemObjectAttributeClassRequestDto.getAttributeClassId()));
-
         SystemObjectAttributeClassId id = new SystemObjectAttributeClassId(
                 systemObjectAttributeClassRequestDto.getAttributeClassId(),
                 systemObjectAttributeClassRequestDto.getSystemObjectTypeId());
-
         throwExceptionWhenExistsByIdAndItsRequired(id, false);
         SystemObjectAttributeClass systemObjectAttributeClass = SystemObjectAttributeClassMapper
                 .mapToSystemObjectAttributeClass(id, systemObjectAttributeClassRequestDto);
@@ -56,12 +54,21 @@ public class SystemObjectAttributeClassService {
     }
 
     public SystemObjectAttributeClassResponseDto editSystemObjectAttributeClass(
-            long attributeClassId, long systemObjectTypeId, SystemObjectAttributeClassRequestDto systemObjectAttributeClassRequestDto) {
+            long attributeClassId, long systemObjectTypeId, SystemObjectAttributeClassEditRequestDto systemObjectAttributeClassEditRequestDto) {
+        // TODO: 05.07.2022 Fix tests for  editSystemObjectAttributeClass method
         SystemObjectAttributeClassId id = new SystemObjectAttributeClassId(attributeClassId, systemObjectTypeId);
+        SystemObjectType systemObjectType = systemObjectTypeRepository.findById(id.getSystemObjectTypeId())
+                .orElseThrow(() -> new ForeignKeyConstraintViolationException(
+                        SYSTEM_OBJECT_TYPE_RESOURCE_NAME, id.getSystemObjectTypeId()));
+        AttributeClass attributeClass = attributeClassRepository.findById(id.getAttributeClassId())
+                .orElseThrow(() -> new ForeignKeyConstraintViolationException(
+                        ATTRIBUTE_CLASS_RESOURCE_NAME, id.getSystemObjectTypeId()));
         throwExceptionWhenExistsByIdAndItsRequired(id, true);
         SystemObjectAttributeClass systemObjectAttributeClass = SystemObjectAttributeClassMapper
-                .mapToSystemObjectAttributeClass(id, systemObjectAttributeClassRequestDto);
+                .mapToSystemObjectAttributeClass(id, systemObjectAttributeClassEditRequestDto);
         systemObjectAttributeClassRepository.save(systemObjectAttributeClass);
+        systemObjectAttributeClass.setSystemObjectType(systemObjectType);
+        systemObjectAttributeClass.setAttributeClass(attributeClass);
         return SystemObjectAttributeClassMapper.mapToSystemObjectAttributeClassResponseDto(systemObjectAttributeClass);
     }
 

@@ -2,6 +2,7 @@ package pl.wj.bgstat.systemobjectattributeclass;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import pl.wj.bgstat.systemobjectattributeclass.model.dto.SystemObjectAttributeClassEditRequestDto;
 import pl.wj.bgstat.systemobjectattributeclass.model.dto.SystemObjectAttributeClassRequestDto;
 import pl.wj.bgstat.systemobjectattributeclass.model.dto.SystemObjectAttributeClassResponseDto;
 
@@ -23,9 +24,9 @@ public class SystemObjectAttributeClassController {
     @PutMapping("/{attributeClassId},{systemObjectTypeId}")
     public SystemObjectAttributeClassResponseDto editSystemObjectAttributeClass(
             @PathVariable long attributeClassId, @PathVariable long systemObjectTypeId,
-            @RequestBody @Valid SystemObjectAttributeClassRequestDto systemObjectAttributeClassRequestDto) {
+            @RequestBody @Valid SystemObjectAttributeClassEditRequestDto systemObjectAttributeClassEditRequestDto) {
         return systemObjectAttributeClassService.editSystemObjectAttributeClass(
-                attributeClassId, systemObjectTypeId, systemObjectAttributeClassRequestDto);
+                attributeClassId, systemObjectTypeId, systemObjectAttributeClassEditRequestDto);
     }
 
     @DeleteMapping("/{attributeClassId},{systemObjectTypeId}")
