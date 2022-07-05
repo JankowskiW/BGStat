@@ -11,6 +11,7 @@ import pl.wj.bgstat.gameplay.GameplayRepository;
 import pl.wj.bgstat.rulebook.RulebookRepository;
 import pl.wj.bgstat.store.StoreRepository;
 import pl.wj.bgstat.systemobjectattributeclass.SystemObjectAttributeClassRepository;
+import pl.wj.bgstat.systemobjectattributeclass.model.SystemObjectAttributeClassId;
 import pl.wj.bgstat.systemobjecttype.SystemObjectTypeRepository;
 import pl.wj.bgstat.user.UserRepository;
 import pl.wj.bgstat.userboardgame.UserBoardGameRepository;
@@ -88,7 +89,11 @@ public class ExceptionHelper {
     }
 
     public static String createResourceNotFoundExceptionMessage(String resource, String field, Object value) {
-        return String.format("No such %s with %s: '%s'", resource, field, value);
+        if (value instanceof SystemObjectAttributeClassId) {
+            SystemObjectAttributeClassId id = (SystemObjectAttributeClassId) value;
+            return String.format("No such %s with %s: {%d, %d}", resource, field, id.getAttributeClassId(), id.getSystemObjectTypeId());
+        }
+        return String.format("No such %s with %s: %s", resource, field, value);
     }
 
     public static void throwExceptionWhenForeignKeyConstraintViolationOccur(long id, JpaRepository repository) {
