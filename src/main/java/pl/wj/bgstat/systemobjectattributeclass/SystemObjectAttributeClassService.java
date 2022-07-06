@@ -84,15 +84,4 @@ public class SystemObjectAttributeClassService {
         else if (!shouldExists && systemObjectAttributeClassRepository.existsById(id))
             throw new ResourceExistsException(SYSTEM_OBJECT_ATTRIBUTE_CLASS_RESOURCE_NAME, Optional.of(ID_FIELD));
     }
-
-    private void throwExceptionWhenSystemObjectTypeNotExistsById(long id) {
-        if (!systemObjectTypeRepository.existsById(id))
-            throw new ResourceNotFoundException(SYSTEM_OBJECT_TYPE_RESOURCE_NAME, ID_FIELD, id);
-    }
-
-    private void throwExceptionWhenAttributeClassNotExistsById(long id) {
-        if (!attributeClassRepository.existsById(id))
-            throw new ResourceNotFoundException(ATTRIBUTE_CLASS_RESOURCE_NAME, ID_FIELD, id);
-    }
-
 }

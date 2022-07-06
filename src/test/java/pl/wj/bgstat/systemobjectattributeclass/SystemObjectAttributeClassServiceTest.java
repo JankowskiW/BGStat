@@ -64,30 +64,22 @@ class SystemObjectAttributeClassServiceTest {
     void shouldReturnAssignmentOfAttributeClassToSystemObjectType() {
         // given
         SystemObjectAttributeClassId id = new SystemObjectAttributeClassId(1L, 3L);
-
         Optional<SystemObjectType> systemObjectType = systemObjectTypeList.stream()
                 .filter(sot -> sot.getId() == id.getSystemObjectTypeId()).findFirst();
         Optional<AttributeClass> attributeClass = attributeClassList.stream()
                 .filter(ac -> ac.getId() == id.getAttributeClassId()).findFirst();
-
         SystemObjectAttributeClassRequestDto systemObjectAttributeClassRequestDto =
                 SystemObjectAttributeClassServiceTestHelper.createSystemObjectAttributeClassRequestDto(id);
-
         SystemObjectAttributeClass systemObjectAttributeClass =
                 SystemObjectAttributeClassMapper.mapToSystemObjectAttributeClass(id, systemObjectAttributeClassRequestDto);
         systemObjectAttributeClass.setSystemObjectType(systemObjectType.orElseThrow());
         systemObjectAttributeClass.setAttributeClass(attributeClass.orElseThrow());
-
         SystemObjectAttributeClassResponseDto expectedResponse =
                 SystemObjectAttributeClassMapper.mapToSystemObjectAttributeClassResponseDto(systemObjectAttributeClass);
-
         given(systemObjectTypeRepository.findById(anyLong())).willReturn(systemObjectType);
-
         given(attributeClassRepository.findById(anyLong())).willReturn(attributeClass);
-
         given(systemObjectAttributeClassRepository.existsById(any(SystemObjectAttributeClassId.class)))
                 .willReturn(systemObjectAttributeClassList.stream().anyMatch(soac -> soac.getId().equals(id)));
-
         given(systemObjectAttributeClassRepository.save(any(SystemObjectAttributeClass.class))).willAnswer(
            i -> i.getArgument(0, SystemObjectAttributeClass.class));
 
@@ -141,16 +133,19 @@ class SystemObjectAttributeClassServiceTest {
     }
 
     @Test
-    @DisplayName("Should throw ResourceExistsException when trying to create existing assignment")
+    @DisplayName("Should throw ForeignKeyConstraintViolationException when trying to create existing assignment")
     void shouldThrowExceptionWhenTryingToCreateExistingAssignment() {
         // given
         SystemObjectAttributeClassId id = new SystemObjectAttributeClassId(1L, 1L);
         SystemObjectAttributeClassRequestDto systemObjectAttributeClassRequestDto =
                 SystemObjectAttributeClassServiceTestHelper.createSystemObjectAttributeClassRequestDto(id);
-        given(systemObjectTypeRepository.existsById(anyLong())).willReturn(
-                systemObjectTypeList.stream().anyMatch(sot -> sot.getId() == id.getSystemObjectTypeId()));
-        given(attributeClassRepository.existsById(anyLong())).willReturn(
-                attributeClassList.stream().anyMatch(ac -> ac.getId() == id.getAttributeClassId()));
+        Optional<SystemObjectType> systemObjectType = systemObjectTypeList.stream()
+                .filter(sot -> sot.getId() == id.getSystemObjectTypeId()).findFirst();
+        Optional<AttributeClass> attributeClass = attributeClassList.stream()
+                .filter(ac -> ac.getId() == id.getAttributeClassId()).findFirst();
+
+        given(systemObjectTypeRepository.findById(anyLong())).willReturn(systemObjectType);
+        given(attributeClassRepository.findById(anyLong())).willReturn(attributeClass);
         given(systemObjectAttributeClassRepository.existsById(any(SystemObjectAttributeClassId.class)))
                 .willReturn(systemObjectAttributeClassList.stream().anyMatch(soac -> soac.getId().equals(id)));
 
