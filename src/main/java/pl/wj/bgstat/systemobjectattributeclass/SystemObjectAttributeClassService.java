@@ -62,7 +62,7 @@ public class SystemObjectAttributeClassService {
                         SYSTEM_OBJECT_TYPE_RESOURCE_NAME, id.getSystemObjectTypeId()));
         AttributeClass attributeClass = attributeClassRepository.findById(id.getAttributeClassId())
                 .orElseThrow(() -> new ForeignKeyConstraintViolationException(
-                        ATTRIBUTE_CLASS_RESOURCE_NAME, id.getSystemObjectTypeId()));
+                        ATTRIBUTE_CLASS_RESOURCE_NAME, id.getAttributeClassId()));
         throwExceptionWhenExistsByIdAndItsRequired(id, true);
         SystemObjectAttributeClass systemObjectAttributeClass = SystemObjectAttributeClassMapper
                 .mapToSystemObjectAttributeClass(id, systemObjectAttributeClassEditRequestDto);

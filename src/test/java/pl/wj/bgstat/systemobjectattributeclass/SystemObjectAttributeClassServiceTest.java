@@ -15,6 +15,7 @@ import pl.wj.bgstat.exception.ResourceNotFoundException;
 import pl.wj.bgstat.systemobjectattributeclass.model.SystemObjectAttributeClass;
 import pl.wj.bgstat.systemobjectattributeclass.model.SystemObjectAttributeClassId;
 import pl.wj.bgstat.systemobjectattributeclass.model.SystemObjectAttributeClassMapper;
+import pl.wj.bgstat.systemobjectattributeclass.model.dto.SystemObjectAttributeClassEditRequestDto;
 import pl.wj.bgstat.systemobjectattributeclass.model.dto.SystemObjectAttributeClassRequestDto;
 import pl.wj.bgstat.systemobjectattributeclass.model.dto.SystemObjectAttributeClassResponseDto;
 import pl.wj.bgstat.systemobjecttype.SystemObjectTypeRepository;
@@ -95,7 +96,8 @@ class SystemObjectAttributeClassServiceTest {
     }
 
     @Test
-    @DisplayName("Should throw ForeignKeyConstraintViolationException when trying to assign not existing attribute class to system object type")
+    @DisplayName("Should throw ForeignKeyConstraintViolationException when trying to assign not existing attribute " +
+            "class to system object type")
     void shouldThrowExceptionWhenTryingToAssignNotExistingAttributeClassToSystemObjectType() {
         // given
         SystemObjectAttributeClassId id = new SystemObjectAttributeClassId(100L, 1L);
@@ -115,7 +117,8 @@ class SystemObjectAttributeClassServiceTest {
     }
 
     @Test
-    @DisplayName("Should throw ForeignKeyConstraintViolationException when trying to assign attribute class to not existing system object type")
+    @DisplayName("Should throw ForeignKeyConstraintViolationException when trying to assign attribute class " +
+            "to not existing system object type")
     void shouldThrowExceptionWhenTryingToAssignAttributeClassToNotExistingSystemObjectType() {
         // given
         SystemObjectAttributeClassId id = new SystemObjectAttributeClassId(1L, 100L);
@@ -133,7 +136,7 @@ class SystemObjectAttributeClassServiceTest {
     }
 
     @Test
-    @DisplayName("Should throw ForeignKeyConstraintViolationException when trying to create existing assignment")
+    @DisplayName("Should throw ResourceExistsException when trying to create existing assignment")
     void shouldThrowExceptionWhenTryingToCreateExistingAssignment() {
         // given
         SystemObjectAttributeClassId id = new SystemObjectAttributeClassId(1L, 1L);
@@ -143,7 +146,6 @@ class SystemObjectAttributeClassServiceTest {
                 .filter(sot -> sot.getId() == id.getSystemObjectTypeId()).findFirst();
         Optional<AttributeClass> attributeClass = attributeClassList.stream()
                 .filter(ac -> ac.getId() == id.getAttributeClassId()).findFirst();
-
         given(systemObjectTypeRepository.findById(anyLong())).willReturn(systemObjectType);
         given(attributeClassRepository.findById(anyLong())).willReturn(attributeClass);
         given(systemObjectAttributeClassRepository.existsById(any(SystemObjectAttributeClassId.class)))
@@ -191,51 +193,88 @@ class SystemObjectAttributeClassServiceTest {
     @Test
     @DisplayName("Should edit attribute type to system object assignment when exists")
     void shouldEditAttributeTypeToSystemObjectAssignmentWhenExists() {
-//        // given
-//        SystemObjectAttributeClassId id = new SystemObjectAttributeClassId(1L, 1L);
-//        SystemObjectAttributeClass systemObjectAttributeClass =
-//                systemObjectAttributeClassList.stream().filter(soac ->
-//                        soac.getId().equals(id)).findFirst().orElseThrow();
-//        SystemObjectAttributeClassRequestDto systemObjectAttributeClassRequestDto =
-//                SystemObjectAttributeClassRequestDto.builder()
-//                        .attributeClassId(id.getAttributeClassId())
-//                        .systemObjectTypeId(id.getSystemObjectTypeId())
-//                        .required(systemObjectAttributeClass.isRequired())
-//                        .classDefaultValue("NEW " + systemObjectAttributeClass.getClassDefaultValue())
-//                        .build();
-//        given(systemObjectAttributeClassRepository.existsById(any(SystemObjectAttributeClassId.class)))
-//                .willReturn(systemObjectAttributeClassList.stream().anyMatch(soac -> soac.getId().equals(id)));
-//        given(systemObjectAttributeClassRepository.save(any(SystemObjectAttributeClass.class))).willAnswer(
-//                i -> i.getArgument(0, SystemObjectAttributeClass.class));
+        // given
+        SystemObjectAttributeClassId id = new SystemObjectAttributeClassId(1L, 1L);
+        SystemObjectAttributeClass systemObjectAttributeClass =
+                systemObjectAttributeClassList.stream().filter(soac ->
+                        soac.getId().equals(id)).findFirst().orElseThrow();
+        SystemObjectAttributeClassEditRequestDto systemObjectAttributeClassEditRequestDto =
+                SystemObjectAttributeClassEditRequestDto.builder()
+                        .required(systemObjectAttributeClass.isRequired())
+                        .classDefaultValue("NEW " + systemObjectAttributeClass.getClassDefaultValue())
+                        .build();
+        Optional<SystemObjectType> systemObjectType = systemObjectTypeList.stream()
+                .filter(sot -> sot.getId() == id.getSystemObjectTypeId()).findFirst();
+        Optional<AttributeClass> attributeClass = attributeClassList.stream()
+                .filter(ac -> ac.getId() == id.getAttributeClassId()).findFirst();
+        given(systemObjectTypeRepository.findById(anyLong())).willReturn(systemObjectType);
+        given(attributeClassRepository.findById(anyLong())).willReturn(attributeClass);
+        given(systemObjectAttributeClassRepository.existsById(any(SystemObjectAttributeClassId.class)))
+                .willReturn(systemObjectAttributeClassList.stream().anyMatch(soac -> soac.getId().equals(id)));
+        given(systemObjectAttributeClassRepository.save(any(SystemObjectAttributeClass.class))).willAnswer(
+                i -> i.getArgument(0, SystemObjectAttributeClass.class));
 
-//        // when
-//        SystemObjectAttributeClassResponseDto systemObjectAttributeClassResponseDto =
-//                systemObjectAttributeClassService.editSystemObjectAttributeClass(
-//                        id.getAttributeClassId(), id.getSystemObjectTypeId(), systemObjectAttributeClassRequestDto);
-//
-//        // then
-//        assertThat(systemObjectAttributeClassResponseDto).isNotNull();
-//        assertThat(systemObjectAttributeClassResponseDto.getAttributeClassId()).isEqualTo(id.getAttributeClassId());
-//        assertThat(systemObjectAttributeClassResponseDto.getSystemObjectTypeId()).isEqualTo(id.getSystemObjectTypeId());
-//        assertThat(systemObjectAttributeClassResponseDto.getClassDefaultValue())
-//                .isEqualTo(systemObjectAttributeClassRequestDto.getClassDefaultValue());
+        // when
+        SystemObjectAttributeClassResponseDto systemObjectAttributeClassResponseDto =
+                systemObjectAttributeClassService.editSystemObjectAttributeClass(
+                        id.getAttributeClassId(), id.getSystemObjectTypeId(), systemObjectAttributeClassEditRequestDto);
+
+        // then
+        assertThat(systemObjectAttributeClassResponseDto).isNotNull();
+        assertThat(systemObjectAttributeClassResponseDto.getAttributeClassId()).isEqualTo(id.getAttributeClassId());
+        assertThat(systemObjectAttributeClassResponseDto.getSystemObjectTypeId()).isEqualTo(id.getSystemObjectTypeId());
+        assertThat(systemObjectAttributeClassResponseDto.getClassDefaultValue())
+                .isEqualTo(systemObjectAttributeClassEditRequestDto.getClassDefaultValue());
     }
 
     @Test
     @DisplayName("Should throw ResourceNotFoundException when trying to edit not existing " +
                  "attribute class to system object type assignment")
     void shouldThrowExceptionWhenTryingToEditNotExistingAssignment() {
-//        // given
-//        SystemObjectAttributeClassId id = new SystemObjectAttributeClassId(1L, 100L);
-//        given(systemObjectAttributeClassRepository.existsById(any(SystemObjectAttributeClassId.class)))
-//                .willReturn(systemObjectAttributeClassList.stream().anyMatch(soac -> soac.getId().equals(id)));
-//
-//        // when
-//        assertThatThrownBy(() -> systemObjectAttributeClassService.editSystemObjectAttributeClass(
-//                id.getAttributeClassId(), id.getSystemObjectTypeId(), new SystemObjectAttributeClassRequestDto()))
-//                .isInstanceOf(ResourceNotFoundException.class)
-//                .hasMessage(createResourceNotFoundExceptionMessage(SYSTEM_OBJECT_ATTRIBUTE_CLASS_RESOURCE_NAME, ID_FIELD, id));
-//
+        // given
+        SystemObjectAttributeClassId id = new SystemObjectAttributeClassId(1L, 100L);
+        given(systemObjectTypeRepository.findById(anyLong())).willReturn(Optional.of(new SystemObjectType()));
+        given(attributeClassRepository.findById(anyLong())).willReturn(Optional.of(new AttributeClass()));
+        given(systemObjectAttributeClassRepository.existsById(any(SystemObjectAttributeClassId.class)))
+                .willReturn(systemObjectAttributeClassList.stream().anyMatch(soac -> soac.getId().equals(id)));
+
+        // when
+        assertThatThrownBy(() -> systemObjectAttributeClassService.editSystemObjectAttributeClass(
+                id.getAttributeClassId(), id.getSystemObjectTypeId(), new SystemObjectAttributeClassEditRequestDto()))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage(createResourceNotFoundExceptionMessage(SYSTEM_OBJECT_ATTRIBUTE_CLASS_RESOURCE_NAME, ID_FIELD, id));
     }
 
+    @Test
+    @DisplayName("Should throw ForeignKeyConstraintViolationException when update and trying to assign attribute class " +
+            "to not existing system object type")
+    void shouldThrowExceptionWhenUpdateAndTryingToAssignAttributeClassToNotExistingSystemObjectType() {
+        // given
+        SystemObjectAttributeClassId id = new SystemObjectAttributeClassId(100L, 1L);
+        given(systemObjectTypeRepository.findById(anyLong())).willReturn(Optional.of(new SystemObjectType()));
+        given(attributeClassRepository.findById(anyLong())).willReturn(Optional.empty());
+
+        // when
+        assertThatThrownBy(() -> systemObjectAttributeClassService.editSystemObjectAttributeClass(
+                id.getAttributeClassId(), id.getSystemObjectTypeId(), new SystemObjectAttributeClassEditRequestDto()))
+                .isInstanceOf(ForeignKeyConstraintViolationException.class)
+                .hasMessage(createForeignKeyConstraintViolationExceptionMessage(
+                        ATTRIBUTE_CLASS_RESOURCE_NAME, id.getAttributeClassId()));
+    }
+
+    @Test
+    @DisplayName("Should throw ForeignKeyConstraintViolationException when update and trying to assign system object type " +
+            "to not existing attribute class")
+    void shouldThrowExceptionWhenUpdateAndTryingToAssignSystemObjectTypeToNotExistingAttributeClass() {
+        // given
+        SystemObjectAttributeClassId id = new SystemObjectAttributeClassId(100L, 1L);
+        given(systemObjectTypeRepository.findById(anyLong())).willReturn(Optional.empty());
+
+        // when
+        assertThatThrownBy(() -> systemObjectAttributeClassService.editSystemObjectAttributeClass(
+                id.getAttributeClassId(), id.getSystemObjectTypeId(), new SystemObjectAttributeClassEditRequestDto()))
+                .isInstanceOf(ForeignKeyConstraintViolationException.class)
+                .hasMessage(createForeignKeyConstraintViolationExceptionMessage(
+                        SYSTEM_OBJECT_TYPE_RESOURCE_NAME, id.getSystemObjectTypeId()));
+    }
 }
