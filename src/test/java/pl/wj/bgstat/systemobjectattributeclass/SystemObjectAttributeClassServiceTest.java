@@ -9,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pl.wj.bgstat.attributeclass.AttributeClassRepository;
 import pl.wj.bgstat.attributeclass.model.AttributeClass;
+import pl.wj.bgstat.exception.ForeignKeyConstraintViolationException;
 import pl.wj.bgstat.exception.ResourceExistsException;
 import pl.wj.bgstat.exception.ResourceNotFoundException;
 import pl.wj.bgstat.systemobjectattributeclass.model.SystemObjectAttributeClass;
@@ -63,18 +64,30 @@ class SystemObjectAttributeClassServiceTest {
     void shouldReturnAssignmentOfAttributeClassToSystemObjectType() {
         // given
         SystemObjectAttributeClassId id = new SystemObjectAttributeClassId(1L, 3L);
+
+        Optional<SystemObjectType> systemObjectType = systemObjectTypeList.stream()
+                .filter(sot -> sot.getId() == id.getSystemObjectTypeId()).findFirst();
+        Optional<AttributeClass> attributeClass = attributeClassList.stream()
+                .filter(ac -> ac.getId() == id.getAttributeClassId()).findFirst();
+
         SystemObjectAttributeClassRequestDto systemObjectAttributeClassRequestDto =
                 SystemObjectAttributeClassServiceTestHelper.createSystemObjectAttributeClassRequestDto(id);
+
         SystemObjectAttributeClass systemObjectAttributeClass =
                 SystemObjectAttributeClassMapper.mapToSystemObjectAttributeClass(id, systemObjectAttributeClassRequestDto);
+        systemObjectAttributeClass.setSystemObjectType(systemObjectType.orElseThrow());
+        systemObjectAttributeClass.setAttributeClass(attributeClass.orElseThrow());
+
         SystemObjectAttributeClassResponseDto expectedResponse =
                 SystemObjectAttributeClassMapper.mapToSystemObjectAttributeClassResponseDto(systemObjectAttributeClass);
-        given(systemObjectTypeRepository.existsById(anyLong())).willReturn(
-                systemObjectTypeList.stream().anyMatch(sot -> sot.getId() == id.getSystemObjectTypeId()));
-        given(attributeClassRepository.existsById(anyLong())).willReturn(
-                attributeClassList.stream().anyMatch(ac -> ac.getId() == id.getAttributeClassId()));
+
+        given(systemObjectTypeRepository.findById(anyLong())).willReturn(systemObjectType);
+
+        given(attributeClassRepository.findById(anyLong())).willReturn(attributeClass);
+
         given(systemObjectAttributeClassRepository.existsById(any(SystemObjectAttributeClassId.class)))
                 .willReturn(systemObjectAttributeClassList.stream().anyMatch(soac -> soac.getId().equals(id)));
+
         given(systemObjectAttributeClassRepository.save(any(SystemObjectAttributeClass.class))).willAnswer(
            i -> i.getArgument(0, SystemObjectAttributeClass.class));
 
@@ -90,38 +103,41 @@ class SystemObjectAttributeClassServiceTest {
     }
 
     @Test
-    @DisplayName("Should throw ResourceNotFoundException when trying to assign not existing attribute class to system object type")
+    @DisplayName("Should throw ForeignKeyConstraintViolationException when trying to assign not existing attribute class to system object type")
     void shouldThrowExceptionWhenTryingToAssignNotExistingAttributeClassToSystemObjectType() {
         // given
         SystemObjectAttributeClassId id = new SystemObjectAttributeClassId(100L, 1L);
         SystemObjectAttributeClassRequestDto systemObjectAttributeClassRequestDto =
                 SystemObjectAttributeClassServiceTestHelper.createSystemObjectAttributeClassRequestDto(id);
-        given(systemObjectTypeRepository.existsById(anyLong())).willReturn(
-                systemObjectTypeList.stream().anyMatch(sot -> sot.getId() == id.getSystemObjectTypeId()));
-        given(attributeClassRepository.existsById(anyLong())).willReturn(
-                attributeClassList.stream().anyMatch(ac -> ac.getId() == id.getAttributeClassId()));
+
+        given(systemObjectTypeRepository.findById(anyLong())).willReturn(systemObjectTypeList.stream()
+                .filter(sot -> sot.getId() == id.getSystemObjectTypeId()).findFirst());
+        given(attributeClassRepository.findById(anyLong())).willReturn(attributeClassList.stream()
+                .filter(ac -> ac.getId() == id.getAttributeClassId()).findFirst());
 
         // when
         assertThatThrownBy(() -> systemObjectAttributeClassService.addSystemObjectAttributeClass(systemObjectAttributeClassRequestDto))
-                    .isInstanceOf(ResourceNotFoundException.class)
-                    .hasMessage(createResourceNotFoundExceptionMessage(ATTRIBUTE_CLASS_RESOURCE_NAME, ID_FIELD, id.getAttributeClassId()));
+                    .isInstanceOf(ForeignKeyConstraintViolationException.class)
+                    .hasMessage(createForeignKeyConstraintViolationExceptionMessage(
+                            ATTRIBUTE_CLASS_RESOURCE_NAME, id.getAttributeClassId()));
     }
 
     @Test
-    @DisplayName("Should throw ResourceNotFoundException when trying to assign attribute class to not existing system object type")
+    @DisplayName("Should throw ForeignKeyConstraintViolationException when trying to assign attribute class to not existing system object type")
     void shouldThrowExceptionWhenTryingToAssignAttributeClassToNotExistingSystemObjectType() {
         // given
         SystemObjectAttributeClassId id = new SystemObjectAttributeClassId(1L, 100L);
         SystemObjectAttributeClassRequestDto systemObjectAttributeClassRequestDto =
                 SystemObjectAttributeClassServiceTestHelper.createSystemObjectAttributeClassRequestDto(id);
-        given(systemObjectTypeRepository.existsById(anyLong())).willReturn(
-                systemObjectTypeList.stream().anyMatch(sot -> sot.getId() == id.getSystemObjectTypeId()));
+        given(systemObjectTypeRepository.findById(anyLong())).willReturn(systemObjectTypeList.stream()
+                .filter(sot -> sot.getId() == id.getSystemObjectTypeId()).findFirst());
 
         // when
         assertThatThrownBy(() -> systemObjectAttributeClassService.addSystemObjectAttributeClass(
                 systemObjectAttributeClassRequestDto))
-                    .isInstanceOf(ResourceNotFoundException.class)
-                    .hasMessage(createResourceNotFoundExceptionMessage(SYSTEM_OBJECT_TYPE_RESOURCE_NAME, ID_FIELD, id.getSystemObjectTypeId()));
+                    .isInstanceOf(ForeignKeyConstraintViolationException.class)
+                    .hasMessage(createForeignKeyConstraintViolationExceptionMessage(
+                            SYSTEM_OBJECT_TYPE_RESOURCE_NAME, id.getSystemObjectTypeId()));
     }
 
     @Test

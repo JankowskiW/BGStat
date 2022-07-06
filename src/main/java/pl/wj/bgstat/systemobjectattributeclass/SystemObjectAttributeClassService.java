@@ -20,6 +20,7 @@ import java.util.Optional;
 
 import static pl.wj.bgstat.exception.ExceptionHelper.*;
 
+
 @Service
 @RequiredArgsConstructor
 public class SystemObjectAttributeClassService {
@@ -30,7 +31,6 @@ public class SystemObjectAttributeClassService {
 
     public SystemObjectAttributeClassResponseDto addSystemObjectAttributeClass(
             SystemObjectAttributeClassRequestDto systemObjectAttributeClassRequestDto) {
-        // TODO: 05.07.2022 Fix tests for addSystemObjectAttributeClass 
         SystemObjectType systemObjectType = systemObjectTypeRepository
                 .findById(systemObjectAttributeClassRequestDto.getSystemObjectTypeId())
                 .orElseThrow(() -> new ForeignKeyConstraintViolationException(
