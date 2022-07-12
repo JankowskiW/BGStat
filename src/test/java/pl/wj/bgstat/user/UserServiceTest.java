@@ -11,9 +11,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import pl.wj.bgstat.boardgame.model.BoardGame;
 import pl.wj.bgstat.exception.ResourceNotFoundException;
 import pl.wj.bgstat.gameplay.GameplayRepository;
 import pl.wj.bgstat.gameplay.model.dto.GameplayHeaderDto;
+import pl.wj.bgstat.user.model.User;
 import pl.wj.bgstat.userboardgame.UserBoardGameRepository;
 import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameHeaderDto;
 
