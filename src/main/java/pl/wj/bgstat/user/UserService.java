@@ -37,16 +37,15 @@ public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final UserBoardGameRepository userBoardGameRepository;
     private final GameplayRepository gameplayRepository;
-//    private final PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-//        User user = userRepository.findByUsername(username)
-//                .orElseThrow(() -> new UsernameNotFoundException("User not found in the database"));
-//        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-//        user.getRoles().forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getName())));
-//        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), authorities);
-        throw new NotYetImplementedException();
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found in the database"));
+        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        user.getRoles().forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getName())));
+        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), authorities);
     }
 
 

@@ -12,8 +12,8 @@ public class BgStatApplication {
         SpringApplication.run(BgStatApplication.class, args);
     }
 
-//    @Bean
-//    PasswordEncoder passwordEncoder() {
-//        return new BCryptPasswordEncoder();
-//    }
+    @Bean
+    PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 }
