@@ -2,21 +2,20 @@ package pl.wj.bgstat.exception;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.http.MediaType;
-import pl.wj.bgstat.attribute.AttributeRepository;
-import pl.wj.bgstat.attributeclass.AttributeClassRepository;
-import pl.wj.bgstat.attributeclasstype.AttributeClassTypeRepository;
-import pl.wj.bgstat.boardgame.BoardGameRepository;
-import pl.wj.bgstat.boardgamedescription.BoardGameDescriptionRepository;
-import pl.wj.bgstat.gameplay.GameplayRepository;
-import pl.wj.bgstat.rulebook.RulebookRepository;
-import pl.wj.bgstat.store.StoreRepository;
-import pl.wj.bgstat.systemobjectattributeclass.SystemObjectAttributeClassRepository;
-import pl.wj.bgstat.systemobjectattributeclass.model.SystemObjectAttributeClassId;
-import pl.wj.bgstat.systemobjecttype.SystemObjectTypeRepository;
-import pl.wj.bgstat.user.UserRepository;
-import pl.wj.bgstat.userboardgame.UserBoardGameRepository;
+import pl.wj.bgstat.domain.attribute.AttributeRepository;
+import pl.wj.bgstat.domain.attributeclass.AttributeClassRepository;
+import pl.wj.bgstat.domain.attributeclasstype.AttributeClassTypeRepository;
+import pl.wj.bgstat.domain.boardgame.BoardGameRepository;
+import pl.wj.bgstat.domain.boardgamedescription.BoardGameDescriptionRepository;
+import pl.wj.bgstat.domain.gameplay.GameplayRepository;
+import pl.wj.bgstat.domain.rulebook.RulebookRepository;
+import pl.wj.bgstat.domain.store.StoreRepository;
+import pl.wj.bgstat.domain.systemobjectattributeclass.SystemObjectAttributeClassRepository;
+import pl.wj.bgstat.domain.systemobjectattributeclass.model.SystemObjectAttributeClassId;
+import pl.wj.bgstat.domain.systemobjecttype.SystemObjectTypeRepository;
+import pl.wj.bgstat.domain.user.UserRepository;
+import pl.wj.bgstat.domain.userboardgame.UserBoardGameRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
