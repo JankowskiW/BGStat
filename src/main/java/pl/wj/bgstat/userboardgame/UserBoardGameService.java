@@ -1,17 +1,24 @@
 package pl.wj.bgstat.userboardgame;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import pl.wj.bgstat.boardgame.BoardGameRepository;
+import pl.wj.bgstat.exception.BadRequestException;
 import pl.wj.bgstat.exception.ResourceNotFoundException;
 import pl.wj.bgstat.store.StoreRepository;
 import pl.wj.bgstat.user.UserRepository;
+import pl.wj.bgstat.user.model.User;
 import pl.wj.bgstat.userboardgame.model.UserBoardGame;
 import pl.wj.bgstat.userboardgame.model.UserBoardGameMapper;
 import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameDetailsDto;
+import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameHeaderDto;
 import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameRequestDto;
 import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameResponseDto;
+
+import javax.security.auth.login.CredentialException;
 
 import static pl.wj.bgstat.exception.ExceptionHelper.*;
 
@@ -23,6 +30,13 @@ public class UserBoardGameService {
     private final BoardGameRepository boardGameRepository;
     private final UserRepository userRepository;
     private final StoreRepository storeRepository;
+
+    public Page<UserBoardGameHeaderDto> getAuthorizedUserBoardGame(Pageable pageable, String username) {
+        if (username == null || username.isEmpty()) throw new BadRequestException();
+        User user = userRepository.getByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException(USER_RESOURCE_NAME, "username", username));
+        return userBoardGameRepository.findUserBoardGameHeaders(user.getId(), pageable);
+    }
 
     public UserBoardGameDetailsDto getSingleUserBoardGame(long id) {
         UserBoardGameDetailsDto userBoardGameDetailsDto = userBoardGameRepository.getWithDetailsById(id)

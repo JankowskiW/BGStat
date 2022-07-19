@@ -72,7 +72,7 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler(ForeignKeyConstraintViolationException.class)
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
-    public ExceptionBody handleForeignKeyConstraintViolation(ForeignKeyConstraintViolationException e) {
+    public ExceptionBody handleForeignKeyConstraintViolationException(ForeignKeyConstraintViolationException e) {
         return new ExceptionBody(
                 e.getMessage(),
                 HttpStatus.BAD_REQUEST,
@@ -82,10 +82,20 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler(SystemObjectTypeIncompatibilityException.class)
     @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
-    public ExceptionBody handleForeignKeyConstraintViolation(SystemObjectTypeIncompatibilityException e) {
+    public ExceptionBody handleForeignKeyConstraintViolationException(SystemObjectTypeIncompatibilityException e) {
         return new ExceptionBody(
                 e.getMessage(),
                 HttpStatus.INTERNAL_SERVER_ERROR,
+                ZonedDateTime.now()
+        );
+    }
+
+    @ExceptionHandler(BadRequestException.class)
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    public ExceptionBody handleBadRequestException(BadRequestException e) {
+        return new ExceptionBody(
+                e.getMessage(),
+                HttpStatus.BAD_REQUEST,
                 ZonedDateTime.now()
         );
     }

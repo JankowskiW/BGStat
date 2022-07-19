@@ -1,10 +1,16 @@
 package pl.wj.bgstat.userboardgame;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameDetailsDto;
+import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameHeaderDto;
 import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameRequestDto;
 import pl.wj.bgstat.userboardgame.model.dto.UserBoardGameResponseDto;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
 
@@ -14,6 +20,13 @@ import javax.validation.Valid;
 public class UserBoardGameController {
 
     private final UserBoardGameService userBoardGameService;
+
+    @GetMapping("")
+    public Page<UserBoardGameHeaderDto> getAuthorizedUserBoardGame(
+            @AuthenticationPrincipal @ApiIgnore String username,
+            Pageable pageable) {
+        return userBoardGameService.getAuthorizedUserBoardGame(pageable, username);
+    }
 
     @GetMapping("/{id}")
     public UserBoardGameDetailsDto getSingleUserBoardGame(@PathVariable long id) {
