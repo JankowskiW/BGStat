@@ -31,7 +31,7 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username)
+        User user = userRepository.getByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found in the database"));
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
         user.getRoles().forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getName())));
@@ -54,5 +54,10 @@ public class UserService implements UserDetailsService {
     public Page<GameplayHeaderDto> getUserGameplayHeaders(long id, Pageable pageable) {
         throwExceptionWhenNotExistsById(id, userRepository);
         return gameplayRepository.findUserGameplayHeaders(id, pageable);
+    }
+
+    public User getUser(String username) {
+        return userRepository.getByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found in the database"));
     }
 }

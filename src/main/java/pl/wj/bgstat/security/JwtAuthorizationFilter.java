@@ -15,10 +15,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
-    private static final String ACCESS_TOKEN_HEADER = "Authorization";
-    private static final String REFRESH_TOKEN_HEADER = "refresh_token";
-    private static final String TOKEN_PREFIX = "Bearer ";
+//    private static final String ACCESS_TOKEN_HEADER = "Authorization";
+//    private static final String REFRESH_TOKEN_HEADER = "refresh_token";
+    public static final String TOKEN_PREFIX = "Bearer ";
     private final UserDetailsService userDetailsService;
     private final String secret;
 
@@ -43,7 +45,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     }
 
     private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request) {
-        String token = request.getHeader(ACCESS_TOKEN_HEADER);
+        String token = request.getHeader(AUTHORIZATION);
         if (token != null && token.startsWith(TOKEN_PREFIX)) {
             String userName = JWT.require(Algorithm.HMAC256(secret))
                     .build()
