@@ -20,6 +20,7 @@ import pl.wj.bgstat.security.JsonObjectAuthenticationFilter;
 import pl.wj.bgstat.security.JwtAuthorizationFilter;
 import pl.wj.bgstat.security.RestAuthenticationFailureHandler;
 import pl.wj.bgstat.security.RestAuthenticationSuccessHandler;
+import pl.wj.bgstat.util.JwtUtil;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
