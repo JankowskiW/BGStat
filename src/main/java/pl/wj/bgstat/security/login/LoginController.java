@@ -1,9 +1,9 @@
-package pl.wj.bgstat.login;
+package pl.wj.bgstat.security.login;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import pl.wj.bgstat.login.model.LoginCredentialsDto;
+import pl.wj.bgstat.security.login.model.LoginCredentialsDto;
 
 @RestController
 public class LoginController {

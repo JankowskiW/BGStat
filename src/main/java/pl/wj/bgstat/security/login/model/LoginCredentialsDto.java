@@ -1,4 +1,4 @@
-package pl.wj.bgstat.login.model;
+package pl.wj.bgstat.security.login.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

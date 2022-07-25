@@ -14,9 +14,12 @@ import pl.wj.bgstat.domain.gameplay.model.dto.GameplayHeaderDto;
 import pl.wj.bgstat.domain.user.model.User;
 import pl.wj.bgstat.domain.userboardgame.UserBoardGameRepository;
 import pl.wj.bgstat.domain.userboardgame.model.dto.UserBoardGameHeaderDto;
+import pl.wj.bgstat.security.privilege.model.Privilege;
+import pl.wj.bgstat.security.role.model.Role;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static pl.wj.bgstat.exception.ExceptionHelper.*;
 
@@ -34,7 +37,10 @@ public class UserService implements UserDetailsService {
         User user = userRepository.getByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found in the database"));
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        user.getRoles().forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getName())));
+        user.getRoles().forEach(role -> {
+            authorities.add(new SimpleGrantedAuthority(role.getName()));
+            role.getPrivileges().forEach(privilege -> authorities.add(new SimpleGrantedAuthority(privilege.getName())));
+        } );
         return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), authorities);
     }
 

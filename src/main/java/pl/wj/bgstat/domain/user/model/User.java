@@ -2,7 +2,7 @@ package pl.wj.bgstat.domain.user.model;
 
 import lombok.Getter;
 import lombok.Setter;
-import pl.wj.bgstat.role.model.Role;
+import pl.wj.bgstat.security.role.model.Role;
 
 import javax.persistence.*;
 import java.util.ArrayList;

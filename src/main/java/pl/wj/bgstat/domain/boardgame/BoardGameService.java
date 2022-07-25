@@ -112,13 +112,13 @@ public class BoardGameService {
         String thumbnailPath = boardGame.getThumbnailPath();
 
         attributeRepository.deleteByObjectIdAndObjectTypeId(id, boardGame.getObjectTypeId());
+        gameplayRepository.deleteByBoardGameId(id);
         userBoardGameRepository.deleteByBoardGameId(id);
         try {
             rulebookService.deleteAllRulebooksByBoardGameId(id);
         } catch (IOException e) {
             throw new FileException("Cannot remove rulebooks file or directory");
         }
-        gameplayRepository.deleteByBoardGameId(id);
         boardGameRepository.deleteById(id);
         if (boardGameRepository.existsById(id)) return;
 

@@ -1,22 +1,17 @@
 package pl.wj.bgstat.security;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pl.wj.bgstat.domain.user.UserService;
 import pl.wj.bgstat.domain.user.model.User;
-import pl.wj.bgstat.role.model.Role;
+import pl.wj.bgstat.security.privilege.model.Privilege;
+import pl.wj.bgstat.security.role.model.Role;
 import pl.wj.bgstat.util.JwtUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Date;
 import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -32,6 +27,7 @@ public class SecurityController {
 
     @GetMapping("/refresh-token")
     public void refreshToken(HttpServletRequest request, HttpServletResponse response) {
+
         String refreshToken = request.getHeader(AUTHORIZATION);
         String username = jwtUtil.extractUsernameFromRefreshToken(refreshToken, true);
         if (username != null) {

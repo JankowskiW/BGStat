@@ -5,6 +5,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -23,8 +24,6 @@ import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
-//    private static final String ACCESS_TOKEN_HEADER = "Authorization";
-//    private static final String REFRESH_TOKEN_HEADER = "refresh_token";
     public static final String TOKEN_PREFIX = "Bearer ";
     private final UserDetailsService userDetailsService;
     private final String secret;

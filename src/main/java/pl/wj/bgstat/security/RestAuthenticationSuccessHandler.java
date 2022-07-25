@@ -6,6 +6,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+import pl.wj.bgstat.security.privilege.model.Privilege;
+import pl.wj.bgstat.security.role.model.Role;
 import pl.wj.bgstat.util.JwtUtil;
 
 import javax.servlet.http.HttpServletRequest;
