@@ -46,14 +46,10 @@ public class AttributeService {
         boolean multivalued = attributeClassTypeRepository
                 .getMultivaluedStatusByAttributeClassId(attributeRequestDto.getAttributeClassId());
         if (multivalued) {
-            if (attributeRepository.existsByObjectIdAndObjectTypeIdAndAttributeClassIdAndValue(
-                    attributeRequestDto.getObjectId(), attributeRequestDto.getObjectTypeId(),
-                    attributeRequestDto.getAttributeClassId(), attributeRequestDto.getValue()))
+            if (checkIfAttributeExists(attributeRequestDto))
                 throw new ResourceExistsException(ATTRIBUTE_RESOURCE_NAME, Optional.empty());
         } else {
-            if (attributeRepository.existsByObjectIdAndObjectTypeIdAndAttributeClassId(
-                    attributeRequestDto.getObjectId(), attributeRequestDto.getObjectTypeId(),
-                    attributeRequestDto.getAttributeClassId()))
+            if (checkIfMultivaluedAttributeExists(attributeRequestDto))
                 throw new ResourceExistsException(ATTRIBUTE_RESOURCE_NAME, Optional.empty());
         }
 
@@ -70,14 +66,10 @@ public class AttributeService {
         boolean multivalued = attributeClassTypeRepository
                 .getMultivaluedStatusByAttributeClassId(attributeRequestDto.getAttributeClassId());
         if (multivalued) {
-            if (attributeRepository.existsByObjectIdAndObjectTypeIdAndAttributeClassIdAndValueAndIdNot(
-                    attributeRequestDto.getObjectId(), attributeRequestDto.getObjectTypeId(),
-                    attributeRequestDto.getAttributeClassId(), attributeRequestDto.getValue(), id))
+            if (checkIfOtherAttributeExists(id, attributeRequestDto))
                 throw new ResourceExistsException(ATTRIBUTE_RESOURCE_NAME, Optional.empty());
         } else {
-            if (attributeRepository.existsByObjectIdAndObjectTypeIdAndAttributeClassIdAndIdNot(
-                    attributeRequestDto.getObjectId(), attributeRequestDto.getObjectTypeId(),
-                    attributeRequestDto.getAttributeClassId(), id))
+            if (checkIfOtherMultivaluedAttributeExists(id, attributeRequestDto))
                 throw new ResourceExistsException(ATTRIBUTE_RESOURCE_NAME, Optional.empty());
         }
         Attribute attribute = AttributeMapper.mapToAttribute(id, attributeRequestDto);
@@ -88,6 +80,30 @@ public class AttributeService {
     public void deleteAttribute(long id) {
          if (!attributeRepository.existsById(id)) throw new ResourceNotFoundException(ATTRIBUTE_RESOURCE_NAME, ID_FIELD, id);
          attributeRepository.deleteById(id);
+    }
+
+    private boolean checkIfAttributeExists(AttributeRequestDto attributeRequestDto) {
+        return attributeRepository.existsByObjectIdAndObjectTypeIdAndAttributeClassIdAndValue(
+                attributeRequestDto.getObjectId(), attributeRequestDto.getObjectTypeId(),
+                attributeRequestDto.getAttributeClassId(), attributeRequestDto.getValue());
+    }
+
+    private boolean checkIfMultivaluedAttributeExists(AttributeRequestDto attributeRequestDto) {
+        return attributeRepository.existsByObjectIdAndObjectTypeIdAndAttributeClassId(
+                attributeRequestDto.getObjectId(), attributeRequestDto.getObjectTypeId(),
+                attributeRequestDto.getAttributeClassId());
+    }
+
+    private boolean checkIfOtherAttributeExists(long id, AttributeRequestDto attributeRequestDto) {
+        return attributeRepository.existsByObjectIdAndObjectTypeIdAndAttributeClassIdAndValueAndIdNot(
+                attributeRequestDto.getObjectId(), attributeRequestDto.getObjectTypeId(),
+                attributeRequestDto.getAttributeClassId(), attributeRequestDto.getValue(), id);
+    }
+
+    private boolean checkIfOtherMultivaluedAttributeExists(long id, AttributeRequestDto attributeRequestDto) {
+        return attributeRepository.existsByObjectIdAndObjectTypeIdAndAttributeClassIdAndIdNot(
+                attributeRequestDto.getObjectId(), attributeRequestDto.getObjectTypeId(),
+                attributeRequestDto.getAttributeClassId(), id);
     }
 
     private void checkSystemObjectForeignKeyViolation(long objectId, long objectTypeId) {
