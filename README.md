@@ -35,7 +35,7 @@ To run this project, ....
 * and a lot more features...
 
 ## Sources
-This app is inspired by:
+This app was inspired by:
 * Spring Boot Reference Documentation
 * Hibernate ORM Documentation
 * AssertJ Documentation
