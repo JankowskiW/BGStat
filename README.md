@@ -23,9 +23,6 @@ Project contains:
 * JUnit5
 * AssertJ
 
-## Setup
-To run this project, ....
-
 ## Features
 * Add new board games and basic info about them
 * Add board games to your private library
